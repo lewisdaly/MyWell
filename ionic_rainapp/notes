@@ -1,0 +1,105 @@
+##### Database: #####
+user: wmv_dev
+pwd: ^>7d8zpxJiTz3x(
+
+
+##### Tables: #####
+LastReading
+Well_History
+Well_Levels
+Well_Locations
+
+
+##### Schema: #####
+Last Reading: (ID, Date) - not needed
+Well_History: (ID, TOT_WELL_DEPTH_m, T_STAMP) PK=(ID, T_STAMP)
+Well_Levels: (ID, TOT_WELL_DEPTH_m, T_STAMP)
+Well_Locations: (ID, LAT_DEGREE, LAT_MINUTE, LAT_SECOND, LAT_DECIMAL, LNG_DEGREE, LNG_MINUTE, LNG_SECOND, LNG_DECIMAL, ELEVATION_M)
+
+User: (user)
+
+
+Each well has a location, 
+
+
+##### Users #####
+http://www.johankarlsson.net/2013/04/accessing-non-mobile-services-tables-in.html
+enZHOPTnoELogin_waterManagementMobileUser
+oVxMVEUjORLogin_test-water-appUser
+
+GRANT SELECT ON LastReading TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT SELECT ON Well_History TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT SELECT ON Well_Levels TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT SELECT ON Well_Locations TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT SELECT ON LastReading TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT SELECT ON Well_History TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT SELECT ON Well_Levels TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT SELECT ON Well_Locations TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT INSERT ON LastReading TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT INSERT ON Well_History TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT INSERT ON Well_Levels TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT INSERT ON Well_Locations TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT INSERT ON LastReading TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT INSERT ON Well_History TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT INSERT ON Well_Levels TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT INSERT ON Well_Locations TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT DELETE ON LastReading TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT DELETE ON Well_History TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT DELETE ON Well_Levels TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT DELETE ON Well_Locations TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT DELETE ON LastReading TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT DELETE ON Well_History TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT DELETE ON Well_Levels TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT DELETE ON Well_Locations TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT UPDATE ON LastReading TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT UPDATE ON Well_History TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT UPDATE ON Well_Levels TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT UPDATE ON Well_Locations TO enZHOPTnoELogin_waterManagementMobileUser;
+GRANT UPDATE ON LastReading TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT UPDATE ON Well_History TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT UPDATE ON Well_Levels TO "oVxMVEUjORLogin_test-water-appUser";
+GRANT UPDATE ON Well_Locations TO "oVxMVEUjORLogin_test-water-appUser";
+
+
+##### Queries: #####
+
+- Get well depths:
+select * from Well_Locations JOIN Well_Levels ON Well_Locations.id = Well_Levels.id;
+
+- Update Well Depth:
+update Well_Levels set TOT_WELL_DEPTH_M=123, T_STAMP=CAST( '2015-11-05T05:14:07.667Z' AS DATETIME) WHERE ID=1;
+update Well_Levels set TOT_WELL_DEPTH_M=13 WHERE ID=1;
+
+- Update Well Location:
+update well_locations set LNG_MINUTE=13, LNG_SECOND=15 WHERE ID = 1;
+
+- Insert Well History:
+insert into WELL_HISTORY VALUES (1, 123, CAST( '2015-11-05T05:14:07.667Z' AS DATETIME))
+
+- Update users:
+update Users set verified=true where user_id=10154336252182564;
+
+
+
+##### DIRECTORY SOMETHING #####
+https://login.windows.net/constantinbaumgartnergmail.onmicrosoft.com/.well-known/openid-configuration
+
+
+
+
+
+IIJ - internet something japan, may semester 
+
+
+
+##### API KEYS #####
+Google:
+Client ID: 998287122056-tqd2c57p0ao3pd575g111td1v5267pcn.apps.googleusercontent.com
+Secret: R5ltIBxravenu7VnMyXb3EYV
+
+Cloud Bursting
+- \
+
+
+
+Pho Ming

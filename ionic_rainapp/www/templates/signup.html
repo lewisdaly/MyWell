@@ -1,0 +1,37 @@
+<ion-view title="Sign Up">
+<ion-content>
+<div class="list list-inset">
+ <form name="myForm">
+   <label class="item item-input">
+     <input type="email" placeholder="email" id="email" name="email" ng-model="formData.email" required/>
+     <span ng-show="myForm.email.$error.required && myForm.email.$dirty" font-size:12px style="color:red;font-size:13px">*required</span>
+     <span ng-show="!myForm.email.$error.required && myForm.email.$error.email && myForm.email.$dirty" font-size:12px style="color:red;font-size:13px">invalid email</span>
+   </label>
+
+   <label class="item item-input">
+     <input type="text" id="username" placeholder="username" name="username" ng-model="formData.username" ng-minlength="5" ng-maxlength="20" ng-pattern="/^[A-z][A-z0-9]*$/" required  />
+     <span ng-show="myForm.username.$error.required && myForm.username.$dirty" font-size:12px style="color:red;font-size:13px">*required</span>
+     <span ng-show="!myForm.username.$error.minLength && !myForm.username.$error.maxLength && myForm.username.$error.pattern && myForm.username.$dirty" font-size:12px style="color:red;font-size:13px">Must start with a letter, and contain letters &amp; numbers only.</span>
+     <span ng-show="!myForm.username.$error.required && (myForm.username.$error.minlength || myForm.username.$error.maxlength) && myForm.username.$dirty" font-size:12px style="color:red;font-size:13px">Username ust be between 5 and 20 characters.</span>
+   </label>
+
+   <label class="item item-input">
+     <input type="password" placeholder="password" id="password" name="password" ng-model="formData.password" ng-minlength="8" ng-maxlength="20" ng-pattern="/(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z])/" required  />
+     <span ng-show="myForm.password.$error.required && myForm.password.$dirty" font-size:12px style="color:red;font-size:13px">*required</span>
+     <span ng-show="!myForm.password.$error.required && (myForm.password.$error.minlength || myForm.password.$error.maxlength) && myForm.password.$dirty" font-size:12px style="color:red;font-size:13px">Passwords must be between 8 and 20 characters.</span>
+     <span ng-show="!myForm.password.$error.required && !myForm.password.$error.minlength && !myForm.password.$error.maxlength && myForm.password.$error.pattern && myForm.password.$dirty" font-size:12px style="color:red;font-size:13px" font-size:12px style="color:red;font-size:13px">Must contain one lower &amp; uppercase letter, and one non-alpha character</span>
+   </label>
+
+   <label class="item item-input">
+     <input type="password" placeholder="verifypassword" id="password_c" name="password_c" ng-model="formData.password_c" valid-password-c required  />
+     <span ng-show="myForm.password_c.$error.required && myForm.password_c.$dirty" font-size:12px style="color:red;font-size:13px">Please confirm your password.</span>
+     <span ng-show="!myForm.password_c.$error.required && myForm.password_c.$error.noMatch && myForm.password.$dirty" font-size:12px style="color:red;font-size:13px">Passwords do not match.</span>
+   </label>
+   <div class="row">
+     <button type="submit" class="button button-block button-calm" ng-click="signup()" ng-disabled="!myForm.$valid">Submit</button>
+   </div>
+ </form>
+</div>
+
+</ion-content>
+</ion-view>

@@ -1,0 +1,33 @@
+<ion-view view-title="Report">
+<ion-content scroll="false">
+
+
+<h3 ng-if="isUserNotLoggedIn">Log in to submit well levels</h3>
+<h3 ng-if="isUserNotVerified">Your account is not verified. Please wait for an admin to verifiy your account</h3>
+
+<!-- Postcode, Date, Well ID, WT Depth,  -->
+<div ng-if="isUserLoggedInAndVerified">
+<form class="list list-inset simple-form">
+  <label class="item item-input">
+    <input ng-model="form.postcode" type="tel" placeholder="Postcode">
+  </label>
+  <label class="item item-input">
+    <input ng-model="form.date" type="date" placeholder="Date">
+  </label>
+  <label class="item item-input">
+    <input ng-model="form.well_id" type="tel" placeholder="Well ID">
+  </label>
+  <label class="item item-input">
+    <input ng-model="form.wt_depth" type="number" placeholder="WT Depth" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+  </label>
+</form>
+
+<div class="padding">
+  <button class="button button-block button-positive" ng-click="sendReport(form)">
+    Submit
+  </button>
+</div>
+
+</div>
+</ion-content>
+</ion-view>
