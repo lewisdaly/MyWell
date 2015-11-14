@@ -81,6 +81,7 @@ update Users set verified=true where user_id=10154336252182564;
 
 
 
+
 ##### DIRECTORY SOMETHING #####
 https://login.windows.net/constantinbaumgartnergmail.onmicrosoft.com/.well-known/openid-configuration
 
