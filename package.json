@@ -1,0 +1,7 @@
+{
+  "name": "ionic_rainapp",
+  "version": "1.0.0",
+  "dependencies": {
+        "express": "*"
+  }
+}
