@@ -76,6 +76,10 @@ update well_locations set LNG_MINUTE=13, LNG_SECOND=15 WHERE ID = 1;
 - Insert Well History:
 insert into WELL_HISTORY VALUES (1, 123, CAST( '2015-11-05T05:14:07.667Z' AS DATETIME))
 
+- Insert into Well_locations
+insert into WELL_LOCATIONS VALUES (ID, LAT_DEGREE, LAT_MINUTE, LAT_SECOND, LAT_DECIMAL, LNG_DEGREE, LNG_MINUTE, LNG_SECOND, LNG_DECIMAL, ELEVATION_M)
+insert into WELL_LOCATIONS VALUES (1, 12, 123, 134, 12, 65, 14, 23, 41, 54.2)
+
 - Update users:
 update Users set verified=true where user_id=10154336252182564;
 
