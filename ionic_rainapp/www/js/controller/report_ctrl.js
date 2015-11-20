@@ -1,18 +1,37 @@
-  angular.module('report.controllers', [])
+angular.module('report.controllers', [])
 
-  .controller('ReportCtrl', function($scope, $ionicPopup, $http, apiUrl, Azureservice, $rootScope) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
+.controller('ReportCtrl', function($scope, $ionicPopup, $http, apiUrl, Azureservice, $rootScope, LoginService) {
+
+  $scope.form = {};
+  $scope.form.date =  new Date();
+
   $scope.$on('$ionicView.enter', function(e) {
+    checkUserStatus();
+  });
+
+  $scope.$on('login-state-changed', function(e) {
+    checkUserStatus();
+  })
+  
+  $scope.refreshUser = function() {
+    //Perform login again - in case user's verification status has changed:
+    LoginService.reAuthenticateUser()
+    .then(function(response){
+      var currentUser = $rootScope.globals.currentUser;
+      console.log("currentUser: " + JSON.stringify(currentUser));
+      checkUserStatus();
+
+    },function(error) {
+    });
+  }
+
+
+  function checkUserStatus() {
     $scope.isUserNotLoggedIn = false;
     $scope.isUserNotVerified = false;
     $scope.isUserLoggedInAndVerified = false;
 
     var currentUser = $rootScope.globals.currentUser;
-    console.log("currentUser: " + JSON.stringify(currentUser));
 
     if (!currentUser) {
       $scope.isUserNotLoggedIn = true;
@@ -24,25 +43,9 @@
     {
       $scope.isUserLoggedInAndVerified = true;
     }
-
-
-  });
-
-  $scope.form = {};
-  $scope.form.date =  new Date();
-
-
-  $scope.isUserNotLoggedIn = function () {
-    // return $rootScope.globals.currentUser;
-    return true;
   }
 
-  $scope.isUserNotVerified = false;
 
-  $scope.isUserLoggedInAndVerified = function() {
-
-    return false;
-  }
 
   // Validate and submit form
   $scope.sendReport = function(form){
@@ -61,7 +64,6 @@
     data.wellDepth = $scope.form.wt_depth;
     data.wellID = $scope.form.well_id;
     data.timestamp = new Date();
-
 
     Azureservice.invokeApi("mobilerequest", {
       method: "post",

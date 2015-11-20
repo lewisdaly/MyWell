@@ -1,13 +1,13 @@
 <ion-view view-title="Settings">
 <ion-content class="padding">
 
-<button class="button button-outline button-block button-assertive button-positive" ng-click="logout()">Logout</button>
+<!-- <button class="button button-outline button-block button-assertive button-positive" ng-click="logout()">Logout</button> -->
 <button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="register()">Register New Well</button>
 
 
 <ion-list class="list">
 
-  <div class="item">
+  <div class="item" ng-show="isVerified">
     <label>Unverified Users</label>
     <div class="item row" ng-repeat="user in unverifiedUsers">
 

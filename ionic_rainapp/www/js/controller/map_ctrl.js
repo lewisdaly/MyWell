@@ -1,7 +1,6 @@
 angular.module('map.controllers', [])
-.controller('MapCtrl', function($scope, apiUrl, Azureservice) {
+.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state) {
 
-  console.log(apiUrl);
   $scope.map;
 
   // Placeholder
@@ -9,13 +8,12 @@ angular.module('map.controllers', [])
     content: ""
   });
 
-
   $scope.$on('mapInitialized', function(event, map) {
     if(map.class.indexOf("map-main") == -1) {
       return
     }
 
-      $scope.map = map;
+    $scope.map = map;
     var well_data = {}; //ht
 
     //Test send request to Azure service
@@ -23,55 +21,35 @@ angular.module('map.controllers', [])
       body: null,
       method: "get"
     }).then(function(response) {
-      console.log('Here is my response object');
       var newArray = [];
       for (var i in response) {
         var object = response[i];
         object.lat = ConvertDMSToDD(object.LAT_DEGREE, object.LAT_MINUTE, object.LAT_SECOND, object.LAT_DECIMAL);//"24.570883333333335";
         object.lng = ConvertDMSToDD(object.LNG_DEGREE, object.LNG_MINUTE, object.LNG_SECOND, object.LNG_DECIMAL);//"74.22109861111112";
         object.Level = object.TOT_WELL_DEPTH_m;
-
-        // var newObj = {};
-        // newObj.lat = object.lat;
-        // newObj.lng = object.lng;
-        // newObj.Id = 501;
-        // newObj.Elevation = 453.12;
-        // newObj.Level = 31;
-        // newArray.push(newObj);
       }
 
-      console.log(JSON.stringify(response));
       $scope.well_data = response;
       // $scope.well_data = newArray;
 
-      //TESTING:
-      var originalWell = JSON.parse("[{\"Id\":501,\"lat\":24.570883333333335,\"lng\":74.22109861111112,\"Elevation\":438.07,\"Level\":31,\"TimeStamp\":\"2015-08-28\"}]");
-      console.log(JSON.stringify(originalWell));
       setUpMap();
     }, function(err) {
       console.error('Azure Error: ' + err);
     });
-})
+  })
 
 function setUpMap() {
 
   var wellGeoJson = GeoJSON.parse($scope.well_data, {Point: ['lat', 'lng']});
 
-      //Create Info window pop up to display Well Id and water level
-      //Might want to change this to onClick -- mouseover get annoying
-      // $scope.map.data.addListener('click', function() {
-      //   console.log("click!");
-      // });
-$scope.map.data.addGeoJson(wellGeoJson);
+  $scope.map.data.addGeoJson(wellGeoJson);
 
-
-$scope.map.data.addListener('click', function(event) {
-  console.log("Click!");
-  infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Well ID = '+
-    event.feature.getProperty('ID') +"<br/>Water Level: " + event.feature.getProperty("Level")  + "m");
-  var anchor = new google.maps.MVCObject();
-  anchor.set("position",event.latLng);
-  infoWindow.open($scope.map,anchor);
+  $scope.map.data.addListener('click', function(event) {
+    infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Well ID = '+
+      event.feature.getProperty('ID') +"<br/>Water Level: " + event.feature.getProperty("Level")  + "m");
+    var anchor = new google.maps.MVCObject();
+    anchor.set("position",event.latLng);
+    infoWindow.open($scope.map,anchor);
         // $scope.map.showInfoWindow(infoWindow);
       });
 
@@ -130,7 +108,6 @@ $scope.map.data.addListener('click', function(event) {
       //var maxIntensity = heatmap['gm_bindings_']['maxIntensity'][484]['Sc']['j'];
       var legendWidth = document.getElementById('LegendGradient').style.width = '100%';
       var offset = Math.round(maxIntensity/6);
-      console.log("MaxIntesity: " + maxIntensity +", offset:" + offset  );
       var value = maxIntensity;
       var key = 6;
       //build legend key scale

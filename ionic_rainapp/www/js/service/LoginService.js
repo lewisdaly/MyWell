@@ -1,49 +1,41 @@
 angular.module('service.login', [])
 
-.service("LoginService",['$http', '$q', 'apiUrl', 'Azureservice', 'AuthenticationService', function($http, $q, apiUrl, Azureservice, AuthenticationService) {
+.service("LoginService",['$http', '$q', 'apiUrl', 'Azureservice', 'AuthenticationService', '$rootScope', function($http, $q, apiUrl, Azureservice, AuthenticationService, $rootScope) {
   //TODO: figure out how to save user's login credentials, and auto login
 
   //Return public api
   return({
     login: login,
-    logout: logout
+    logout: logout,
+    reAuthenticateUser: reAuthenticateUser
   });
 
-  //Public Methods
-  // function login(user) {
-  //   var url = apiUrl + '/api/user/current'; //TODO: change later on.
-  //   var method = 'get';
-  //   var objString = "username=" + user.username + "&password=" + user.password;
-
-  //   var headers = user ? {authorization : "Basic "
-  //       + btoa(user.username + ":" + user.password)
-  //   } : {};
-
-  //   return $http({
-  //     method: method,
-  //     headers: headers,
-  //     url: url
-  //   })
-  //   .success(function(data, status, headers) {
-  //     console.log("Login success: " + data);
-  //     //Add the xsrf token manually here - don't think this works
-  //     var token = headers('XSRF-TOKEN');
-  //     $http.defaults.headers.post['X-XSRF-TOKEN'] = headers('XSRF-TOKEN');
-
-  //   })
-  //   .error(function(data) {
+  function reAuthenticateUser() {
+    return $q(function(resolve, reject){
+      //Get the current user
+      var currentUser = $rootScope.globals.currentUser;
+      if (!currentUser) {
+        reject("User is not logged in");
+      } else {
+        //Perform the new login:
+        login(currentUser.service, currentUser.authToken)
+        .then(function(response) {
+          resolve(response);
+        }, function(error) {
+          reject("Error");
+        })
+      }
+    })
+  }
 
 
-  //   }); 
-  // }
-
-
-  function login(service) {
+  //Send empty token if login isn't resuming
+  function login(service, token) {
     return $q(function(resolve, reject) {
 
       switch(service) {
         case 'facebook':
-        Azureservice.login("facebook")
+        Azureservice.login("facebook", token)
         .then(function(results) {
           var  currentUser = Azureservice.getCurrentUser();
           console.log("Current user: " + JSON.stringify(currentUser));
@@ -71,7 +63,7 @@ angular.module('service.login', [])
 
         break;
         case 'twitter':
-        Azureservice.login("twitter")
+        Azureservice.login("twitter", token)
         .then(function(results) {
           var  currentUser = Azureservice.getCurrentUser();
           console.log("Current user: " + JSON.stringify(currentUser));
@@ -101,7 +93,7 @@ angular.module('service.login', [])
         break;
         default:
           //Google 
-          Azureservice.login("google")
+          Azureservice.login("google", token)
           .then(function(results) {
             var  currentUser = Azureservice.getCurrentUser();
             console.log("Current user: " + JSON.stringify(currentUser));
@@ -126,12 +118,8 @@ angular.module('service.login', [])
             reject("Error")
 
           });
-      }
-
-    });
-
-
-
+        }
+      });
 }
 
 function logout() {

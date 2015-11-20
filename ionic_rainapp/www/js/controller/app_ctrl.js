@@ -14,8 +14,14 @@ angular.module('starter.controllers', ['ionic'])
 
 
 	$scope.login = function() {
-		console.log("Login!");
 		$scope.modal.show();
+	}
+
+	$scope.logout = function() {
+		AuthenticationService.ClearCredentials();
+		$rootScope.$broadcast('login-state-changed');
+		$scope.isVerified = false;
+		$scope.unverifiedUsers = [];
 	}
 
 	$scope.cancel = function() {
@@ -35,7 +41,6 @@ angular.module('starter.controllers', ['ionic'])
 
 	//TODO: other services, google etc.
 	//TODO: Auto login user!
-	//TODO: Abstract this to a service or something
 
 	$scope.performLogin = function(service) {
 		LoginService.login(service)
@@ -46,9 +51,6 @@ angular.module('starter.controllers', ['ionic'])
 		function(error) {
 			$scope.modal.hide();
 		});
-
-
-
 	}
 
 	$ionicModal.fromTemplateUrl('templates/login.html', {

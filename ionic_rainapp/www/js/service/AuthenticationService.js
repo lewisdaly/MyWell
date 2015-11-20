@@ -29,19 +29,17 @@
         }
 
         function SetCredentials(user, authToken) {
-            // var authdata = Base64.encode(username + ':' + password);
 
-            //Not sure why user is an array...
             $rootScope.globals = {
                 currentUser: {
-                    userID:user[0].user_id,
+                    userID:user.id,
                     authToken: authToken,
-                    username: user[0].user_name, 
-                    verified: user[0].verified
+                    username: user.user_name, 
+                    verified: user.verified,
+                    service: user.service
                 }
             };
 
-            // $http.defaults.headers.common['Authorization'] = 'Basic ' + authdata;
             $localstorage.setObject('globals', $rootScope.globals);
         }
 

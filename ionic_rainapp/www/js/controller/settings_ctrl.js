@@ -11,7 +11,7 @@ angular.module('controller.settings', ['ionic'])
 
 
 		var currentUser = $rootScope.globals.currentUser;
-		console.log("Settings: currentUser: " + JSON.stringify(currentUser));
+		// console.log("Settings: currentUser: " + JSON.stringify(currentUser));
 
 		if (currentUser) {
 			if (currentUser.verified == true) {
@@ -20,7 +20,6 @@ angular.module('controller.settings', ['ionic'])
 				Azureservice.invokeApi("authenticateuser", {method:'get'})
 				.then(function(response) {
 					$scope.unverifiedUsers = response;
-					console.log("Response: " + JSON.stringify(response));
 				},
 				function(error) {
 					console.log("Error: " + JSON.stringify(error));
