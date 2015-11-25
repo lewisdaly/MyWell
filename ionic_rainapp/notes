@@ -79,6 +79,21 @@ insert into WELL_HISTORY VALUES (1, 123, CAST( '2015-11-05T05:14:07.667Z' AS DAT
 - Update users:
 update Users set verified=true where user_id=10154336252182564;
 
+- Get average well depth
+var lowerLimit = wellID + “00”;
+var upperLimit = parseInt(lowerLimit) + 100;
+select AVG(TOT_WELL_DEPTH_m) from well_levels where ID >= lowerLimit AND ID <= upperLimit;
+
+
+- upsert:
+update WELL_LEVELS set TOT_WELL_DEPTH_M=12.3, T_STAMP=CAST( '2015-11-26T00:00:00.000Z' AS DATETIME) WHERE ID=501;
+
+IF EXISTS (SELECT * FROM well_history WHERE id = 501 AND T_STAMP = CAST('2015-11-26T00:00:00.000Z' AS DATETIME))UPDATE WELL_HISTORY SET TOT_WELL_DEPTH_M=12.3 WHERE ID = 501 AND T_STAMP = CAST('2015-11-26T00:00:00.000Z' AS DATETIME) ELSE INSERT INTO WELL_HISTORY VALUES (501, 12.3, CAST( '2015-11-26T00:00:00.000Z' AS DATETIME))
+
+
+
+
+
 
 
 ##### DIRECTORY SOMETHING #####
@@ -97,9 +112,15 @@ Google:
 Client ID: 998287122056-tqd2c57p0ao3pd575g111td1v5267pcn.apps.googleusercontent.com
 Secret: R5ltIBxravenu7VnMyXb3EYV
 
-Cloud Bursting
-- \
 
 
+##### SIGNING TO PLAY STORE ######
 
-Pho Ming
+cordova plugin rm cordova-plugin-console
+cordova build --release android
+keytool -genkey -v -keystore lewisdaly-release-key.keystore -alias lewisdaly_aliaz -keyalg RSA -keysize 2048 -validity 10000
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore lewisdaly-release-key.keystore /Users/lewisdaly/Developer/rain_app_india/rainmapmobile/ionic_rainapp/platforms/android/build/outputs/apk/android-release-unsigned.apk lewisdaly_aliaz
+~/Library/Android/sdk/build-tools/22.0.1/zipalign -v 4 /Users/lewisdaly/Developer/rain_app_india/rainmapmobile/ionic_rainapp/platforms/android/build/outputs/apk/android-release-unsigned.apk myWell.apk
+
+Pwd Hint: lewis's 'why'
+
