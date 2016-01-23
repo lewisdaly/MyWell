@@ -1,8 +1,9 @@
 angular.module('map.controllers', [])
-.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory) {
+.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory, $ionicModal, $ionicPopup) {
 
   $scope.map;
   $scope.isPageActive = true;
+  $scope.closestVillage = "Varni"; //default
 
   // Placeholder
   var infoWindow = new google.maps.InfoWindow({
@@ -13,8 +14,6 @@ angular.module('map.controllers', [])
     if ($scope.map) {
           google.maps.event.trigger($scope.map, 'resize');
     }
-
-      
   });
 
   $scope.$on('$ionicView.exit')
@@ -48,10 +47,78 @@ angular.module('map.controllers', [])
     });
   })
 
-function setUpMap() {
 
-  var wellGeoJson = GeoJSON.parse($scope.well_data, {Point: ['lat', 'lng']});
-  $scope.map.data.addGeoJson(wellGeoJson);
+  function refreshMapHeading() {
+    //Get the map centre
+    var center = $scope.map.getCenter();
+    var params = {"lat":center.lat(), "lng":center.lng()};
+
+    var smallestDistance = 9999;
+    var closestWellID;
+    var closestVillage;
+
+    //find the closest well id
+    for (var i in $scope.well_data) {
+      var well = $scope.well_data[i];
+
+      var distance = distanceBetween(center.lat(), center.lng(), well.lat, well.lng);
+      if (distance <= smallestDistance) {
+        closestWellID = well.ID;
+        smallestDistance = distance;
+        closestVillage = well.village_name;
+      }
+    }
+
+    $scope.closestVillage = closestVillage;
+    var villageID = closestWellID/100; //we just want the first digit
+
+    Azureservice.invokeApiSilently("getclosestvillage", {
+      body: {"well_id" : villageID},
+      method:"post"
+    }).then(function(response) {
+      console.log("getclosestvillage response: " + JSON.stringify(response));
+      $scope.closestVillageInfo = response;
+    }, function(err){
+      console.error("Azure Error: " + JSON.stringify(err));
+    });
+  }
+
+  //Display a popup with the village info
+  $scope.displayVillageInfo = function() {
+    var message = " ";
+    if ($scope.closestVillageInfo){
+      message = "Current Ave WT Depth: " + $scope.closestVillageInfo.current_depth.toFixed(2) +
+      "m</br>Ave WT Depth 1 month ago: " + $scope.closestVillageInfo.last_month_depth.toFixed(2) +
+      "m</br>Ave WT Depth 1 year ago: " + $scope.closestVillageInfo.last_year_depth.toFixed(2) + "m";
+    }
+    displayMessage($scope.closestVillage, message);
+  }
+
+  function distanceBetween(lat1, lng1, lat2, lng2) {
+    var R = 6371000; // metres
+    var φ1 = lat1 * Math.PI / 180; //convert to radians
+    var φ2 = lat2 * Math.PI / 180;
+    var Δφ = (lat2-lat1) * Math.PI / 180;
+    var Δλ = (lng2-lng1) * Math.PI / 180;
+
+    var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c;
+    return d;
+  }
+
+  function setUpMap() {
+
+    var wellGeoJson = GeoJSON.parse($scope.well_data, {Point: ['lat', 'lng']});
+    $scope.map.data.addGeoJson(wellGeoJson);
+
+
+    $scope.map.addListener('dragend', function()
+    {
+      refreshMapHeading();
+    });
 
   $scope.map.data.addListener('click', function(event) {
     infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: '
@@ -173,5 +240,12 @@ function setUpMap() {
       var dd =  degrees + minutes + seconds/(60*60);
 
       return dd;
+    }
+
+    function displayMessage(title, message) {
+      var alertPopup = $ionicPopup.alert({
+        title: title,
+        template: message
+      });
     }
   })

@@ -389,6 +389,44 @@ angular.module('azure-mobile-service.module', [])
                         });
 
                 return deferred.promise;
+            },
+
+
+            //Ok this is starting to get bad...
+            invokeApiSilently: function(name, options) {
+
+                var deferred = $q.defer();
+
+                var validMethods = ['get', 'post', 'put', 'delete', 'patch'];
+
+                if (isNullOrUndefined(name)) {
+                    console.error('Azureservice.invokeApi No custom api name specified');
+                    return null;
+                }
+
+                if (isUndefinedOrNotAnObject(options)) {
+                    options = {
+                        method: 'get'
+                    };
+                } else if (isNullOrUndefined(options.method)) {
+                    options.method = 'get';
+                } else if (validMethods.indexOf(options.method.toLowerCase()) === -1) {
+                    console.error('Azureservice.invokeApi Invalid method type');
+                    return null;
+                }
+
+                //Yay for lewis' hacky methods!!
+
+                client
+                    .invokeApi(name, options)
+                    .done(function(results) {
+                            deferred.resolve(results.result);
+                        },
+                        function(err) {
+                            deferred.reject(err);
+                        });
+
+                return deferred.promise;
             }
         };
 

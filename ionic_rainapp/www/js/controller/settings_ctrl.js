@@ -101,7 +101,6 @@ angular.module('controller.settings', ['ionic'])
 			}
 			console.log("Settings map init");
 			$scope.modalMap = map;
-
 		});
 
 
