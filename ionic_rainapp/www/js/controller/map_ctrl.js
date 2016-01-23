@@ -1,12 +1,23 @@
 angular.module('map.controllers', [])
-.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state) {
+.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory) {
 
   $scope.map;
+  $scope.isPageActive = true;
 
   // Placeholder
   var infoWindow = new google.maps.InfoWindow({
     content: ""
   });
+
+  $scope.$on('$ionicView.enter', function(e) {
+    if ($scope.map) {
+          google.maps.event.trigger($scope.map, 'resize');
+    }
+
+      
+  });
+
+  $scope.$on('$ionicView.exit')
 
   $scope.$on('mapInitialized', function(event, map) {
     if(map.class.indexOf("map-main") == -1) {
@@ -30,7 +41,6 @@ angular.module('map.controllers', [])
       }
 
       $scope.well_data = response;
-      // $scope.well_data = newArray;
 
       setUpMap();
     }, function(err) {
@@ -41,12 +51,16 @@ angular.module('map.controllers', [])
 function setUpMap() {
 
   var wellGeoJson = GeoJSON.parse($scope.well_data, {Point: ['lat', 'lng']});
-
   $scope.map.data.addGeoJson(wellGeoJson);
 
   $scope.map.data.addListener('click', function(event) {
-    infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Well ID = '+
-      event.feature.getProperty('ID') +"<br/>Depth to Water Level: " + event.feature.getProperty("Level").toFixed(2)  + "m");
+    infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: '
+       + event.feature.getProperty('village_name') +
+      '<br/>Well Owner: ' + event.feature.getProperty('well_owner') +
+      '<br/>Well ID : '+ event.feature.getProperty('ID') +
+      '<br/>Depth to Water Level: ' + event.feature.getProperty("Level").toFixed(2)  + "m");
+
+
     var anchor = new google.maps.MVCObject();
     anchor.set("position",event.latLng);
     infoWindow.open($scope.map,anchor);
@@ -149,7 +163,6 @@ function setUpMap() {
         console.log("Geolocation is not supported by this browser.");
       }
     }
-
 
     function ConvertDMSToDD(degrees, minutes, seconds, decimal) {
       //TODO: implement better...
