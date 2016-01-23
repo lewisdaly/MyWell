@@ -46,7 +46,7 @@ function setUpMap() {
 
   $scope.map.data.addListener('click', function(event) {
     infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Well ID = '+
-      event.feature.getProperty('ID') +"<br/>Water Level: " + event.feature.getProperty("Level")  + "m");
+      event.feature.getProperty('ID') +"<br/>Depth to Water Level: " + event.feature.getProperty("Level").toFixed(2)  + "m");
     var anchor = new google.maps.MVCObject();
     anchor.set("position",event.latLng);
     infoWindow.open($scope.map,anchor);
