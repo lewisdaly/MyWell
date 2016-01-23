@@ -2,8 +2,12 @@ angular.module('report.controllers', [])
 
 .controller('ReportCtrl', function($scope, $ionicPopup, $http, apiUrl, Azureservice, $rootScope, LoginService) {
 
-  $scope.form = {};
-  $scope.form.date =  new Date();
+  /**
+   * Init
+   */
+
+  //Set up the form
+  resetForm();
 
   $scope.$on('$ionicView.enter', function(e) {
     checkUserStatus();
@@ -45,35 +49,52 @@ angular.module('report.controllers', [])
     }
   }
 
-
-
   // Validate and submit form
   $scope.sendReport = function(form){
-	// TODO: Validate fields
-  if (($scope.form.postcode == null) || ($scope.form.postcode == null) || ($scope.form.postcode== null) || ($scope.form.postcode == null))
-  {
-    console.log("Fill out the form!");
+
+    // TODO: Validate fields
+    if (($scope.form.postcode == null) || ($scope.form.postcode == null) || ($scope.form.postcode== null) || ($scope.form.postcode == null))
+    {
+      console.log("Fill out the form!");
+      var alertPopup = $ionicPopup.alert({
+        title: 'Error',
+        template: "Please fill out all the fields"
+      });
+    }
+    else
+    {
+      data = {};
+      data.wellDepth = $scope.form.wt_depth;
+      data.wellID = $scope.form.well_id;
+      data.timestamp = new Date();
+
+      Azureservice.invokeApi("mobilerequest", {
+        method: "post",
+        body:data
+      }).then(function(response) {
+        console.log("Submitted successfully");
+        displayMessage("Thanks!", "Submitted successfully.")
+        resetForm();
+      },function(err) {
+        console.log("Error: " + err);
+        displayMessage("Error", err);
+      });
+    }
+  }
+
+  /**
+   *  Helper functions
+   */
+
+  function displayMessage(title, message) {
     var alertPopup = $ionicPopup.alert({
-      title: 'Error',
-      template: "Please fill out all the fields"
-    });
-  }
-  else
-  {
-    data = {};
-    data.wellDepth = $scope.form.wt_depth;
-    data.wellID = $scope.form.well_id;
-    data.timestamp = new Date();
-
-    Azureservice.invokeApi("mobilerequest", {
-      method: "post",
-      body:data
-    }).then(function(response) {
-      console.log("Submitted successfully");
-
-    },function(err) {
-      console.log("Error: " + err);
-    });
+        title: title,
+        template: message
+      });
   }
 
-}})
+  function resetForm () {
+    $scope.form = {};
+    $scope.form.date =  new Date();
+  }
+})

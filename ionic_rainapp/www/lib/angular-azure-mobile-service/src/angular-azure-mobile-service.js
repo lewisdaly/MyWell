@@ -1,5 +1,5 @@
 angular.module('azure-mobile-service.module', [])
-    .service('Azureservice', ['$window', '$q', 'AzureMobileServiceClient', function Azureservice($window, $q, AzureMobileServiceClient) {
+    .service('Azureservice', ['$window', '$q', 'AzureMobileServiceClient', '$rootScope', function Azureservice($window, $q, AzureMobileServiceClient, $rootScope) {
 
         'use strict';
 
@@ -374,13 +374,17 @@ angular.module('azure-mobile-service.module', [])
                     return null;
                 }
 
+                //Yay for lewis' hacky methods!!
+                $rootScope.$broadcast('loading:show');
 
                 client
                     .invokeApi(name, options)
                     .done(function(results) {
+                            $rootScope.$broadcast('loading:hide');
                             deferred.resolve(results.result);
                         },
                         function(err) {
+                            $rootScope.$broadcast('loading:hide')
                             deferred.reject(err);
                         });
 

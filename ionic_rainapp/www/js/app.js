@@ -75,8 +75,8 @@ angular.module('starter', [
   $rootScope.$on('loading:hide', function() {
     $ionicLoading.hide();
   })
-
 })
+
 
 //The ADAL Provider - Auth and Stuff
 .config(['$compileProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', 'adalAuthenticationServiceProvider',

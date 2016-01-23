@@ -42,7 +42,10 @@ angular.module('controller.settings', ['ionic'])
 			$scope.modal = modal
 		})  
 
-		/* ##### Modal Methods ##### */
+
+		/**
+		 * Modal Methods
+		 */
 
 		$scope.register = function() {
 			$scope.modal.show()
@@ -55,11 +58,17 @@ angular.module('controller.settings', ['ionic'])
 			//TODO: Submit new well to azure!
 			//TODO: convert lat lng? Or do that in the cloud?
 
+			//var params = $scope.form
+			//params = { well_owner, well_id, postcode, max_wt_depth, lat, lng}
+			//TODO: verify and submit
+
+
+
 			console.log("Data: " + center);
 			if (center != null) {
 				//Assign center, and move map
 				//TODO: Update the model!
-				$scope.map.setCenter(center);
+				$scope.modalMap.setCenter(center);
 			}
 			$scope.modal.hide();
 		}
@@ -73,7 +82,7 @@ angular.module('controller.settings', ['ionic'])
 				return
 			}
 			console.log("Settings map init");
-			$scope.map = map;
+			$scope.modalMap = map;
 
 		});
 

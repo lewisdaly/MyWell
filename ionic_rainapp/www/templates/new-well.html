@@ -3,10 +3,10 @@
 	<h1 class="title">New Well</h1>
 </ion-header-bar>
 
-
+<!-- 
 <div class="container overlap">
 	<i class="ion-location icon-larger"></i>
-</div>
+</div> -->
 
 <ion-content scrollable="false">
 
@@ -14,30 +14,31 @@
 	<input ng-model="form.postcode" type="tel" placeholder="Postcode">
 </label>
 <label class="item item-input">
+	<input ng-model="form.well_owner" type="text" placeholder="Well Owner">
+</label>
+<label class="item item-input">
 	<input ng-model="form.well_id" type="tel" placeholder="Well ID">
 </label>
 <label class="item item-input">
-	<input ng-model="form.wt_depth" type="number" placeholder="Max Depth" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+	<input ng-model="form.max_wt_depth" type="number" placeholder="Max WT Depth" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+</label>
+<label class="item item-input">
+	<input ng-model="form.lat" type="number" placeholder="Latitude">
+</label>
+<label class="item item-input">
+	<input ng-model="form.lng" type="number" placeholder="Longitude">
 </label>
 
-<label class="padding">Center Map On new Well Location:</label>
 
 
-<map id="map-canvas" center="24.57138, 74.21638" zoom="15" map-type-id="hybrid" disable-default-u-i="true" class="map-modal">
-</map>
+<!-- Remove the map for now - it causes issues with the main map, that I can't seem to figure out... -->
+<!-- <label class="padding">Center Map On new Well Location:</label> -->
+<!-- <map id="map-modal-canvas" center="24.57138, 74.21638" zoom="15" map-type-id="hybrid" disable-default-u-i="true" class="map-modal">
+</map> -->
 
 <div class="padding">
-
-	<a class="button button-positive button-clear button-block button-outline" ng-click="closeModal(map.getCenter())">Save</a>
+	<a class="button button-positive button-clear button-block button-outline" ng-click="closeModal(modalMap.getCenter())">Save</a>
 	<a class="button button-assertive button-clear button-block button-outline" ng-click="closeModal()">Cancel</a>
-
-<!-- <div class="bar bar-footer">
-	<div class="button-bar">
-		<a class="button button-assertive button-clear button-outline" ng-click="closeModal()">Cancel</a>
-		<a class="button button-positive button-clear button-outline" ng-click="closeModal(map.getCenter())">Save</a>
-	</div>
-</div> -->
-
 </div>
 
 </ion-content>

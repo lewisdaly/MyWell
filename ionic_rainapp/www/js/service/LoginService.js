@@ -33,6 +33,7 @@ angular.module('service.login', [])
   function login(service, token) {
     return $q(function(resolve, reject) {
 
+      showLoadingIncicator();
       switch(service) {
         case 'facebook':
         Azureservice.login("facebook", token)
@@ -52,10 +53,12 @@ angular.module('service.login', [])
           },
           function(err) {
             console.error('Azure Error: ' + err);
+            hideLoadingIndicator();
             reject("Error")
           });
 
         }, function(error){
+          hideLoadingIndicator();
           alert(error);
           reject("Error")
 
@@ -79,11 +82,13 @@ angular.module('service.login', [])
             resolve("Success");
           },
           function(err) {
+            hideLoadingIndicator();
             console.error('Azure Error: ' + err);
             reject("Error")
           });
 
         }, function(error){
+          hideLoadingIndicator();
           alert(error);
           reject("Error")
 
@@ -109,11 +114,13 @@ angular.module('service.login', [])
               resolve("Success");
             },
             function(err) {
+              hideLoadingIndicator();
               console.error('Azure Error: ' + err);
               reject("Error")
             });
 
           }, function(error){
+            hideLoadingIndicator();
             alert(error);
             reject("Error")
 
@@ -143,6 +150,14 @@ function logout() {
 
   function handleSuccess(response) {
     return(response.data);
+  }
+
+  function showLoadingIncicator() {
+     $rootScope.$broadcast('loading:show');
+  }
+
+  function hideLoadingIndicator() {
+     $rootScope.$broadcast('loading:hide');
   }
 }]);
 
