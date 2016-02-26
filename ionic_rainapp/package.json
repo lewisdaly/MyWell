@@ -1,6 +1,6 @@
 {
   "name": "ionic_rainapp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ionic_rainapp: An Ionic project",
   "dependencies": {
     "express": "^4.13.3",
