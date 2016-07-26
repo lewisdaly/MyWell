@@ -1,7 +1,13 @@
 angular.module('controller.settings', ['ionic'])
 
-.controller('SettingsCtrl', ['$scope', 'AuthenticationService', '$location', '$rootScope', 'Azureservice', '$ionicModal', 
-	function($scope, AuthenticationService, $location, $rootScope, Azureservice, $ionicModal) {
+.controller('SettingsCtrl', ['$scope', 'AuthenticationService', '$location', '$rootScope', 'Azureservice', '$ionicModal', '$ionicPopup', 'ApiService', 
+	function($scope, AuthenticationService, $location, $rootScope, Azureservice, $ionicModal, $ionicPopup, ApiService) {
+
+		$scope.resources = [
+			"well",
+			"dam",
+			"rain_gauge"
+		];
 
 		$scope.$on('$ionicView.enter', function(e) {
 			checkUserStatus();
@@ -10,7 +16,7 @@ angular.module('controller.settings', ['ionic'])
 
 		$scope.$on('login-state-changed', function(e) {
     		checkUserStatus();
-  		});
+ 		});
 
 		$scope.logout = function() {
 			AuthenticationService.ClearCredentials();
@@ -39,7 +45,7 @@ angular.module('controller.settings', ['ionic'])
 		    else {
 		    	$scope.isUserLoggedInAndVerified = true;
 				$scope.isVerified = true;
-				loadUnverifiedUsers();
+				// loadUnverifiedUsers();
 			}
 		}
 
@@ -73,22 +79,74 @@ angular.module('controller.settings', ['ionic'])
 
 		}
 
-		$scope.closeModal = function(center) {
-
-			//TODO: Submit new well to azure!
-			//TODO: convert lat lng? Or do that in the cloud?
-
-			//var params = $scope.form
-			//params = { well_owner, well_id, postcode, max_wt_depth, lat, lng}
-			//TODO: verify and submit
-
-			console.log("Data: " + center);
-			if (center != null) {
-				//Assign center, and move map
-				//TODO: Update the model!
-				$scope.modalMap.setCenter(center);
+		$scope.closeModal = function(form) {
+			if (form === false) {
+				$scope.modal.hide();
+				return;
 			}
-			$scope.modal.hide();
+
+			if ((form == null) ||
+					(form.postcode == null) || 
+				  (form.owner == null) || 
+				  (form.postcode == null) || 
+				  (form.id== null) || 
+				  (form.max_wt_depth == null) || 
+				  (form.type == null) || 
+				  (form.lat == null) || 
+				  (form.lng == null)
+				  ){
+
+				console.log("Fill out the form!");
+	      var alertPopup = $ionicPopup.alert({
+	        title: 'Error',
+	        template: "Please fill out all the fields"
+	      });
+
+	      return;
+			}
+
+			if ((form.id > 999) ||
+				  (form.id < 100)) {
+			  var alertPopup = $ionicPopup.alert({
+	        title: 'Error',
+	        template: "Id must be between 100-999"
+	      });
+
+				return;
+			}
+
+			//Transform to the format we need:
+			const villageId = parseInt(form.id.toString()[0]); 
+
+			const data = {
+				id: form.id,
+				geo: {
+					lat: form.lat,
+					lng: form.lng
+				},
+				owner: form.owner,
+				elevation: form.max_wt_depth,
+				type:form.type,
+				postcode: form.postcode,
+				villageId: villageId,
+			};
+
+			ApiService.registerWell(data)
+			.then((response) => {
+				var alertPopup = $ionicPopup.alert({
+	        title: 'Thanks!',
+	        template: "Created new resource with Id " + data.id 
+	      });
+
+				$scope.modal.hide();
+			})
+			.catch((response) => {
+				console.log("err", response.data.error);
+			 	var alertPopup = $ionicPopup.alert({
+        	title: 'Error',
+        	template: response.data.error.message
+      	});
+			});
 		}
 
 		$scope.$on('$destroy', function() {
@@ -114,7 +172,7 @@ angular.module('controller.settings', ['ionic'])
 			Azureservice.invokeApi("authenticateuser",{method:'put', body:data})
 			.then(function(response) {
 				console.log("Success! " + JSON.stringify(response));
-				loadUnverifiedUsers(); 
+				// loadUnverifiedUsers(); 
 
 			},
 			function(error) {

@@ -1,3 +1,3 @@
 angular.module('rainapp-constants',[])  
-  .constant('apiUrl', 'http://202.158.216.65')
-  .constant('debug', '1');
+  .constant('apiUrl', 'http://docker.local:3000')
+  .constant('debug', '0');

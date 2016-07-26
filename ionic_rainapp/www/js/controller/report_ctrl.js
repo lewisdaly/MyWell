@@ -1,6 +1,6 @@
 angular.module('report.controllers', [])
 
-.controller('ReportCtrl', function($scope, $ionicPopup, $http, apiUrl, Azureservice, $rootScope, LoginService) {
+.controller('ReportCtrl', function($scope, $ionicPopup, $http, apiUrl, Azureservice, $rootScope, LoginService, ApiService) {
 
   /**
    * Init
@@ -63,21 +63,23 @@ angular.module('report.controllers', [])
     }
     else
     {
-      data = {};
-      data.wellDepth = $scope.form.wt_depth;
-      data.wellID = $scope.form.well_id;
-      data.timestamp = new Date();
+      console.log("form", $scope.form);
 
-      Azureservice.invokeApi("mobilerequest", {
-        method: "post",
-        body:data
-      }).then(function(response) {
+      data = {};
+      data.postcode = $scope.form.postcode;
+      data.value = $scope.form.value;
+      data.resourceId = $scope.form.resourceId;
+      data.date = $scope.form.date;
+
+      ApiService.updateReading(data)
+      .then((response) => {
         console.log("Submitted successfully");
         displayMessage("Thanks!", "Submitted successfully.")
         resetForm();
-      },function(err) {
-        console.log("Error: " + err);
-        displayMessage("Error", err);
+      })
+      .catch((response) => {
+        console.log("Error: ", response);
+        displayMessage("Error", response.data.error.message);
       });
     }
   }

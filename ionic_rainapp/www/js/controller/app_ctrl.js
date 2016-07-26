@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['ionic'])
 
-.controller('AppCtrl', function($scope, $ionicModal, AuthenticationService, Azureservice, $state, $rootScope, LoginService) {
+.controller('AppCtrl', function($scope, $ionicModal, AuthenticationService, Azureservice, $state, $rootScope, LoginService, ApiService) {
 
 	//Init
 	//Check to see if user is logged in.
@@ -38,19 +38,28 @@ angular.module('starter.controllers', ['ionic'])
 		}
 	})
 
-
-	//TODO: other services, google etc.
-	//TODO: Auto login user!
-
-	$scope.performLogin = function(service) {
-		LoginService.login(service)
-		.then(function(response) {
-			$scope.modal.hide();
-
-		},
-		function(error) {
-			$scope.modal.hide();
-		});
+	$scope.performLogin = function(form) {
+		console.log("service", form.password);
+    ApiService.login(form.password)
+    .then((response) => {
+      if (response.data.login === true) {
+        //login
+        const dummyUser = {
+          id: 1,
+          authToken:12345,
+          username: 'dummyUser',
+          verified: true,
+          service: 'none'
+        };
+        AuthenticationService.SetCredentials(dummyUser, 12345);
+      }
+      //Hide the modal no matter what
+      $scope.modal.hide();
+    })
+    .catch((err) => {
+      console.log("err", err);
+      $scope.modal.hide();
+    });
 	}
 
 	$ionicModal.fromTemplateUrl('templates/login.html', {
@@ -59,7 +68,6 @@ angular.module('starter.controllers', ['ionic'])
 	}).then(function(modal) {
 		$scope.modal = modal;
 	});
-
 
   	//Cleanup the modal when we're done with it!
   	$scope.$on('$destroy', function() {

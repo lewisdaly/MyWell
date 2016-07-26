@@ -1,5 +1,5 @@
 angular.module('map.controllers', [])
-.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory, $ionicModal, $ionicPopup) {
+.controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
 
   $scope.map;
   $scope.isPageActive = true;
@@ -26,20 +26,15 @@ angular.module('map.controllers', [])
     $scope.map = map;
     var well_data = {}; //ht
 
-    //Test send request to Azure service
-    Azureservice.invokeApi("mobilerequest", {
-      body: null,
-      method: "get"
-    }).then(function(response) {
-      var newArray = [];
-      for (var i in response) {
-        var object = response[i];
-        object.lat = ConvertDMSToDD(object.LAT_DEGREE, object.LAT_MINUTE, object.LAT_SECOND, object.LAT_DECIMAL);//"24.570883333333335";
-        object.lng = ConvertDMSToDD(object.LNG_DEGREE, object.LNG_MINUTE, object.LNG_SECOND, object.LNG_DECIMAL);//"74.22109861111112";
-        object.Level = object.TOT_WELL_DEPTH_m;
-      }
-
-      $scope.well_data = response;
+    //Get the map data
+    ApiService.getResources()
+    .then(function(response) {
+      //for now this works, but ideally we could be sending proper geojson...
+      $scope.well_data = response.data.map((resource) => {
+        resource.lat = resource.geo.lat;
+        resource.lng = resource.geo.lng;
+        return resource;
+      });
 
       setUpMap();
     }, function(err) {
@@ -53,33 +48,30 @@ angular.module('map.controllers', [])
     var center = $scope.map.getCenter();
     var params = {"lat":center.lat(), "lng":center.lng()};
 
-    var smallestDistance = 9999;
-    var closestWellID;
-    var closestVillage;
+    var smallestDistance = 9999999999999999;
+    var closestWellId;
+    var closestVillageId
 
     //find the closest well id
-    for (var i in $scope.well_data) {
-      var well = $scope.well_data[i];
-
-      var distance = distanceBetween(center.lat(), center.lng(), well.lat, well.lng);
+    //TODO: replace with a simple mongo function...
+    $scope.well_data.forEach((resource) => {
+      const distance = distanceBetween(center.lat(), center.lng(), resource.geo.lat, resource.geo.lng);
       if (distance <= smallestDistance) {
-        closestWellID = well.ID;
+        closestWellId = resource.id;
         smallestDistance = distance;
-        closestVillage = well.village_name;
+        closestVillageId = resource.villageId;
       }
-    }
+    });
 
-    $scope.closestVillage = closestVillage;
-    var villageID = closestWellID/100; //we just want the first digit
-
-    Azureservice.invokeApiSilently("getclosestvillage", {
-      body: {"well_id" : villageID},
-      method:"post"
-    }).then(function(response) {
-      console.log("getclosestvillage response: " + JSON.stringify(response));
-      $scope.closestVillageInfo = response;
-    }, function(err){
-      console.error("Azure Error: " + JSON.stringify(err));
+    ApiService.getClosestVillage(closestVillageId)
+    .then((response) => {
+      $scope.closestVillage = response.data.response.name;
+      $scope.closestVillageInfo = response.data.response;
+    })
+    .catch((err) => {
+      console.log("err", err);
+      $scope.closestVillageInfo = undefined;
+      $scope.closestVillage = "";
     });
   }
 
@@ -87,9 +79,12 @@ angular.module('map.controllers', [])
   $scope.displayVillageInfo = function() {
     var message = " ";
     if ($scope.closestVillageInfo){
-      message = "Current Ave WT Depth: " + $scope.closestVillageInfo.current_depth.toFixed(2) +
-      "m</br>Ave WT Depth 1 month ago: " + $scope.closestVillageInfo.last_month_depth.toFixed(2) +
-      "m</br>Ave WT Depth 1 year ago: " + $scope.closestVillageInfo.last_year_depth.toFixed(2) + "m";
+
+      const line1 = $scope.closestVillageInfo.thisMonth.average ? "Current Ave WT Depth: " + $scope.closestVillageInfo.thisMonth.average.toFixed(2) : "";
+      const line2 = $scope.closestVillageInfo.lastMonth.average ? "m</br>Ave WT Depth 1 month ago: " + $scope.closestVillageInfo.lastMonth.average.toFixed(2) : "";
+      const line3 = $scope.closestVillageInfo.lastYear.average ? "m</br>Ave WT Depth 1 year ago: " + $scope.closestVillageInfo.lastYear.average.toFixed(2) : "";
+
+      message = line1 + line2 + line3 +"m";
     }
     displayMessage($scope.closestVillage, message);
   }
@@ -109,23 +104,28 @@ angular.module('map.controllers', [])
     return d;
   }
 
+
+
   function setUpMap() {
-
+    console.log("well_data", $scope.well_data);
     var wellGeoJson = GeoJSON.parse($scope.well_data, {Point: ['lat', 'lng']});
-    $scope.map.data.addGeoJson(wellGeoJson);
+    console.log("well geoJson", wellGeoJson);
 
+    $scope.map.data.addGeoJson(wellGeoJson);
 
     $scope.map.addListener('dragend', function()
     {
       refreshMapHeading();
     });
 
+  //TODO: re-add village name...
   $scope.map.data.addListener('click', function(event) {
+
     infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: '
-       + event.feature.getProperty('village_name') +
-      '<br/>Well Owner: ' + event.feature.getProperty('well_owner') +
-      '<br/>Well ID : '+ event.feature.getProperty('ID') +
-      '<br/>Depth to Water Level: ' + event.feature.getProperty("Level").toFixed(2)  + "m");
+       +
+      '<br/>Well Owner: ' + event.feature.f.owner +
+      '<br/>Well ID : '+ event.feature.f.id +
+      '<br/>Depth to Water Level: ' + saftelyGetLevelString(event.feature.f.last_value)  + "m");
 
 
     var anchor = new google.maps.MVCObject();
@@ -184,7 +184,6 @@ angular.module('map.controllers', [])
 
     //Called when page is requested to load
     // google.maps.event.addDomListener(window, 'load', initialize);
-
     function drawLegend(maxIntensity) {
       //var maxIntensity = heatmap['gm_bindings_']['maxIntensity'][484]['Sc']['j'];
       var legendWidth = document.getElementById('LegendGradient').style.width = '100%';
@@ -200,7 +199,6 @@ angular.module('map.controllers', [])
         value = value - offset;
       }
     }
-
 
     $scope.toggleHeatmap = function() {
       heatmap.setMap(heatmap.getMap() ? null : $scope.map);
@@ -240,6 +238,13 @@ angular.module('map.controllers', [])
       var dd =  degrees + minutes + seconds/(60*60);
 
       return dd;
+    }
+
+    function saftelyGetLevelString(value) {
+      if (!value) {
+        return "";
+      }
+      return value.toFixed(2);
     }
 
     function displayMessage(title, message) {
