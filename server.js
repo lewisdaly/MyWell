@@ -10,11 +10,9 @@ server.get('/test', function(req, res){
 
 
 var port = process.env.PORT || 1337;
-server.listen(port);
-
-// server.listen(port, function() {
-// 	console.log("server listening on port " + port);
-// });
+server.listen(port, function() {
+	console.log("server listening on port " + port);
+});
 
 
 
