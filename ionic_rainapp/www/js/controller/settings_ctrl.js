@@ -1,6 +1,6 @@
 angular.module('controller.settings', ['ionic'])
 
-.controller('SettingsCtrl', ['$scope', 'AuthenticationService', '$location', '$rootScope', 'Azureservice', '$ionicModal', '$ionicPopup', 'ApiService', 
+.controller('SettingsCtrl', ['$scope', 'AuthenticationService', '$location', '$rootScope', 'Azureservice', '$ionicModal', '$ionicPopup', 'ApiService',
 	function($scope, AuthenticationService, $location, $rootScope, Azureservice, $ionicModal, $ionicPopup, ApiService) {
 
 		$scope.resources = [
@@ -11,7 +11,7 @@ angular.module('controller.settings', ['ionic'])
 
 		$scope.$on('$ionicView.enter', function(e) {
 			checkUserStatus();
-			
+
 		});
 
 		$scope.$on('login-state-changed', function(e) {
@@ -71,7 +71,7 @@ angular.module('controller.settings', ['ionic'])
 			animation: 'slide-in-up'
 		}).then(function(modal) {
 			$scope.modal = modal
-		})  
+		})
 
 		$scope.register = function() {
 			$scope.modal.show()
@@ -86,13 +86,13 @@ angular.module('controller.settings', ['ionic'])
 			}
 
 			if ((form == null) ||
-					(form.postcode == null) || 
-				  (form.owner == null) || 
-				  (form.postcode == null) || 
-				  (form.id== null) || 
-				  (form.max_wt_depth == null) || 
-				  (form.type == null) || 
-				  (form.lat == null) || 
+					(form.postcode == null) ||
+				  (form.owner == null) ||
+				  (form.postcode == null) ||
+				  (form.id== null) ||
+				  (form.max_wt_depth == null) ||
+				  (form.type == null) ||
+				  (form.lat == null) ||
 				  (form.lng == null)
 				  ){
 
@@ -116,7 +116,7 @@ angular.module('controller.settings', ['ionic'])
 			}
 
 			//Transform to the format we need:
-			const villageId = parseInt(form.id.toString()[0]); 
+			const villageId = parseInt(form.id.toString()[0]);
 
 			const data = {
 				id: form.id,
@@ -132,15 +132,15 @@ angular.module('controller.settings', ['ionic'])
 			};
 
 			ApiService.registerWell(data)
-			.then((response) => {
+			.then(function(response) {
 				var alertPopup = $ionicPopup.alert({
 	        title: 'Thanks!',
-	        template: "Created new resource with Id " + data.id 
+	        template: "Created new resource with Id " + data.id
 	      });
 
 				$scope.modal.hide();
 			})
-			.catch((response) => {
+			.catch(function(response) {
 				console.log("err", response.data.error);
 			 	var alertPopup = $ionicPopup.alert({
         	title: 'Error',
@@ -172,7 +172,7 @@ angular.module('controller.settings', ['ionic'])
 			Azureservice.invokeApi("authenticateuser",{method:'put', body:data})
 			.then(function(response) {
 				console.log("Success! " + JSON.stringify(response));
-				// loadUnverifiedUsers(); 
+				// loadUnverifiedUsers();
 
 			},
 			function(error) {

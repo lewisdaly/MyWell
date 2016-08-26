@@ -30,7 +30,7 @@ angular.module('map.controllers', [])
     ApiService.getResources()
     .then(function(response) {
       //for now this works, but ideally we could be sending proper geojson...
-      $scope.well_data = response.data.map((resource) => {
+      $scope.well_data = response.data.map(function (resource) {
         resource.lat = resource.geo.lat;
         resource.lng = resource.geo.lng;
         return resource;
@@ -54,7 +54,7 @@ angular.module('map.controllers', [])
 
     //find the closest well id
     //TODO: replace with a simple mongo function...
-    $scope.well_data.forEach((resource) => {
+    $scope.well_data.forEach(function (resource) {
       const distance = distanceBetween(center.lat(), center.lng(), resource.geo.lat, resource.geo.lng);
       if (distance <= smallestDistance) {
         closestWellId = resource.id;
@@ -64,11 +64,11 @@ angular.module('map.controllers', [])
     });
 
     ApiService.getClosestVillage(closestVillageId)
-    .then((response) => {
+    .then(function (response) {
       $scope.closestVillage = response.data.response.name;
       $scope.closestVillageInfo = response.data.response;
     })
-    .catch((err) => {
+    .catch(function (err) {
       console.log("err", err);
       $scope.closestVillageInfo = undefined;
       $scope.closestVillage = "";
@@ -140,7 +140,7 @@ angular.module('map.controllers', [])
       var maxWeight = 6;    //Max weight value for heatmap legend
 
       //Get maxWeight and populate heatMapdata
-      for(var well in wellGeoJson.features){      
+      for(var well in wellGeoJson.features){
         if (wellGeoJson.features[well].properties.Level > maxWeight) {
           maxWeight = wellGeoJson.features[well].properties.Level;
         }
@@ -149,7 +149,7 @@ angular.module('map.controllers', [])
           location: new google.maps.LatLng(
             Number(wellGeoJson.features[well].geometry.coordinates[1]),
             Number(wellGeoJson.features[well].geometry.coordinates[0])),
-          weight: wellGeoJson.features[well].properties.Level 
+          weight: wellGeoJson.features[well].properties.Level
         };
         heatMapData.push(point);
       }
@@ -158,7 +158,7 @@ angular.module('map.controllers', [])
       heatmap = new google.maps.visualization.HeatmapLayer({
         data: new google.maps.MVCArray(heatMapData),
         radius: 40
-      }); 
+      });
 
       //Build out Legend
       var gradient = ['rgba(0, 255, 255, 0)','rgba(0, 255, 255, 1)','rgba(0, 191, 255, 1)','rgba(0, 127, 255, 1)','rgba(0, 63, 255, 1)','rgba(0, 0, 255, 1)',    'rgba(0, 0, 223, 1)','rgba(0, 0, 191, 1)','rgba(0, 0, 159, 1)','rgba(0, 0, 127, 1)','rgba(63, 0, 91, 1)','rgba(127, 0, 63, 1)','rgba(191, 0, 31, 1)','rgba(255, 0, 0, 1)']

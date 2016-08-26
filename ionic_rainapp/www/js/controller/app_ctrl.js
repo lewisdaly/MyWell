@@ -41,7 +41,7 @@ angular.module('starter.controllers', ['ionic'])
 	$scope.performLogin = function(form) {
 		console.log("service", form.password);
     ApiService.login(form.password)
-    .then((response) => {
+    .then(function (response) {
       if (response.data.login === true) {
         //login
         const dummyUser = {
@@ -56,7 +56,7 @@ angular.module('starter.controllers', ['ionic'])
       //Hide the modal no matter what
       $scope.modal.hide();
     })
-    .catch((err) => {
+    .catch(function (err){
       console.log("err", err);
       $scope.modal.hide();
     });

@@ -19,7 +19,7 @@ Well_Locations: (ID, LAT_DEGREE, LAT_MINUTE, LAT_SECOND, LAT_DECIMAL, LNG_DEGREE
 User: (user)
 
 
-Each well has a location, 
+Each well has a location,
 
 
 ##### Users #####
@@ -103,24 +103,4 @@ https://login.windows.net/constantinbaumgartnergmail.onmicrosoft.com/.well-known
 
 
 
-IIJ - internet something japan, may semester 
-
-
-
-##### API KEYS #####
-Google:
-Client ID: 998287122056-tqd2c57p0ao3pd575g111td1v5267pcn.apps.googleusercontent.com
-Secret: R5ltIBxravenu7VnMyXb3EYV
-
-
-
-##### SIGNING TO PLAY STORE ######
-
-cordova plugin rm cordova-plugin-console
-cordova build --release android
-keytool -genkey -v -keystore lewisdaly-release-key.keystore -alias lewisdaly_aliaz -keyalg RSA -keysize 2048 -validity 10000
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore lewisdaly-release-key.keystore /Users/lewisdaly/Developer/rain_app_india/rainmapmobile/ionic_rainapp/platforms/android/build/outputs/apk/android-release-unsigned.apk lewisdaly_aliaz
-~/Library/Android/sdk/build-tools/22.0.1/zipalign -v 4 /Users/lewisdaly/Developer/rain_app_india/rainmapmobile/ionic_rainapp/platforms/android/build/outputs/apk/android-release-unsigned.apk myWell.apk
-
-Pwd Hint: lewis's 'why'
-
+IIJ - internet something japan, may semester

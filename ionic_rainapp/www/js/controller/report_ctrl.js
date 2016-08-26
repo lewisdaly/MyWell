@@ -16,7 +16,7 @@ angular.module('report.controllers', [])
   $scope.$on('login-state-changed', function(e) {
     checkUserStatus();
   })
-  
+
   $scope.refreshUser = function() {
     //Perform login again - in case user's verification status has changed:
     LoginService.reAuthenticateUser()
@@ -72,12 +72,12 @@ angular.module('report.controllers', [])
       data.date = $scope.form.date;
 
       ApiService.updateReading(data)
-      .then((response) => {
+      .then(function(response) {
         console.log("Submitted successfully");
         displayMessage("Thanks!", "Submitted successfully.")
         resetForm();
       })
-      .catch((response) => {
+      .catch(function(response) {
         console.log("Error: ", response);
         displayMessage("Error", response.data.error.message);
       });
