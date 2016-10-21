@@ -28,7 +28,6 @@ angular.module('service.login', [])
     })
   }
 
-
   //Send empty token if login isn't resuming
   function login(service, token) {
     return $q(function(resolve, reject) {
@@ -97,7 +96,7 @@ angular.module('service.login', [])
 
         break;
         default:
-          //Google 
+          //Google
           Azureservice.login("google", token)
           .then(function(results) {
             var  currentUser = Azureservice.getCurrentUser();
@@ -160,6 +159,3 @@ function logout() {
      $rootScope.$broadcast('loading:hide');
   }
 }]);
-
-
-

@@ -50,7 +50,17 @@
     color: grey;
 }
 
+/* Search buttons */
+.searchPanel {
+  position: absolute;
+  z-index: 1;
+  width: 96%;
+  background: gainsboro;
+}
 
+.searchPanel button {
+
+}
 
 
 /* New Well Popup*/
@@ -75,7 +85,7 @@
 
 .bottom-text {
 	position: absolute;
-    bottom: 0px;    
+    bottom: 0px;
     width: 100%;
     text-align: center;
 }

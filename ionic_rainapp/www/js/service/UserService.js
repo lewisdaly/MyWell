@@ -37,8 +37,6 @@ angular.module('service.user', [])
 			method: "get",
 			url: baseUrl + "/api/user/current"
 		})
-
-
 	}
 
 	//Private Methods

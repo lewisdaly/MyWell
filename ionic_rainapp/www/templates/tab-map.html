@@ -1,25 +1,35 @@
 <ion-view view-title="MyWell">
 <ion-content class="padding" scroll="false" data-tap-disabled="true">
 
- 
+
   <!-- TODO: replace with "current village" banner -->
-<div class="button-bar" id="panel">
-    <button class="button button-full button-stable" ng-click="displayVillageInfo()">
-      Closest Village: {{closestVillage}}
+  <label class="item item-input">
+    <input id="searchBox" ng-model="searchResource" type="text" placeholder="Search by Id or Postcode">
+  </label>
+  <!-- <select>
+    <option ng-repeat="resource in well_data | filter:searchResource">
+      {{resource}}
+    </option>
+  </select> -->
+
+<!--TODO: flexbox layouts nicely  -->
+<div class="searchPanel" id="panel" ng-show='searchResource.length > 2'>
+  <div>
+     Village, Id, Postcode
+  </div>
+  <div>
+    <!-- a little hacky, but the only way to clear the text box -->
+    <button
+      class="button button-full button-positive"
+      ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource.id)"
+      ng-repeat="resource in well_data | filter:searchResource as results">
+        <td>{{ resource.villageId }}</td>
+        <td>{{ resource.id }}</td>
+        <td>{{ resource.postcode }}</td>
     </button>
-
-
-   <!--    <a class="button" ng-click="toggleHeatmap()">Heatmap</a>
-      <a class="button" ng-click="changeGradient()">Gradient</a>
-      <a class="button" ng-click="changeRadius()">Radius</a>
-      <a class="button" ng-click="changeOpacity()">Opacity</a>
-    --> 
-    </div>
-
-
- <!--      <div ng-if="closestVillage">
-        <p>Closest Village: {{closestVillage}}</p>
-      </div> -->
+  </div>
+  <p ng-show="results.length == 0">No results found!</p>
+</div>
 
       <map id="map-canvas" center="24.57138, 74.21638" zoom="15" map-type-id="hybrid" disable-default-u-i="true" class="map-main">
         <custom-control class= "button button-med" id="location" position="TOP_LEFT" index="1" ng-click="locate()">
@@ -27,7 +37,7 @@
       </custom-control>
     </map>
 
-    <div id="LegendKey"> 
+    <div id="LegendKey">
       <div id="LegendGradient"></div>
       <div class="scale" id="0">O m</div>
       <div class="scale" id="1" style="left: 15%;"></div>

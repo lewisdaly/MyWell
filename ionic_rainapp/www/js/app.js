@@ -6,16 +6,17 @@
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
 angular.module('starter', [
-  'ionic', 
-  'ngMap', 
-  'starter.controllers', 
-  'map.controllers', 
-  'report.controllers', 
+  'ionic',
+  'ngMap',
+  'starter.controllers',
+  'map.controllers',
+  'report.controllers',
   'controller.settings',
-  'rainapp-constants', 
+  'rainapp-constants',
   'ngIOS9UIWebViewPatch',
   'controller.signup',
   'controller.login',
+  'controller.map-detail',
   'service.authentication',
   'service.login',
   'service.signup',
@@ -47,7 +48,7 @@ angular.module('starter', [
   if ($rootScope.globals){
     // if ($rootScope.globals.currentUser) {
     //   $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata;
-    // }  
+    // }
   } else {
     $rootScope.globals = {};
   }
@@ -81,7 +82,7 @@ angular.module('starter', [
 
 //The ADAL Provider - Auth and Stuff
 .config(['$compileProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', 'adalAuthenticationServiceProvider',
-  function ($compileProvider, $stateProvider, $urlRouterProvider, $httpProvider, adalProvider) { 
+  function ($compileProvider, $stateProvider, $urlRouterProvider, $httpProvider, adalProvider) {
     adalProvider.init(
     {
       instance: 'https://login.microsoftonline.com/',
@@ -138,7 +139,16 @@ angular.module('starter', [
       }
     }
   })
-
+  // Map detail page
+  .state('tab.map-detail', {
+    url: '/map/:resourceId',
+    views: {
+      'tab-map': {
+        templateUrl: 'templates/map-detail.html',
+        controller: 'MapDetailController'
+      }
+    }
+  })
   .state('tab.report', {
     url: '/report',
     // requireADLogin: true,

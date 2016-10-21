@@ -4,6 +4,7 @@ angular.module('map.controllers', [])
   $scope.map;
   $scope.isPageActive = true;
   $scope.closestVillage = "Varni"; //default
+  $scope.searchResource = '';
 
   // Placeholder
   var infoWindow = new google.maps.InfoWindow({
@@ -12,7 +13,7 @@ angular.module('map.controllers', [])
 
   $scope.$on('$ionicView.enter', function(e) {
     if ($scope.map) {
-          google.maps.event.trigger($scope.map, 'resize');
+      google.maps.event.trigger($scope.map, 'resize');
     }
   });
 
@@ -42,6 +43,26 @@ angular.module('map.controllers', [])
     });
   })
 
+  /**
+   * Someone has clicked search. Get the resource from id, and navigate, also show popup
+   */
+  $scope.searchItemPressed = function(event, resourceId) {
+    var resource = getResourceFromId(resourceId);
+    var geolocate = new google.maps.LatLng(resource.geo.lat, resource.geo.lng);
+    $scope.map.setCenter(geolocate);
+
+    //TODO: refactor common
+    infoWindow.setContent(
+      `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.villageId}
+      <br/>Well ID : ${resource.id}
+      <br/>Depth to Water Level: ${saftelyGetLevelString(resource.last_value)} m
+      <br/><a href=#/tab/map/${resource.id}>More</a>`
+    );
+
+    var anchor = new google.maps.MVCObject();
+    anchor.set("position",geolocate);
+    infoWindow.open($scope.map,anchor);
+  }
 
   function refreshMapHeading() {
     //Get the map centre
@@ -104,8 +125,6 @@ angular.module('map.controllers', [])
     return d;
   }
 
-
-
   function setUpMap() {
     console.log("well_data", $scope.well_data);
     var wellGeoJson = GeoJSON.parse($scope.well_data, {Point: ['lat', 'lng']});
@@ -118,15 +137,16 @@ angular.module('map.controllers', [])
       refreshMapHeading();
     });
 
-  //TODO: re-add village name...
+
   $scope.map.data.addListener('click', function(event) {
+    infoWindow.setContent(
+      `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${event.feature.f.villageId}
+      <br/>Well ID : ${event.feature.f.id}
+      <br/>Depth to Water Level: ${saftelyGetLevelString(event.feature.f.last_value)} m
+      <br/><a href=#/tab/map/${event.feature.f.id}>More</a>`
+    );
 
-    infoWindow.setContent('<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: '
-       +
-      '<br/>Well Owner: ' + event.feature.f.owner +
-      '<br/>Well ID : '+ event.feature.f.id +
-      '<br/>Depth to Water Level: ' + saftelyGetLevelString(event.feature.f.last_value)  + "m");
-
+    // '<br/>Well Owner: ' + event.feature.f.owner +
 
     var anchor = new google.maps.MVCObject();
     anchor.set("position",event.latLng);
@@ -180,7 +200,6 @@ angular.module('map.controllers', [])
 
       drawLegend(maxWeight);
     }
-
 
     //Called when page is requested to load
     // google.maps.event.addDomListener(window, 'load', initialize);
@@ -252,5 +271,11 @@ angular.module('map.controllers', [])
         title: title,
         template: message
       });
+    }
+
+    function getResourceFromId(id) {
+      return $scope.well_data.filter(function(resource) {
+        return resource.id === id;
+      }).shift();
     }
   })
