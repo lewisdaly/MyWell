@@ -1,7 +1,37 @@
 Commands:
 
+# running:
+
+To run locally:
+
+```
+ionic serve --nobrowser
+```
+And navigate to localhost:8100
+
+
+# Setup
 Change Urls (and other env. variables):
-can be: dev, doveton, localdev
+can be: dev, prod
 
 eg.
 "gulp replace --env localdev"
+
+
+Or, you can do run:
+```
+npm setup <environment>
+```
+
+
+# Fixing issues with ionic serve:
+if you get issues like the following:
+
+Error: EACCES: permission denied, open '/Users/lewis/.config/configstore/bower-github.json'
+
+This is a permissions issue with npm, try the following:
+
+```
+sudo chown -R $USER:$GROUP ~/.npm
+sudo chown -R $USER:$GROUP ~/.config
+```

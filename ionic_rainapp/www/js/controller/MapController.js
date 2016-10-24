@@ -1,4 +1,5 @@
-angular.module('map.controllers', [])
+angular.module('controller.map', [])
+//TODO: change this name
 .controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
 
   $scope.map;

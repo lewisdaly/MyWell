@@ -1,4 +1,4 @@
 {
-  "apiUrl":"http://202.158.216.65",
+  "apiUrl":"http://localhost:3000",
   "debug":"1"
 }

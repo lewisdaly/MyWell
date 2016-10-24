@@ -2,6 +2,10 @@
   "name": "ionic_rainapp",
   "version": "1.0.1",
   "description": "ionic_rainapp: An Ionic project",
+  "scripts": {
+    "setup-dev": "./node_modules/gulp/bin/gulp.js replace --env dev",
+    "setup-prod": "./node_modules/gulp/bin/gulp.js replace --env prod"
+  },
   "dependencies": {
     "express": "^4.13.3",
     "gulp": "^3.5.6",

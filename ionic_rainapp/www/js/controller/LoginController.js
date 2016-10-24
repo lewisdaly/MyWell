@@ -1,5 +1,5 @@
 angular.module('controller.login', [])
-.controller('LoginCtrl', function($scope, $location, AuthenticationService,$ionicPopup, debug, Azureservice, $http){
+.controller('LoginController', function($scope, $location, AuthenticationService,$ionicPopup, debug, Azureservice, $http){
     $scope.user = {};
 
     (function initController() {

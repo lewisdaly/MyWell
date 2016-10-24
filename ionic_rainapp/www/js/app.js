@@ -9,13 +9,13 @@ angular.module('starter', [
   'ionic',
   'ngMap',
   'starter.controllers',
-  'map.controllers',
   'report.controllers',
   'controller.settings',
   'rainapp-constants',
   'ngIOS9UIWebViewPatch',
   'controller.signup',
   'controller.login',
+  'controller.map',
   'controller.map-detail',
   'service.authentication',
   'service.login',
@@ -109,13 +109,13 @@ angular.module('starter', [
   .state('login', {
     url: '/login',
     templateUrl: 'templates/login.html',
-    controller: 'LoginCtrl'
+    controller: 'LoginController'
   })
 
   .state('signup', {
     url: '/signup',
     templateUrl: 'templates/signup.html',
-    controller: 'SignupCtrl'
+    controller: 'SignupController'
   })
 
 
@@ -135,6 +135,7 @@ angular.module('starter', [
     views: {
       'tab-map': {
         templateUrl: 'templates/tab-map.html',
+        //TODO: change this name
         controller: 'MapCtrl'
       }
     }
@@ -155,7 +156,7 @@ angular.module('starter', [
     views: {
       'tab-report': {
         templateUrl: 'templates/tab-report.html',
-        controller: 'ReportCtrl'
+        controller: 'ReportController'
       }
     }
   })
@@ -176,7 +177,7 @@ angular.module('starter', [
     views: {
       'tab-settings': {
         templateUrl: 'templates/tab-settings.html',
-        controller: 'SettingsCtrl'
+        controller: 'SettingsController'
       }
     }
   });

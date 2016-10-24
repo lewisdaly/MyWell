@@ -2156,7 +2156,7 @@ var LOADING_SET_DEPRECATED = '$ionicLoading instance.setContent() has been depre
  * app.constant('$ionicLoadingConfig', {
  *   template: 'Default Loading Template...'
  * });
- * app.controller('AppCtrl', function($scope, $ionicLoading) {
+ * app.controller('AppController', function($scope, $ionicLoading) {
  *   $scope.showLoading = function() {
  *     $ionicLoading.show(); //options default to values in $ionicLoadingConfig
  *   };

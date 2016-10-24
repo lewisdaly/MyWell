@@ -1,7 +1,6 @@
 angular.module('controller.signup',[])
-.controller('SignupCtrl', function($scope, $location, SignupService, AuthenticationService, $window, debug) {
+.controller('SignupController', function($scope, $location, SignupService, AuthenticationService, $window, debug) {
 	$scope.user = {};
-
 
 	$scope.signup = function() {
     //TODO: Verify the email, passwords etc.
@@ -41,8 +40,5 @@ angular.module('controller.signup',[])
     function(data) {
     	console.log("contorller Error");
     })
-
-      //TODO: log user in!
-      
   }
 });

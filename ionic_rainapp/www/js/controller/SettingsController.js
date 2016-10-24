@@ -1,8 +1,5 @@
-angular.module('controller.settings', ['ionic'])
-
-.controller('SettingsCtrl', ['$scope', 'AuthenticationService', '$location', '$rootScope', 'Azureservice', '$ionicModal', '$ionicPopup', 'ApiService',
-	function($scope, AuthenticationService, $location, $rootScope, Azureservice, $ionicModal, $ionicPopup, ApiService) {
-
+angular.module('controller.settings', [])
+.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, Azureservice, $ionicModal, $ionicPopup, ApiService) {
 		$scope.resources = [
 			"well",
 			"dam",
@@ -179,5 +176,4 @@ angular.module('controller.settings', ['ionic'])
 				console.log("Error: " + JSON.stringify(error));
 			})
 		}
-
-}])
+});

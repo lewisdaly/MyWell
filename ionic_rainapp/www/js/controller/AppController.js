@@ -1,6 +1,6 @@
 angular.module('starter.controllers', ['ionic'])
 
-.controller('AppCtrl', function($scope, $ionicModal, AuthenticationService, Azureservice, $state, $rootScope, LoginService, ApiService) {
+.controller('AppController', function($scope, $ionicModal, AuthenticationService, Azureservice, $state, $rootScope, LoginService, ApiService) {
 
 	//Init
 	//Check to see if user is logged in.
