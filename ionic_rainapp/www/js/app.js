@@ -23,7 +23,7 @@ angular.module('starter', [
   'service.user',
   'service.api',
   'rainapp.utils',
-  'azure-mobile-service.module',
+  // 'azure-mobile-service.module',
   'AdalAngular'
   ])
 

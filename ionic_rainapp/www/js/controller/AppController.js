@@ -1,5 +1,4 @@
 angular.module('starter.controllers', ['ionic'])
-
 .controller('AppController', function($scope, $ionicModal, AuthenticationService, Azureservice, $state, $rootScope, LoginService, ApiService) {
 
 	//Init

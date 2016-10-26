@@ -3,6 +3,7 @@ angular.module('controller.map', [])
 .controller('MapCtrl', function($scope, apiUrl, Azureservice, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
 
   $scope.map;
+  $scope.markers = []; //Array of Leaflet Marker Objects
   $scope.isPageActive = true;
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
@@ -11,6 +12,41 @@ angular.module('controller.map', [])
   var infoWindow = new google.maps.InfoWindow({
     content: ""
   });
+
+
+  //Set up the Leaflet Map
+  var leafletMap = L.map('leafletMap').setView([51.505, -0.09], 13);
+  //TODO: make these offline!
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.emerald',
+    accessToken: 'pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw'
+  }).addTo(leafletMap);
+
+  ApiService.getResources()
+  .then(function(response) {
+    $scope.data = response.data;
+
+    var greenIcon = L.icon({
+      iconUrl: '/img/leaf-green.png',
+      shadowUrl: '/img/leaf-shadow.png',
+
+      iconSize:     [38, 95], // size of the icon
+      shadowSize:   [50, 64], // size of the shadow
+      iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+      shadowAnchor: [4, 62],  // the same for the shadow
+      popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+
+    $scope.data.forEach(function(resource) {
+      var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: greenIcon}).addTo(leafletMap);
+      //TODO: change the icon depending on resource type
+      $scope.markers.push(marker);
+    });
+  });
+
+
 
   $scope.$on('$ionicView.enter', function(e) {
     if ($scope.map) {
