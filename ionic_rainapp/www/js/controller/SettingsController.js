@@ -1,5 +1,5 @@
 angular.module('controller.settings', [])
-.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, Azureservice, $ionicModal, $ionicPopup, ApiService) {
+.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService) {
 		$scope.resources = [
 			"well",
 			"dam",
@@ -47,16 +47,16 @@ angular.module('controller.settings', [])
 		}
 
 
-		function loadUnverifiedUsers() {
-			console.log("Requesting unverified users!");
-			Azureservice.invokeApi("authenticateuser", {method:'get'})
-			.then(function(response) {
-				$scope.unverifiedUsers = response;
-			},
-			function(error) {
-				console.log("Error: " + JSON.stringify(error));
-			})
-		}
+		// function loadUnverifiedUsers() {
+		// 	console.log("Requesting unverified users!");
+		// 	Azureservice.invokeApi("authenticateuser", {method:'get'})
+		// 	.then(function(response) {
+		// 		$scope.unverifiedUsers = response;
+		// 	},
+		// 	function(error) {
+		// 		console.log("Error: " + JSON.stringify(error));
+		// 	})
+		// }
 
 
 		/**
@@ -163,17 +163,17 @@ angular.module('controller.settings', [])
 		 * Verify a user
 		 */
 
-		$scope.verify = function(userID) {
-			console.log("Verify");
-			var data = {"user_id" : userID, "verified" : true};
-			Azureservice.invokeApi("authenticateuser",{method:'put', body:data})
-			.then(function(response) {
-				console.log("Success! " + JSON.stringify(response));
-				// loadUnverifiedUsers();
-
-			},
-			function(error) {
-				console.log("Error: " + JSON.stringify(error));
-			})
-		}
+		// $scope.verify = function(userID) {
+		// 	console.log("Verify");
+		// 	var data = {"user_id" : userID, "verified" : true};
+		// 	Azureservice.invokeApi("authenticateuser",{method:'put', body:data})
+		// 	.then(function(response) {
+		// 		console.log("Success! " + JSON.stringify(response));
+		// 		// loadUnverifiedUsers();
+    //
+		// 	},
+		// 	function(error) {
+		// 		console.log("Error: " + JSON.stringify(error));
+		// 	})
+		// }
 });

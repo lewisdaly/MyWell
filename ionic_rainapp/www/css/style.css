@@ -1,7 +1,10 @@
 /* Map View: */
 
 #leafletMap {
+  position: absolute;
   height: 700px;
+  width: 97%;
+  z-index: 1;
 }
 
 .map-main {
@@ -58,7 +61,7 @@
 /* Search buttons */
 .searchPanel {
   position: absolute;
-  z-index: 1;
+  z-index: 3;
   width: 96%;
   background: gainsboro;
 }
@@ -67,6 +70,10 @@
 
 }
 
+.locateButton {
+  position: absolute;
+  z-index: 2;
+}
 
 /* New Well Popup*/
 .overlap {

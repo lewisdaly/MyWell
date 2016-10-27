@@ -1,6 +1,6 @@
 angular.module('service.login', [])
 
-.service("LoginService",['$http', '$q', 'apiUrl', 'Azureservice', 'AuthenticationService', '$rootScope', function($http, $q, apiUrl, Azureservice, AuthenticationService, $rootScope) {
+.service("LoginService",['$http', '$q', 'apiUrl', 'AuthenticationService', '$rootScope', function($http, $q, apiUrl, AuthenticationService, $rootScope) {
   //TODO: figure out how to save user's login credentials, and auto login
 
   //Return public api

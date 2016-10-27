@@ -1,6 +1,6 @@
 angular.module('report.controllers', [])
 
-.controller('ReportController', function($scope, $ionicPopup, $http, apiUrl, Azureservice, $rootScope, LoginService, ApiService) {
+.controller('ReportController', function($scope, $ionicPopup, $http, apiUrl, $rootScope, LoginService, ApiService) {
 
   /**
    * Init

@@ -1,5 +1,5 @@
 angular.module('controller.login', [])
-.controller('LoginController', function($scope, $location, AuthenticationService,$ionicPopup, debug, Azureservice, $http){
+.controller('LoginController', function($scope, $location, AuthenticationService,$ionicPopup, debug, $http){
     $scope.user = {};
 
     (function initController() {
@@ -59,11 +59,11 @@ angular.module('controller.login', [])
         //     });
         //     //TODO: alert user
         // });
-// };  
+// };
 
 
 
 $scope.signup = function signup() {
     $location.path('/signup');
-}        
+}
 });
