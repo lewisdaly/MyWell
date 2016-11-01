@@ -238,3 +238,8 @@ angular.module('starter', [
   };
 
 })
+
+
+angular.isNullOrUndefined = function(val) {
+  return angular.isUndefined(val) || val === null;
+}

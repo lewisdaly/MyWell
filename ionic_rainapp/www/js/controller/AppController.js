@@ -38,26 +38,32 @@ angular.module('starter.controllers', ['ionic'])
 	})
 
 	$scope.performLogin = function(form) {
-		console.log("service", form.password);
-    ApiService.login(form.password)
+    if (angular.isNullOrUndefined(form) || angular.isNullOrUndefined(form.password) || form.password.length === 0){
+      return;
+    }
+
+    ApiService.login('marvi', form.password)
     .then(function (response) {
-      if (response.data.login === true) {
+      console.log(response);
+      if (response.status === 200) {
         //login
-        const dummyUser = {
-          id: 1,
-          authToken:12345,
-          username: 'dummyUser',
+        const user = {
+          id: response.data.userId,
+          authToken:response.data.id,
+          username: 'marvi',
           verified: true,
           service: 'none'
         };
-        AuthenticationService.SetCredentials(dummyUser, 12345);
+        AuthenticationService.SetCredentials(user, response.data.id);
+        $scope.modal.hide();
+      } else {
+        window.alert('Login Error: '+ response.status);
       }
-      //Hide the modal no matter what
-      $scope.modal.hide();
     })
     .catch(function (err){
       console.log("err", err);
-      $scope.modal.hide();
+      window.alert('Login Error: '+ err.status);
+
     });
 	}
 

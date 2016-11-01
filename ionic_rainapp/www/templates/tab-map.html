@@ -3,12 +3,12 @@
 
 
   <!-- TODO: replace with "current village" banner -->
-  <label class="item item-input">
-    <input id="searchBox" ng-model="searchResource" type="text" placeholder="Search by Id or Postcode">
+  <label id="searchBox" class="item item-input">
+    <input class="positive" ng-model="searchResource" type="text" placeholder="Search by Id or Postcode">
   </label>
-  <button class="locateButton button" ng-click=locate()>Locate</button>
+  <button class="locateButton button icon ion-android-locate" ng-click=locate()></button>
 
-  
+
   <!-- <select>
     <option ng-repeat="resource in well_data | filter:searchResource">
       {{resource}}
@@ -17,21 +17,31 @@
 
 <!--TODO: flexbox layouts nicely  -->
 <div class="searchPanel" id="panel" ng-show='searchResource.length > 2'>
-  <div>
-     Village, Id, Postcode
+  <div class="row top-row">
+    <div class="col col-10"></div>
+    <div class="col">Village</div>
+    <div class="col col-10"></div>
+    <div class="col">ResourceId</div>
+    <div class="col col-10"></div>
+    <div class="col">Postcode</div>
   </div>
   <div>
     <!-- a little hacky, but the only way to clear the text box -->
     <button
-      class="button button-full button-positive"
+      class="button button-full row"
       ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource.id)"
       ng-repeat="resource in data | filter:searchResource as results">
-        <td>{{ resource.villageId }}</td>
-        <td>{{ resource.id }}</td>
-        <td>{{ resource.postcode }}</td>
+
+        <div class="col">{{resource.village.name}}</div>
+        <div class="col">{{resource.id}}</div>
+        <div class="col">{{resource.postcode}}</div>
     </button>
   </div>
-  <p ng-show="results.length == 0">No results found!</p>
+  <div ng-show="results.length == 0" class="no-results">
+    <p>
+      No results found.
+    </p>
+  </div>
 </div>
 
   <div id="leafletMap"></div>

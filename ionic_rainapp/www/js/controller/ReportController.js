@@ -1,6 +1,6 @@
 angular.module('report.controllers', [])
 
-.controller('ReportController', function($scope, $ionicPopup, $http, apiUrl, $rootScope, LoginService, ApiService) {
+.controller('ReportController', function($scope, $ionicPopup, $http, apiUrl, $rootScope, LoginService, ApiService, CachingService) {
 
   /**
    * Init
@@ -11,6 +11,7 @@ angular.module('report.controllers', [])
 
   $scope.$on('$ionicView.enter', function(e) {
     checkUserStatus();
+    $scope.cachedReports = CachingService.getReportCache();
   });
 
   $scope.$on('login-state-changed', function(e) {
@@ -73,15 +74,46 @@ angular.module('report.controllers', [])
 
       ApiService.updateReading(data)
       .then(function(response) {
-        console.log("Submitted successfully");
         displayMessage("Thanks!", "Submitted successfully.")
         resetForm();
       })
-      .catch(function(response) {
-        console.log("Error: ", response);
-        displayMessage("Error", response.data.error.message);
+      .catch(function(err) {
+        if (err.status === 0) {
+          displayMessage("Connection Error", "Saving for later submission.");
+          CachingService.addReportToCache(data);
+          $scope.cachedReports = CachingService.getReportCache();
+          resetForm();
+        } else {
+          console.log("Error: ", err);
+          displayMessage("Error", err.data.error.message);
+        }
       });
     }
+  }
+
+  $scope.submit = function(index) {
+    let report = CachingService.getReportAtIndex(index);
+    ApiService.updateReading(report)
+    .then(function(response) {
+      console.log("Submitted successfully", response);
+      displayMessage("Thanks!", "Submitted successfully.")
+      CachingService.deleteReportAtIndex(index);
+      $scope.cachedReports = CachingService.getReportCache();
+
+    })
+    .catch(function(err) {
+      if (err.status === 0) {
+        displayMessage("Connection Error", "Still having trouble connecting. Please try again later.");
+      } else {
+        console.log("Error: ", err);
+        displayMessage("Error", err.data.error.message);
+      }
+    });
+  }
+
+  $scope.delete = function(index) {
+    CachingService.deleteReportAtIndex(index);
+    $scope.cachedReports = CachingService.getReportCache();
   }
 
   /**

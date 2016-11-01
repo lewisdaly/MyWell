@@ -10,6 +10,7 @@
         service.getCredentials = getCredentials;
         service.SetCredentials = SetCredentials;
         service.ClearCredentials = ClearCredentials;
+        service.getAccessToken = getAccessToken;
         service.Logout = Logout;
         return service;
 
@@ -24,8 +25,13 @@
         }
 
         function getCredentials() {
-
             return UserService.getUserDetails()
+        }
+
+        function getAccessToken() {
+          //TODO: maybe we can directly set headers of $http
+          console.log('user details', $rootScope.globals.currentUser.authToken);
+          return $rootScope.globals.currentUser.authToken;
         }
 
         function SetCredentials(user, authToken) {
@@ -34,13 +40,14 @@
                 currentUser: {
                     userID:user.id,
                     authToken: authToken,
-                    username: user.user_name, 
+                    username: user.user_name,
                     verified: user.verified,
                     service: user.service
                 }
             };
 
             $localstorage.setObject('globals', $rootScope.globals);
+
         }
 
         function ClearCredentials() {

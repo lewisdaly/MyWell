@@ -11,7 +11,7 @@ angular.module('controller.map', [])
 
 
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap').setView([24.593, 74.198], 17);
+  var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 17);
   //TODO: make these offline!
   // L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
   //   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -281,8 +281,7 @@ angular.module('controller.map', [])
     }
 
     function getPopupContentForResource(resource) {
-      console.log(resource);
-      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.villageId}
+      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.village.name}
       <br/>Well ID : ${resource.id}
       <br/>Depth to Water Level: ${saftelyGetLevelString(resource.last_value)} m
       <br/><a href=#/tab/map/${resource.id}>More</a>`;

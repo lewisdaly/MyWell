@@ -4,7 +4,7 @@
 <div class="center-text">
   <p class="verify-text" ng-if="isUserNotLoggedIn">Log in to submit well levels</p>
 </div>
-<div class="center-text" ng-if="isUserNotVerified"> 
+<div class="center-text" ng-if="isUserNotVerified">
   <p class="verify-text">Your account is not verified. Please wait for an admin to verifiy your account</p>
 </div>
 
@@ -29,6 +29,16 @@
     <button class="button button-block button-positive" ng-click="sendReport(form)">
       Submit
     </button>
+  </div>
+
+  <div class="reportCache">
+    <div class="heading">Saved Reports:</div>
+    <div class="row" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="report in cachedReports">
+      <p class="col col-75">ID: {{report.resourceId}} Reading: {{report.value}}m</p>
+      <button class="col button button-small button-clear button-positive" ng-click=submit($index)>submit</button>
+      <button class="col button button-small button-clear button-assertive" ng-click=delete($index)>delete</button>
+    </div>
+
   </div>
 
 </div>

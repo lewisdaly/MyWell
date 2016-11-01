@@ -3,7 +3,7 @@
 #leafletMap {
   position: absolute;
   height: 700px;
-  width: 97%;
+  width: 96.3%;
   z-index: 1;
 }
 
@@ -26,18 +26,11 @@
 #LegendKey {
 	width: 100%;
 	height: 40px;
-
 	border: 1px solid #a2a2a2;
 }
 .scale {
 	position: absolute;
 	display: inline;
-}
-
-#panel .button {
-	font-size: 12px;
-	min-height: 40px;
-	height: 30px;
 }
 
 #location {
@@ -58,17 +51,48 @@
     color: grey;
 }
 
+#searchBox {
+  background: #f8f8f8;
+  width:100%;
+}
+
 /* Search buttons */
 .searchPanel {
   position: absolute;
   z-index: 3;
-  width: 96%;
-  background: gainsboro;
+  width: 96.3%;
+  background: #387ef5;
+  left: 1.7%;
+  padding: 4px 7px;
+  border-color: #ddd;
+  border-width: 1px;
+  border-style: solid;
 }
 
-.searchPanel button {
+.searchPanel .top-row {
+  background: #387ef5;
+}
+
+#panel .button {
+	font-size: 14px;
+  margin: 0;
+  border-bottom-width: 0px;
 
 }
+
+/*cols in search buttons*/
+.col.ng-binding {
+  padding: 0;
+}
+
+.no-results {
+  text-align: center;
+  background: #f8f8f8;
+  height: 50px;
+  vertical-align: middle;
+  margin-top: 50px;
+}
+
 
 .locateButton {
   position: absolute;
@@ -100,4 +124,21 @@
     bottom: 0px;
     width: 100%;
     text-align: center;
+}
+
+/* Report page*/
+
+.reportCache .heading {
+  text-align: center;
+  font-size: 14px;
+  padding-bottom: 10px;
+}
+
+.reportCache .even {
+  padding: 10px;
+  background: #f8f8f8;
+}
+.reportCache .odd {
+  padding: 10px;
+  background: #d1d1d1;
 }
