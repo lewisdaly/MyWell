@@ -46,23 +46,9 @@ angular.module('controller.settings', [])
 			}
 		}
 
-
-		// function loadUnverifiedUsers() {
-		// 	console.log("Requesting unverified users!");
-		// 	Azureservice.invokeApi("authenticateuser", {method:'get'})
-		// 	.then(function(response) {
-		// 		$scope.unverifiedUsers = response;
-		// 	},
-		// 	function(error) {
-		// 		console.log("Error: " + JSON.stringify(error));
-		// 	})
-		// }
-
-
 		/**
 		 * Modal Methods
 		 */
-
 		$ionicModal.fromTemplateUrl('templates/new-well.html', {
 			scope: $scope,
 			animation: 'slide-in-up'
@@ -70,10 +56,39 @@ angular.module('controller.settings', [])
 			$scope.modal = modal
 		})
 
-		$scope.register = function() {
-			$scope.modal.show()
-			// $scope.modal.map = angular.element(document.getElementById('map'));
+    $scope.locate = function() {
+      console.log('locate');
 
+      //TODO: re enable for leaflet
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position){
+          console.log(position);
+          // leafletMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+          //TODO: drop pin
+          // ion-ios-navigate
+        }, function(err) {
+          console.log(err);
+        });
+      }
+      else {
+        console.log("Geolocation is not supported by this browser.");
+      }
+    }
+
+    var leafletMap = null;
+
+		$scope.register = function() {
+      //TODO: load an unsaved resource from localstorage if exists
+      $scope.form = {};
+			$scope.modal.show()
+
+      //Set up the Leaflet Map
+      //TODO: disable map dragging - only allow moving using the locate button for now
+      if (angular.isNullOrUndefined(leafletMap)){
+        leafletMap = L.map('leafletMapRegister', { zoomControl:false }).setView([24.593, 74.198], 17);
+        L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
+         .addTo(leafletMap);
+       }
 		}
 
 		$scope.closeModal = function(form) {
@@ -157,23 +172,4 @@ angular.module('controller.settings', [])
 			console.log("Settings map init");
 			$scope.modalMap = map;
 		});
-
-
-		/**
-		 * Verify a user
-		 */
-
-		// $scope.verify = function(userID) {
-		// 	console.log("Verify");
-		// 	var data = {"user_id" : userID, "verified" : true};
-		// 	Azureservice.invokeApi("authenticateuser",{method:'put', body:data})
-		// 	.then(function(response) {
-		// 		console.log("Success! " + JSON.stringify(response));
-		// 		// loadUnverifiedUsers();
-    //
-		// 	},
-		// 	function(error) {
-		// 		console.log("Error: " + JSON.stringify(error));
-		// 	})
-		// }
 });

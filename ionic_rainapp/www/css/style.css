@@ -142,3 +142,20 @@
   padding: 10px;
   background: #d1d1d1;
 }
+
+/* Add resource page */
+.locateRow {
+
+}
+
+.locateRow .button {
+  width: 40px;
+}
+
+
+#leafletMapRegister {
+  /*position: absolute;*/
+  height: 300px;
+  width: 100%;
+  z-index: 1;
+}
