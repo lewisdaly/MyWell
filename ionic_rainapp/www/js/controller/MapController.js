@@ -11,16 +11,11 @@ angular.module('controller.map', [])
 
 
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 17);
+  var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 16);
   //TODO: make these offline!
-  // L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-  //   attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-  //   maxZoom: 18,
-  //   id: 'mapbox.satellite',
-  //   accessToken: 'pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw'
-  // }).addTo(leafletMap);
-
-  L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
+  // L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/mapbox.mapbox-streets-v7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
+  // L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
+  L.tileLayer('img/maptiles/{z}-{x}-{y}.jpeg')
    .addTo(leafletMap);
 
   ApiService.getResources()
@@ -51,7 +46,6 @@ angular.module('controller.map', [])
     }
   });
 
-  // $scope.$on('$ionicView.exit')
 
   /**
    * Someone has clicked search. Get the resource from id, and navigate, also show popup

@@ -36,7 +36,9 @@ angular.module('rainapp.utils', [])
     getReportCache: getReportCache,
     getReportAtIndex: getReportAtIndex,
     deleteReportAtIndex:deleteReportAtIndex,
-    addReportToCache:addReportToCache
+    addReportToCache:addReportToCache,
+    addResourceToCache: addResourceToCache,
+    getResourceFromCache: getResourceFromCache
   });
 
   //get the cached reports from local storage.
@@ -89,5 +91,16 @@ angular.module('rainapp.utils', [])
     return reportCache;
   }
 
+  function addResourceToCache(data) {
+    $localstorage.setObject('resourceCache', data);
+  }
 
+  function getResourceFromCache() {
+    let resourceCache = $localstorage.getObject('resourceCache');
+    if (angular.isNullOrUndefined(resourceCache)) {
+      return {};
+    }
+    
+    return resourceCache;
+  }
 });

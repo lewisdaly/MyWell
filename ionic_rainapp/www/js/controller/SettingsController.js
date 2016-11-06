@@ -1,5 +1,5 @@
 angular.module('controller.settings', [])
-.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService) {
+.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService) {
 		$scope.resources = [
 			"well",
 			"dam",
@@ -59,13 +59,15 @@ angular.module('controller.settings', [])
     $scope.locate = function() {
       console.log('locate');
 
-      //TODO: re enable for leaflet
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position){
           console.log(position);
-          // leafletMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+          leafletMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+          $scope.form.lat = position.coords.latitude;
+          $scope.form.lng = position.coords.longitude;
+          $scope.$apply();
+
           //TODO: drop pin
-          // ion-ios-navigate
         }, function(err) {
           console.log(err);
         });
@@ -79,13 +81,23 @@ angular.module('controller.settings', [])
 
 		$scope.register = function() {
       //TODO: load an unsaved resource from localstorage if exists
-      $scope.form = {};
+      $scope.form = CachingService.getResourceFromCache();
+
+      //fix up because data format isn't nice:
+      if (!angular.isNullOrUndefined($scope.form.elevation)) {
+        $scope.form.max_wt_depth = $scope.form.elevation;
+      }
+      if (!angular.isNullOrUndefined($scope.form.geo)) {
+        $scope.form.lat = $scope.form.geo.lat;
+        $scope.form.lng = $scope.form.geo.lng;
+      }
+
 			$scope.modal.show()
 
       //Set up the Leaflet Map
       //TODO: disable map dragging - only allow moving using the locate button for now
       if (angular.isNullOrUndefined(leafletMap)){
-        leafletMap = L.map('leafletMapRegister', { zoomControl:false }).setView([24.593, 74.198], 17);
+        leafletMap = L.map('leafletMapRegister', { zoomControl:false, dragging: false, doubleClickZoom:false }).setView([24.593, 74.198], 17);
         L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
          .addTo(leafletMap);
        }
@@ -97,18 +109,16 @@ angular.module('controller.settings', [])
 				return;
 			}
 
-			if ((form == null) ||
-					(form.postcode == null) ||
-				  (form.owner == null) ||
-				  (form.postcode == null) ||
-				  (form.id== null) ||
-				  (form.max_wt_depth == null) ||
-				  (form.type == null) ||
-				  (form.lat == null) ||
-				  (form.lng == null)
-				  ){
+			if ((form == null)
+          || (form.postcode == null)
+          || (form.owner == null)
+          || (form.postcode == null)
+          || (form.id== null)
+          || (form.max_wt_depth == null)
+          || (form.type == null)
+          || (form.lat == null)
+          || (form.lng == null)) {
 
-				console.log("Fill out the form!");
 	      var alertPopup = $ionicPopup.alert({
 	        title: 'Error',
 	        template: "Please fill out all the fields"
@@ -152,11 +162,18 @@ angular.module('controller.settings', [])
 
 				$scope.modal.hide();
 			})
-			.catch(function(response) {
-				console.log("err", response.data.error);
+			.catch(function(err) {
+        if (err.status === 0) {
+          displayMessage("Connection Error", "Saving. Please try again later.");
+          CachingService.addResourceToCache(data);
+          $scope.modal.hide();
+          return;
+        }
+
+				console.log("err", err);
 			 	var alertPopup = $ionicPopup.alert({
         	title: 'Error',
-        	template: response.data.error.message
+        	template: err
       	});
 			});
 		}
@@ -172,4 +189,12 @@ angular.module('controller.settings', [])
 			console.log("Settings map init");
 			$scope.modalMap = map;
 		});
+
+    function displayMessage(title, message) {
+      var alertPopup = $ionicPopup.alert({
+          title: title,
+          template: message
+        });
+    }
+
 });
