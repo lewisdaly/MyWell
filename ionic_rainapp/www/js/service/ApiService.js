@@ -6,7 +6,8 @@ angular.module('service.api', [])
     getClosestVillage:getClosestVillage,
     registerWell:registerWell,
     updateReading:updateReading,
-    login:login
+    login:login,
+    getStatisticsForResourceId: getStatisticsForResourceId
   });
 
   //Load all of the things
@@ -79,6 +80,37 @@ angular.module('service.api', [])
       url: apiUrl + '/api/Users/login',
       data: {username:username, password:password}
     });
+  }
+
+  /**
+   * Get the info and statistics for a resource
+   * @returns Promise<[resource, villageAverage, historicalResourceAverages, historicalVillageAverages ]
+   */
+  function getStatisticsForResourceId(resourceId) {
+    //Get all of the needed statistics:
+
+    return Promise.all([
+      $http({
+        method:'get',
+        headers: {'Content-Type':'application/json'},
+        url: `${apiUrl}/api/resources/${resourceId}`,
+      }),
+      $http({
+        method:'get',
+        headers: {'Content-Type':'application/json'},
+        url: `${apiUrl}/api/resource_stats/getCurrentVillageAverage?villageId=${resourceId[0]}`,
+      }),
+      $http({
+        method:'get',
+        headers: {'Content-Type':'application/json'},
+        url: `${apiUrl}/api/resource_stats/getHistoricalResourceAverages?resourceId=${resourceId}`,
+      }),
+      $http({
+        method:'get',
+        headers: {'Content-Type':'application/json'},
+        url: `${apiUrl}/api/resource_stats/getHistoricalVillageAverages?villageId=${resourceId[0]}`,
+      })
+    ]);
   }
 
 });
