@@ -1,4 +1,9 @@
 {
   "name": "myWell",
-  "app_id": "cfb3139d"
+  "app_id": "cfb3139d",
+  "gulpStartupTasks": [
+    "babel",
+    "sass",
+    "watch"
+  ]
 }

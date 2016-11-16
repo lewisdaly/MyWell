@@ -1,31 +1,30 @@
-angular.module('service.api', [])
-.service('ApiService', function($http, $q, $rootScope, apiUrl, AuthenticationService, $localstorage, CachingService) {
+'use strict';
 
-  return({
-    getResources:getResources,
-    getClosestVillage:getClosestVillage,
-    registerWell:registerWell,
-    updateReading:updateReading,
-    login:login,
+angular.module('service.api', []).service('ApiService', function ($http, $q, $rootScope, apiUrl, AuthenticationService, $localstorage, CachingService) {
+
+  return {
+    getResources: getResources,
+    getClosestVillage: getClosestVillage,
+    registerWell: registerWell,
+    updateReading: updateReading,
+    login: login,
     getStatisticsForResourceId: getStatisticsForResourceId
-  });
+  };
 
   //Load all of the things
   //fallback to cache if fails
   function getResources() {
     return $http({
-      method:'get',
-      headers: {'Content-Type':'application/json'},
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/resources?filter=%7B%22include%22%3A%22village%22%7D'
-    })
-    .then(function(response) {
+    }).then(function (response) {
       //cache the response
       $localstorage.setObject('getResourcesCache', response);
       return response;
-    })
-    .catch(function(err) {
+    }).catch(function (err) {
       //Rollback to previous request if exists
-      let cached = $localstorage.getObject('getResourcesCache');
+      var cached = $localstorage.getObject('getResourcesCache');
       if (!angular.isNullOrUndefined(cached)) {
         return cached;
       }
@@ -36,8 +35,8 @@ angular.module('service.api', [])
 
   function getClosestVillage(villageId) {
     return $http({
-      method:'get',
-      headers: {'Content-Type':'application/json'},
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/villages/closestVillage?villageId=' + villageId
     });
   }
@@ -48,19 +47,19 @@ angular.module('service.api', [])
    */
   function updateReading(reading) {
     return $http({
-      method:'post',
-      headers: {'Content-Type':'application/json'},
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/readings?access_token=' + AuthenticationService.getAccessToken(),
-      data:reading,
+      data: reading
     });
   }
 
   function registerWell(resource) {
     return $http({
-      method:'post',
-      headers: {'Content-Type':'application/json'},
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/resources?access_token=' + AuthenticationService.getAccessToken(),
-      data:resource
+      data: resource
     });
   }
 
@@ -75,10 +74,10 @@ angular.module('service.api', [])
 
   function login(username, password) {
     return $http({
-      method:'post',
-      headers: {'Content-Type':'application/json'},
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/Users/login',
-      data: {username:username, password:password}
+      data: { username: username, password: password }
     });
   }
 
@@ -89,28 +88,22 @@ angular.module('service.api', [])
   function getStatisticsForResourceId(resourceId) {
     //Get all of the needed statistics:
 
-    return Promise.all([
-      $http({
-        method:'get',
-        headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resources/${resourceId}`,
-      }),
-      $http({
-        method:'get',
-        headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resource_stats/getCurrentVillageAverage?villageId=${resourceId[0]}`,
-      }),
-      $http({
-        method:'get',
-        headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resource_stats/getHistoricalResourceAverages?resourceId=${resourceId}`,
-      }),
-      $http({
-        method:'get',
-        headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resource_stats/getHistoricalVillageAverages?villageId=${resourceId[0]}`,
-      })
-    ]);
+    return Promise.all([$http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resources/' + resourceId
+    }), $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resource_stats/getCurrentVillageAverage?villageId=' + resourceId[0]
+    }), $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resource_stats/getHistoricalResourceAverages?resourceId=' + resourceId
+    }), $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resource_stats/getHistoricalVillageAverages?villageId=' + resourceId[0]
+    })]);
   }
-
 });

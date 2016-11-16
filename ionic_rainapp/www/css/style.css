@@ -2,7 +2,7 @@
 
 #leafletMap {
   position: absolute;
-  height: 700px;
+  height: 89%;
   width: 96.3%;
   z-index: 1;
 }

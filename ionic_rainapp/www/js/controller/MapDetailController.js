@@ -1,43 +1,37 @@
-angular.module('controller.map-detail', ['nvd3'])
-.controller('MapDetailController', function($scope, $state, ApiService, $stateParams) {
+"use strict";
 
-  $scope.$on('$ionicView.enter', function(e) {
-    console.log("Entered!");
-  });
+angular.module('controller.map-detail', ['nvd3']).controller('MapDetailController', function ($scope, $state, ApiService, $stateParams) {
 
-  console.log($stateParams.resourceId);
+  $scope.$on('$ionicView.enter', function (e) {});
+
   $scope.resourceId = $stateParams.resourceId;
 
   //Get the data from the api service
-  ApiService.getStatisticsForResourceId($scope.resourceId)
-  .then((data) => {
-    const resource = data[0].data;
-    const villageAverage = data[1].data;
-    let historicalResourceAverages = data[2].data.readings;
-    let historicalVillageAverages = data[3].data.readings;
-
+  ApiService.getStatisticsForResourceId($scope.resourceId).then(function (data) {
+    var resource = data[0].data;
+    var villageAverage = data[1].data;
+    var historicalResourceAverages = data[2].data.readings;
+    var historicalVillageAverages = data[3].data.readings;
 
     $scope.resource = resource;
     $scope.village = villageAverage;
 
     //Calculate the % full
-    const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
+    var percentageFull = ((resource.well_depth - resource.last_value) / resource.well_depth * 100).toFixed(2);
     $scope.resource.percentageFull = percentageFull;
 
     //Add the current village and resource readings to the historical:
-    const thisMonthString = new Date().toISOString().slice(0,7);
-    historicalResourceAverages.push({month:thisMonthString, aveReading:resource.last_value});
-    historicalVillageAverages.push({month:thisMonthString, aveReading:villageAverage.last_value});
+    var thisMonthString = new Date().toISOString().slice(0, 7);
+    historicalResourceAverages.push({ month: thisMonthString, aveReading: resource.last_value });
+    historicalVillageAverages.push({ month: thisMonthString, aveReading: villageAverage.last_value });
 
     console.log(resource);
 
     //Convert to the right format for d3
     $scope.data.push(mapHistoricalDataToD3(historicalResourceAverages, 'Well Average', '#1f77b4'));
     $scope.data.push(mapHistoricalDataToD3(historicalVillageAverages, 'Village Average', '#d62728'));
-  })
-  .catch(err => {
+  }).catch(function (err) {
     console.log(err);
-
   });
 
   $scope.options = {
@@ -50,15 +44,15 @@ angular.module('controller.map-detail', ['nvd3'])
         bottom: 100,
         left: 55
       },
-      x: function(d) {
+      x: function x(d) {
         return d.label;
       },
-      y: function(d) {
+      y: function y(d) {
         return 0 - d.value;
       },
       showValues: false,
       showControls: false,
-      valueFormat: function(d) {
+      valueFormat: function valueFormat(d) {
         return d3.format(',.4f')(d);
       },
       duration: 500,
@@ -69,13 +63,13 @@ angular.module('controller.map-detail', ['nvd3'])
       yAxis: {
         axisLabel: 'Depth to water level (m)',
         axisLabelDistance: -10,
-        tickFormat: function(d) {
-          return (-d);
+        tickFormat: function tickFormat(d) {
+          return -d;
         }
       },
       tooltip: {
         enabled: false
-      },
+      }
     }
   };
 
@@ -120,15 +114,14 @@ angular.module('controller.map-detail', ['nvd3'])
     // }
   ];
 
-
   function mapHistoricalDataToD3(historicalData, graphKey, color) {
     //We have an array containing months: [{aveReading:x, month:"YYYY-MM"}, ...]
-    const values = historicalData.map(value => {
-      return {label: value.month, value: value.aveReading};
+    var values = historicalData.map(function (value) {
+      return { label: value.month, value: value.aveReading };
     });
     return {
       key: graphKey,
-      bar:true,
+      bar: true,
       color: color,
       values: values
     };

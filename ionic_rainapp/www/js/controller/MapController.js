@@ -1,6 +1,8 @@
+'use strict';
+
 angular.module('controller.map', [])
 //TODO: change this name
-.controller('MapCtrl', function($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
+.controller('MapCtrl', function ($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
 
   $scope.map;
   $scope.markers = {}; //dict of Leaflet Marker Objects
@@ -9,53 +11,51 @@ angular.module('controller.map', [])
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
-
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 16);
+  var leafletMap = L.map('leafletMap', { zoomControl: false }).setView([24.593, 74.198], 16);
   //TODO: make these offline!
   // L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/mapbox.mapbox-streets-v7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
   // L.tileLayer('img/maptiles/{z}-{x}-{y}.jpeg')
-   .addTo(leafletMap);
+  .addTo(leafletMap);
 
-  ApiService.getResources()
-  .then(function(response) {
+  ApiService.getResources().then(function (response) {
     $scope.data = response.data;
 
     var fullIcon = L.icon({
-      iconUrl: '/img/icon_full.png',
-      iconSize:     [36, 56], // size of the icon
-      iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+      iconUrl: 'img/icon_full.png',
+      iconSize: [36, 56], // size of the icon
+      iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+      popupAnchor: [17, 5] // point from which the popup should open relative to the iconAnchor
     });
 
     var medIcon = L.icon({
-      iconUrl: '/img/icon_med.png',
-      iconSize:     [36, 56], // size of the icon
-      iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+      iconUrl: 'img/icon_med.png',
+      iconSize: [36, 56], // size of the icon
+      iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+      popupAnchor: [17, 5] // point from which the popup should open relative to the iconAnchor
     });
 
     var lowIcon = L.icon({
-      iconUrl: '/img/icon_low.png',
-      iconSize:     [36, 56], // size of the icon
-      iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+      iconUrl: 'img/icon_low.png',
+      iconSize: [36, 56], // size of the icon
+      iconAnchor: [0, 0], // point of the icon which will correspond to marker's location
+      popupAnchor: [17, 5] // point from which the popup should open relative to the iconAnchor
     });
 
     //TODO: change icon based on well level!
-    $scope.data.forEach(function(resource) {
+    $scope.data.forEach(function (resource) {
       //Calculate the well % level:
-      const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
+      var percentageFull = ((resource.well_depth - resource.last_value) / resource.well_depth * 100).toFixed(2);
       resource.percentageFull = percentageFull;
 
       var marker;
       if (percentageFull < 33.33) {
-        marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: lowIcon}).addTo(leafletMap);
+        marker = L.marker([resource.geo.lat, resource.geo.lng], { icon: lowIcon }).addTo(leafletMap);
       } else if (percentageFull < 66.66) {
-        marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: medIcon}).addTo(leafletMap);
+        marker = L.marker([resource.geo.lat, resource.geo.lng], { icon: medIcon }).addTo(leafletMap);
       } else {
-        marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: fullIcon}).addTo(leafletMap);
+        marker = L.marker([resource.geo.lat, resource.geo.lng], { icon: fullIcon }).addTo(leafletMap);
       }
 
       //TODO: change the icon depending on resource type
@@ -65,23 +65,26 @@ angular.module('controller.map', [])
     });
   });
 
-  $scope.$on('$ionicView.enter', function(e) {
+  $scope.$on('$ionicView.enter', function (e) {
     if ($scope.map) {
       google.maps.event.trigger($scope.map, 'resize');
     }
   });
 
-
   /**
    * Someone has clicked search. Get the resource from id, and navigate, also show popup
    */
-  $scope.searchItemPressed = function(event, resourceId) {
+  $scope.searchItemPressed = function (event, resourceId) {
+    if (!angular.isNullOrUndefined(cordova)) {
+      cordova.plugins.Keyboard.close();
+    }
+
     var resource = getResourceFromId(resourceId);
     var marker = $scope.markers[resourceId];
 
     leafletMap.panTo(new L.LatLng(resource.geo.lat, resource.geo.lng));
     marker.openPopup();
-  }
+  };
 
   // function refreshMapHeading() {
   //   //Get the map centre
@@ -133,13 +136,11 @@ angular.module('controller.map', [])
     var R = 6371000; // metres
     var φ1 = lat1 * Math.PI / 180; //convert to radians
     var φ2 = lat2 * Math.PI / 180;
-    var Δφ = (lat2-lat1) * Math.PI / 180;
-    var Δλ = (lng2-lng1) * Math.PI / 180;
+    var Δφ = (lat2 - lat1) * Math.PI / 180;
+    var Δλ = (lng2 - lng1) * Math.PI / 180;
 
-    var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c;
     return d;
   }
@@ -221,88 +222,84 @@ angular.module('controller.map', [])
   //     drawLegend(maxWeight);
   //   }
 
-    //Called when page is requested to load
-    // google.maps.event.addDomListener(window, 'load', initialize);
-    // function drawLegend(maxIntensity) {
-    //   //var maxIntensity = heatmap['gm_bindings_']['maxIntensity'][484]['Sc']['j'];
-    //   var legendWidth = document.getElementById('LegendGradient').style.width = '100%';
-    //   var offset = Math.round(maxIntensity/6);
-    //   var value = maxIntensity;
-    //   var key = 6;
-    //   //build legend key scale
-    //   for ( key ; key > 0; key--) {
-    //     //Add Value to key
-    //     var t_value = document.createTextNode(Math.round(value));
-    //     document.getElementById(key).appendChild(t_value);
-    //     //decrement value
-    //     value = value - offset;
-    //   }
-    // }
+  //Called when page is requested to load
+  // google.maps.event.addDomListener(window, 'load', initialize);
+  // function drawLegend(maxIntensity) {
+  //   //var maxIntensity = heatmap['gm_bindings_']['maxIntensity'][484]['Sc']['j'];
+  //   var legendWidth = document.getElementById('LegendGradient').style.width = '100%';
+  //   var offset = Math.round(maxIntensity/6);
+  //   var value = maxIntensity;
+  //   var key = 6;
+  //   //build legend key scale
+  //   for ( key ; key > 0; key--) {
+  //     //Add Value to key
+  //     var t_value = document.createTextNode(Math.round(value));
+  //     document.getElementById(key).appendChild(t_value);
+  //     //decrement value
+  //     value = value - offset;
+  //   }
+  // }
 
-    // $scope.toggleHeatmap = function() {
-    //   heatmap.setMap(heatmap.getMap() ? null : $scope.map);
-    // }
-    //
-    // //toggles radius of heatmap - this needs some tunning for well applications, what is the effective radius ?
-    // $scope.changeRadius = function() {
-    //   heatmap.set('radius', heatmap.get('radius') ? null : 20);
-    // }
-    //
-    // //changes the color of the heat map
-    // $scope.changeGradient = function() {
-    //   var gradient = ['rgba(0, 255, 255, 0)','rgba(0, 255, 255, 1)','rgba(0, 191, 255, 1)','rgba(0, 127, 255, 1)','rgba(0, 63, 255, 1)','rgba(0, 0, 255, 1)','rgba(0, 0, 223, 1)','rgba(0, 0, 191, 1)','rgba(0, 0, 159, 1)','rgba(0, 0, 127, 1)','rgba(63, 0, 91, 1)','rgba(127, 0, 63, 1)','rgba(191, 0, 31, 1)','rgba(255, 0, 0, 1)']
-    //   heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
-    // }
+  // $scope.toggleHeatmap = function() {
+  //   heatmap.setMap(heatmap.getMap() ? null : $scope.map);
+  // }
+  //
+  // //toggles radius of heatmap - this needs some tunning for well applications, what is the effective radius ?
+  // $scope.changeRadius = function() {
+  //   heatmap.set('radius', heatmap.get('radius') ? null : 20);
+  // }
+  //
+  // //changes the color of the heat map
+  // $scope.changeGradient = function() {
+  //   var gradient = ['rgba(0, 255, 255, 0)','rgba(0, 255, 255, 1)','rgba(0, 191, 255, 1)','rgba(0, 127, 255, 1)','rgba(0, 63, 255, 1)','rgba(0, 0, 255, 1)','rgba(0, 0, 223, 1)','rgba(0, 0, 191, 1)','rgba(0, 0, 159, 1)','rgba(0, 0, 127, 1)','rgba(63, 0, 91, 1)','rgba(127, 0, 63, 1)','rgba(191, 0, 31, 1)','rgba(255, 0, 0, 1)']
+  //   heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+  // }
 
-    $scope.locate = function() {
-      //TODO: re enable for leaflet
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position){
-          leafletMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
-          //TODO: drop pin
-          // ion-ios-navigate
-        });
-      }
-      else {
-        console.log("Geolocation is not supported by this browser.");
-      }
-    }
-
-    function ConvertDMSToDD(degrees, minutes, seconds, decimal) {
-      //TODO: implement better...
-      degrees = parseFloat(degrees.toFixed(10));
-      minutes = minutes.toFixed(10)/60.00;
-      var decString = "0." + decimal;
-      seconds = seconds + parseFloat(decString);
-      var dd =  degrees + minutes + seconds/(60*60);
-
-      return dd;
-    }
-
-    function saftelyGetLevelString(value) {
-      if (!value) {
-        return "";
-      }
-      return value.toFixed(2);
-    }
-
-    function displayMessage(title, message) {
-      var alertPopup = $ionicPopup.alert({
-        title: title,
-        template: message
+  $scope.locate = function () {
+    //TODO: re enable for leaflet
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        leafletMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
+        //TODO: drop pin
+        // ion-ios-navigate
       });
+    } else {
+      console.log("Geolocation is not supported by this browser.");
     }
+  };
 
-    function getResourceFromId(id) {
-      return $scope.data.filter(function(resource) {
-        return resource.id === id;
-      }).shift();
-    }
+  function ConvertDMSToDD(degrees, minutes, seconds, decimal) {
+    //TODO: implement better...
+    degrees = parseFloat(degrees.toFixed(10));
+    minutes = minutes.toFixed(10) / 60.00;
+    var decString = "0." + decimal;
+    seconds = seconds + parseFloat(decString);
+    var dd = degrees + minutes + seconds / (60 * 60);
 
-    function getPopupContentForResource(resource) {
-      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.village.name}
-      <br/>Well ID : ${resource.id}
-      <br/>Depth to Water Level: ${saftelyGetLevelString(resource.last_value)} m
-      <br/><a href=#/tab/map/${resource.id}>More</a>`;
+    return dd;
+  }
+
+  function saftelyGetLevelString(value) {
+    if (!value) {
+      return "";
     }
-  })
+    return value.toFixed(2);
+  }
+
+  function displayMessage(title, message) {
+    var alertPopup = $ionicPopup.alert({
+      title: title,
+      template: message
+    });
+  }
+
+  function getResourceFromId(id) {
+    return $scope.data.filter(function (resource) {
+      return resource.id === id;
+    }).shift();
+  }
+
+  function getPopupContentForResource(resource) {
+    return '<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ' + resource.village.name + '\n      <br/>Well ID : ' + resource.id + '\n      <br/>Depth to Water Level: ' + saftelyGetLevelString(resource.last_value) + ' m\n      <br/><a href=#/tab/map/' + resource.id + '>More</a>';
+  }
+});

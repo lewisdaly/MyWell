@@ -1,12 +1,12 @@
-angular.module('controller.login', [])
-.controller('LoginController', function($scope, $location, AuthenticationService,$ionicPopup, debug, $http){
+'use strict';
+
+angular.module('controller.login', []).controller('LoginController', function ($scope, $location, AuthenticationService, $ionicPopup, debug, $http) {
     $scope.user = {};
 
     (function initController() {
         // reset login status
         AuthenticationService.ClearCredentials();
     })();
-
 
     //TODO: Add more login buttons!
 
@@ -36,34 +36,32 @@ angular.module('controller.login', [])
     //     });
 
 
-        // //Always log in in debug mode!
-        // if (debug == 1) {
-        //     AuthenticationService.SetCredentials("lewis", 1, "password");
-        //     $location.path('/tab/map');
-        //     return;
-        // }
+    // //Always log in in debug mode!
+    // if (debug == 1) {
+    //     AuthenticationService.SetCredentials("lewis", 1, "password");
+    //     $location.path('/tab/map');
+    //     return;
+    // }
 
 
+    // AuthenticationService.Login($scope.user)
+    // .then(function(response) {
+    //     //Get the logged in user info
+    //     AuthenticationService.SetCredentials(response.data.username, response.data.id, $scope.user.password);
+    //         $location.path('/tab/report');
 
-        // AuthenticationService.Login($scope.user)
-        // .then(function(response) {
-        //     //Get the logged in user info
-        //     AuthenticationService.SetCredentials(response.data.username, response.data.id, $scope.user.password);
-        //         $location.path('/tab/report');
-
-        // },
-        // function(data) {
-        //       var alertPopup = $ionicPopup.alert({
-        //         title: 'Login failed!',
-        //         template: 'Please check your credentials!'
-        //     });
-        //     //TODO: alert user
-        // });
-// };
-
+    // },
+    // function(data) {
+    //       var alertPopup = $ionicPopup.alert({
+    //         title: 'Login failed!',
+    //         template: 'Please check your credentials!'
+    //     });
+    //     //TODO: alert user
+    // });
+    // };
 
 
-$scope.signup = function signup() {
-    $location.path('/signup');
-}
+    $scope.signup = function signup() {
+        $location.path('/signup');
+    };
 });

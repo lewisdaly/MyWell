@@ -6,12 +6,15 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var babel = require("gulp-babel");
+var plumber = require("gulp-plumber");
 
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass: ['./scss/**/*.scss'],
+  es6: ['./www/es6/**/*.js']
 };
 
-gulp.task('default', ['sass']);
+gulp.task('default', ['babel', 'sass']);
 
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
@@ -27,7 +30,18 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
+gulp.task("babel", function () {
+  return gulp.src(paths.es6)
+    .pipe(plumber())
+    .pipe(babel({
+      presets: ['es2015'],
+      plugins:["transform-strict-mode"]
+    }))
+    .pipe(gulp.dest("www/js"));
+});
+
 gulp.task('watch', function() {
+  gulp.watch(paths.es6, ['babel']);
   gulp.watch(paths.sass, ['sass']);
 });
 
@@ -52,11 +66,11 @@ gulp.task('git-check', function(done) {
 });
 
 // Custom Tasks - Env Variables
-var replace = require('gulp-replace-task');  
-var args    = require('yargs').argv;  
+var replace = require('gulp-replace-task');
+var args    = require('yargs').argv;
 var fs      = require('fs');
 
-gulp.task('replace', function () {  
+gulp.task('replace', function () {
   // Get the environment from the command line
   console.log(args.env);
   var env = args.env;
@@ -65,8 +79,8 @@ gulp.task('replace', function () {
   var filename = env + '.json';
   var settings = JSON.parse(fs.readFileSync('./config/' + filename, 'utf8'));
 
-// Replace each placeholder with the correct value for the variable.  
-gulp.src('config/constants.js')  
+// Replace each placeholder with the correct value for the variable.
+gulp.src('config/constants.js')
   .pipe(replace({
     patterns: [
       {
@@ -81,4 +95,3 @@ gulp.src('config/constants.js')
   }))
   .pipe(gulp.dest('www/js'));
 });
-
