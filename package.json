@@ -2,7 +2,8 @@
   "name": "ionic_rainapp",
   "version": "1.0.0",
   "dependencies": {
-    "express": "*"
+    "express": "4.14.0",
+    "nodemon":"1.11.0"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",

@@ -12,6 +12,6 @@ WORKDIR /usr/src/app
 ADD package.json /usr/src/app/
 RUN npm install
 
-EXPOSE 80
+EXPOSE 8100
 
 CMD [ "npm" "run" "prod"]
