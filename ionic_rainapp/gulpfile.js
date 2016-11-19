@@ -93,5 +93,5 @@ gulp.src('config/constants.js')
       }
     ]
   }))
-  .pipe(gulp.dest('www/js'));
+  .pipe(gulp.dest('www/es6'));
 });
