@@ -49,16 +49,7 @@ angular.module('controller.map', [])
       const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
       resource.percentageFull = percentageFull;
 
-      var marker;
-      if (percentageFull < 33.33) {
-        marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: lowIcon}).addTo(leafletMap);
-      } else if (percentageFull < 66.66) {
-        marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: medIcon}).addTo(leafletMap);
-      } else {
-        marker = L.marker([resource.geo.lat, resource.geo.lng], {icon: fullIcon}).addTo(leafletMap);
-      }
-
-      //TODO: change the icon depending on resource type
+      var marker = L.marker([resource.geo.lat, resource.geo.lng]).addTo(leafletMap);
       marker.bindPopup(getPopupContentForResource(resource));
 
       $scope.markers[resource.id] = marker;
@@ -76,7 +67,7 @@ angular.module('controller.map', [])
    * Someone has clicked search. Get the resource from id, and navigate, also show popup
    */
   $scope.searchItemPressed = function(event, resourceId) {
-    if (!angular.isNullOrUndefined(cordova)){
+    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.close();
     }
 
@@ -304,9 +295,42 @@ angular.module('controller.map', [])
     }
 
     function getPopupContentForResource(resource) {
+
+      // var fullIcon = L.icon({
+      //   iconUrl: 'img/icon_full.png',
+      //   iconSize:     [36, 56], // size of the icon
+      //   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+      //   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+      // });
+      //
+      // var medIcon = L.icon({
+      //   iconUrl: 'img/icon_med.png',
+      //   iconSize:     [36, 56], // size of the icon
+      //   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+      //   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+      // });
+      //
+      // var lowIcon = L.icon({
+      //   iconUrl: 'img/icon_low.png',
+      //   iconSize:     [36, 56], // size of the icon
+      //   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+      //   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+      // });
+
+      let iconImage = "icon_low";
+      if (resource.percentageFull > 33) {
+        iconImage = "icon_med";
+      } else if (resource.percentageFull >= 66) {
+        iconImage = "icon_full";
+      }
+
       return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.village.name}
       <br/>Well ID : ${resource.id}
       <br/>Depth to Water Level: ${saftelyGetLevelString(resource.last_value)} m
+      <br/>Percentage Full: ${resource.percentageFull}% <img src="img/${iconImage}.png" style="
+          height: 50px;
+          transform: rotate(90deg);
+          "/>
       <br/><a href=#/tab/map/${resource.id}>More</a>`;
     }
   })
