@@ -7,7 +7,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'ngMap', 'starter.controllers', 'report.controllers', 'controller.settings', 'rainapp-constants', 'ngIOS9UIWebViewPatch', 'controller.signup', 'controller.login', 'controller.map', 'controller.map-detail', 'service.authentication', 'service.login', 'service.signup', 'service.user', 'service.api', 'rainapp.utils',
+angular.module('starter', ['ionic', 'ngMap', 'ngFileUpload', 'starter.controllers', 'report.controllers', 'controller.settings', 'rainapp-constants', 'ngIOS9UIWebViewPatch', 'controller.signup', 'controller.login', 'controller.map', 'controller.map-detail', 'service.authentication', 'service.login', 'service.signup', 'service.user', 'service.api', 'rainapp.utils',
 // 'azure-mobile-service.module',
 'AdalAngular']).run(function ($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
   $ionicPlatform.ready(function () {

@@ -8,7 +8,8 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
     registerWell: registerWell,
     updateReading: updateReading,
     login: login,
-    getStatisticsForResourceId: getStatisticsForResourceId
+    getStatisticsForResourceId: getStatisticsForResourceId,
+    processExcelFile: processExcelFile
   };
 
   //Load all of the things
@@ -105,5 +106,15 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
       headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/resource_stats/getHistoricalVillageAverages?villageId=' + resourceId[0]
     })]);
+  }
+
+  function processExcelFile(fileResponse) {
+    //TODO: make url parameters load properly
+    console.log("processing excel file");
+    return $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken()
+    });
   }
 });

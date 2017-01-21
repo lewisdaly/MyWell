@@ -1,10 +1,14 @@
 angular.module('controller.settings', [])
-.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService) {
+.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService, apiUrl) {
 		$scope.resources = [
 			"well",
 			"dam",
 			"rain_gauge"
 		];
+
+    $scope.templateUrl = `${apiUrl}/containers/container1/download/template`;
+    $scope.apiBaseUrl = apiUrl;
+
 
 		$scope.$on('$ionicView.enter', function(e) {
 			checkUserStatus();

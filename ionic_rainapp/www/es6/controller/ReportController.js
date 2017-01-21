@@ -1,7 +1,7 @@
 'use strict';
 angular.module('report.controllers', [])
 
-.controller('ReportController', function($scope, $ionicPopup, $http, apiUrl, $rootScope, LoginService, ApiService, CachingService) {
+.controller('ReportController', function($scope, $ionicPopup, $http, apiUrl, $rootScope, LoginService, ApiService, CachingService, Upload) {
 
   /**
    * Init
@@ -119,7 +119,6 @@ angular.module('report.controllers', [])
   /**
    *  Helper functions
    */
-
   function displayMessage(title, message) {
     var alertPopup = $ionicPopup.alert({
         title: title,
@@ -131,4 +130,49 @@ angular.module('report.controllers', [])
     $scope.form = {};
     $scope.form.date =  new Date();
   }
+
+
+  /**
+   * File uploading
+   */
+  $scope.upload = function (file) {
+      Upload.upload({
+          url: `${apiUrl}/api/containers/container1/upload`,
+          data: {file: file }
+      }).then(function (resp) {
+          console.log('Success ' + resp.config.data.file.name + 'uploaded. Response: ' + resp.data);
+          return Promise.resolve(resp.data.result.files.file[0]);
+      }, function (resp) {
+          console.log('Error status: ' + resp.status);
+          throw new Error(resp);
+      }, function (evt) {
+          var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+          console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+      })
+      .then((fileResponse) => {
+        return ApiService.processExcelFile(fileResponse);
+      })
+      .then((res) => {
+        displayMessage('Done', `Saved ${res.data.created} readings, with ${res.data.warnings.length} warnings`);
+      })
+      .catch(err => {
+        console.error('error', err);
+        if (err.status === 500) {
+          return displayMessage('Error', 'Could not process file. Please ensure the format is correct.');
+        }
+
+        displayMessage('Error', err.statusText);
+      });
+  };
+
+  $scope.clearFile = function() {
+    $scope.file = null;
+  }
+
+  $scope.submitFile = function() {
+    if ($scope.form.file.$valid && $scope.file) {
+      $scope.upload($scope.file);
+    }
+  };
+
 })

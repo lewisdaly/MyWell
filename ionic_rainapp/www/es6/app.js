@@ -8,6 +8,7 @@
 angular.module('starter', [
   'ionic',
   'ngMap',
+  'ngFileUpload',
   'starter.controllers',
   'report.controllers',
   'controller.settings',

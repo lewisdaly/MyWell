@@ -1,8 +1,6 @@
 <ion-view view-title="Settings">
 <ion-content class="padding">
 
-
-
 <div class="center-text">
   <p ng-if="isUserNotLoggedIn" class="verify-text">Log in access settings</p>
 </div>
@@ -12,20 +10,10 @@
 </div>
 
 <div ng-if="isUserLoggedInAndVerified">
-
-	<!-- <button class="button button-outline button-block button-assertive button-positive" ng-click="logout()">Logout</button> -->
-	<button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="register()">Register New Well</button>
-
-
-	<!-- <ion-list class="list">
-
-  	<div class="item" ng-show="isVerified">
-	    <label>Unverified Users</label>
-	    <div class="item row" ng-repeat="user in unverifiedUsers">
-	        <h2 class="col">{{user.user_name}}</h2>
-	        <button class="col button button-outline button-clear button-positive button-small" ng-click="verify({{user.user_id}})">verify</button>
-	    </div>
-	</div> -->
+	<button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="register()">Register a New Well</button>
+</div>
+<div>
+  <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/template.xlsx" download="template.xlsx">Download a template</a>
 </div>
 <div class="bottom-text">
 	<p>This project is part of MARVI</p>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <meta http-equiv="Content-Security-Policy" content="default-src *; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 
@@ -69,9 +69,13 @@
   <!-- Polyfill  -->
   <script src="lib/babel-polyfill/browser.js"></script>
 
+  <!-- Angular file upload -->
+  <!-- <script src="lib/angular-file-upload.js"></script> -->
 
-  <!-- Azure Service -->
-  <!-- <script src="http://ajax.aspnetcdn.com/ajax/mobileservices/MobileServices.Web-1.1.2.min.js"></script> -->
+  <script src="lib/ng-file-upload/ng-file-upload-shim.js"></script>
+  <script src="lib/ng-file-upload/ng-file-upload.js"></script>
+
+
 
 </head>
 <body ng-app="starter">
