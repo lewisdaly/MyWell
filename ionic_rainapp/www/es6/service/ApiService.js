@@ -3,9 +3,6 @@
 angular.module('service.api', [])
 .service('ApiService', function($http, $q, $rootScope, apiUrl, AuthenticationService, $localstorage, CachingService) {
 
-
-
-
   return({
     getResources:getResources,
     getClosestVillage:getClosestVillage,
@@ -121,12 +118,30 @@ angular.module('service.api', [])
 
   function processExcelFile(fileResponse) {
     //TODO: make url parameters load properly
-    console.log("processing excel file")
-    return $http({
-      method:'get',
-      headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/readings/processExcelFile?container=${fileResponse.container}&name=${fileResponse.name}&access_token=${AuthenticationService.getAccessToken()}`,
-    });
+    //TODO: inject hide and show loading indicator into every request...
+    return Promise.resolve(true)
+      .then(() => showLoadingIndicator())
+      .then(() => $http({
+                  method:'get',
+                  headers: {'Content-Type':'application/json'},
+                  url: `${apiUrl}/api/readings/processExcelFile?container=${fileResponse.container}&name=${fileResponse.name}&access_token=${AuthenticationService.getAccessToken()}`,
+                }))
+      .then(res => {
+        hideLoadingIndicator();
+        return res;
+      })
+      .catch((err) => {
+        hideLoadingIndicator();
+        throw err
+      })
+  }
+
+  function showLoadingIndicator() {
+     $rootScope.$broadcast('loading:show');
+  }
+
+  function hideLoadingIndicator() {
+     $rootScope.$broadcast('loading:hide');
   }
 
 });

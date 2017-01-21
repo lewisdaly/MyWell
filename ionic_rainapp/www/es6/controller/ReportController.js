@@ -153,6 +153,7 @@ angular.module('report.controllers', [])
         return ApiService.processExcelFile(fileResponse);
       })
       .then((res) => {
+        console.log(res);
         displayMessage('Done', `Saved ${res.data.created} readings, with ${res.data.warnings.length} warnings`);
       })
       .catch(err => {

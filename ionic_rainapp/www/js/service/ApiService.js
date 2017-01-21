@@ -110,11 +110,29 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
 
   function processExcelFile(fileResponse) {
     //TODO: make url parameters load properly
-    console.log("processing excel file");
-    return $http({
-      method: 'get',
-      headers: { 'Content-Type': 'application/json' },
-      url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken()
+    //TODO: inject hide and show loading indicator into every request...
+    return Promise.resolve(true).then(function () {
+      return showLoadingIndicator();
+    }).then(function () {
+      return $http({
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+        url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken()
+      });
+    }).then(function (res) {
+      hideLoadingIndicator();
+      return res;
+    }).catch(function (err) {
+      hideLoadingIndicator();
+      throw err;
     });
+  }
+
+  function showLoadingIndicator() {
+    $rootScope.$broadcast('loading:show');
+  }
+
+  function hideLoadingIndicator() {
+    $rootScope.$broadcast('loading:hide');
   }
 });
