@@ -21,7 +21,7 @@ npm
 npm install -g cordova ionic
 
 # dependencies
-cd ./ionic_rainapp
+cd ./src
 npm install
 ```
 

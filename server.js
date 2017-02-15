@@ -1,7 +1,7 @@
 var express = require('express');
 
 var server = express();
-server.use(express.static(__dirname + '/ionic_rainapp/www'));
+server.use(express.static(__dirname + '/src/www'));
 
 server.get('/test', function(req, res){
 	res.writeHead(200, { 'Content-Type': 'text/plain' });

@@ -10,7 +10,7 @@
         "spec": "latest",
         "type": "tag"
       },
-      "/Users/lewis/developer/mywell/mywell-ui/ionic_rainapp"
+      "/Users/lewis/developer/mywell/mywell-ui/src"
     ]
   ],
   "_from": "angular-nvd3@latest",
@@ -45,7 +45,7 @@
   "_shasum": "8d8a71487d9e5a122e8a5d0f5cd26ab0e491a6f5",
   "_shrinkwrap": null,
   "_spec": "angular-nvd3",
-  "_where": "/Users/lewis/developer/mywell/mywell-ui/ionic_rainapp",
+  "_where": "/Users/lewis/developer/mywell/mywell-ui/src",
   "author": {
     "name": "Konstantin Skipor"
   },

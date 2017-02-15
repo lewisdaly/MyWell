@@ -10,7 +10,7 @@
         "spec": "latest",
         "type": "tag"
       },
-      "/Users/lewis/developer/mywell/mywell-ui/ionic_rainapp"
+      "/Users/lewis/developer/mywell/mywell-ui/src"
     ]
   ],
   "_from": "babel-polyfill@latest",
@@ -46,7 +46,7 @@
   "_shasum": "2d45021df87e26a374b6d4d1a9c65964d17f2422",
   "_shrinkwrap": null,
   "_spec": "babel-polyfill",
-  "_where": "/Users/lewis/developer/mywell/mywell-ui/ionic_rainapp",
+  "_where": "/Users/lewis/developer/mywell/mywell-ui/src",
   "author": {
     "name": "Sebastian McKenzie",
     "email": "sebmck@gmail.com"

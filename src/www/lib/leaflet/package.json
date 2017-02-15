@@ -10,7 +10,7 @@
         "spec": "latest",
         "type": "tag"
       },
-      "/Users/lewis/developer/mywell/mywell-server/mywell-ui/ionic_rainapp"
+      "/Users/lewis/developer/mywell/mywell-server/mywell-ui/src"
     ]
   ],
   "_from": "leaflet@latest",
@@ -44,7 +44,7 @@
   "_shasum": "5868c389b556cd85481198ff8bfe59a8de0932db",
   "_shrinkwrap": null,
   "_spec": "leaflet",
-  "_where": "/Users/lewis/developer/mywell/mywell-server/mywell-ui/ionic_rainapp",
+  "_where": "/Users/lewis/developer/mywell/mywell-server/mywell-ui/src",
   "bugs": {
     "url": "https://github.com/Leaflet/Leaflet/issues"
   },

@@ -1,7 +1,7 @@
 {
-  "name": "ionic_rainapp",
+  "name": "src",
   "version": "1.0.4",
-  "description": "ionic_rainapp: An Ionic project",
+  "description": "src: An Ionic project",
   "scripts": {
     "setup-dev": "./node_modules/gulp/bin/gulp.js replace --env dev",
     "setup-prod": "./node_modules/gulp/bin/gulp.js replace --env prod",

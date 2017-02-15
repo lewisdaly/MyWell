@@ -4,7 +4,7 @@
 
 case $ENVIRONMENT in
   production)
-    cd ionic_rainapp
+    cd src
     npm run setup-prod
     npm run babel
     cd ..
@@ -14,7 +14,7 @@ case $ENVIRONMENT in
     echo 'not running ui, as we are in test mode'
     ;;
   development)
-    cd ionic_rainapp
+    cd src
     npm run setup-dev
     npm run babel
     cd ..

@@ -1,5 +1,5 @@
 {
-  "name": "ionic_rainapp",
+  "name": "src",
   "version": "1.0.0",
   "dependencies": {
     "express": "4.14.0",
@@ -12,6 +12,6 @@
   },
   "scripts": {
     "development": "./node_modules/nodemon/bin/nodemon.js server.js",
-    "production": "PORT=80 ./node_modules/nodemon/bin/nodemon.js --watch ionic_rainapp server.js"
+    "production": "PORT=80 ./node_modules/nodemon/bin/nodemon.js --watch src server.js"
   }
 }

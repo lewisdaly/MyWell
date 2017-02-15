@@ -10,7 +10,7 @@ nonap() {
 trap nonap INT
 
 echo "Running gulp"
-cd ./ionic_rainapp && npm run watchify &
+cd ./src && npm run watchify &
 WATCH_PID=$!
 
 echo "Running nodemon"
@@ -32,7 +32,7 @@ wait $NODEMON_PID
 # trap ctrl_c TERM
 #
 #
-# cd ./ionic_rainapp && npm run watchify&
+# cd ./src && npm run watchify&
 # # echo 'hello there!'
 #
 # # jobs -p
