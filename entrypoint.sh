@@ -10,6 +10,9 @@ case $ENVIRONMENT in
     cd ..
     ./run_production.sh
     ;;
+  test)
+    echo 'not running ui, as we are in test mode'
+    ;;
   development)
     cd ionic_rainapp
     npm run setup-dev
@@ -19,6 +22,6 @@ case $ENVIRONMENT in
     ;;
   *)
     echo "unsupported environment $ENVIRONMENT"
-    echo ENVIRONMENT must be {production|development}
+    echo "ENVIRONMENT must be {production|development|test}"
     exit 1
 esac

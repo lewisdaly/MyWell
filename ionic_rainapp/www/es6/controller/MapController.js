@@ -295,28 +295,6 @@ angular.module('controller.map', [])
     }
 
     function getPopupContentForResource(resource) {
-
-      // var fullIcon = L.icon({
-      //   iconUrl: 'img/icon_full.png',
-      //   iconSize:     [36, 56], // size of the icon
-      //   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      //   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-      // });
-      //
-      // var medIcon = L.icon({
-      //   iconUrl: 'img/icon_med.png',
-      //   iconSize:     [36, 56], // size of the icon
-      //   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      //   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-      // });
-      //
-      // var lowIcon = L.icon({
-      //   iconUrl: 'img/icon_low.png',
-      //   iconSize:     [36, 56], // size of the icon
-      //   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      //   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-      // });
-
       let iconImage = "icon_low";
       if (resource.percentageFull > 33) {
         iconImage = "icon_med";
@@ -324,9 +302,12 @@ angular.module('controller.map', [])
         iconImage = "icon_full";
       }
 
+      const watertableHeight = resource.well_depth - resource.last_value;
+
+
       return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.village.name}
       <br/>Well ID : ${resource.id}
-      <br/>Depth to Water Level: ${saftelyGetLevelString(resource.last_value)} m
+      <br/>Watertable Height: ${saftelyGetLevelString(watertableHeight)} m
       <br/>Percentage Full: ${resource.percentageFull}% <img src="img/${iconImage}.png" style="
           height: 50px;
           transform: rotate(90deg);
