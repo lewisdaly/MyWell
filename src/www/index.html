@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src *; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <meta http-equiv="Content-Security-Policy" content="default-src * ;https://codepush.azurewebsites.net/; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 
@@ -79,27 +79,26 @@
 
 </head>
 <body ng-app="starter">
-    <!--
-      The nav bar that will be updated as we navigate between views.
-    -->
-    <ion-nav-bar class="bar-stable" ng-controller="AppController">
+  <ion-nav-bar class="bar-stable" ng-controller="AppController">
     <ion-nav-back-button></ion-nav-back-button>
     <ion-nav-buttons side="right">
-    <button class="button" ng-click="login()" ng-hide="isLoggedIn">
-      Login
-    </button>
-    <button class="button" ng-click="logout()" ng-hide="!isLoggedIn">
-      Logout
-    </button>
-
+      <button class="button" ng-click="login()" ng-hide="isLoggedIn">
+        Login
+      </button>
+      <button class="button" ng-click="logout()" ng-hide="!isLoggedIn">
+        Logout
+      </button>
   </ion-nav-buttons>
+  </ion-nav-bar>
+  <!-- in case we want a silly header...  -->
+  <!-- <div class="bar bar-subheader">
+    <div class="button-bar">
+      <a class="button">Wells</a>
+      <a class="button">Rain</a>
+      <a class="button">Checkdams</a>
+    </div>
+  </div> -->
 
-</ion-nav-bar>
-    <!--
-      The views will be rendered in the <ion-nav-view> directive below
-      Templates are in the /templates folder (but you could also
-      have templates inline in this html file if you'd like).
-    -->
-    <ion-nav-view scroll="false"></ion-nav-view>
-  </body>
-  </html>
+  <ion-nav-view scroll="false"></ion-nav-view>
+</body>
+</html>

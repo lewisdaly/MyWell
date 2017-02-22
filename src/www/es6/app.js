@@ -29,19 +29,31 @@ angular.module('starter', [
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-  if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-    cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-    cordova.plugins.Keyboard.disableScroll(true);
-
-  }
-  if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      // StatusBar.styleDarkContent();
+  $ionicPlatform.ready(() => {
+    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+      cordova.plugins.Keyboard.disableScroll(true);
     }
+
+    const codePushCallback = syncStatus => {
+      switch (syncStatus) {
+        case SyncStatus.APPLY_SUCCESS:
+        case SyncStatus.UP_TO_DATE:
+        case SyncStatus.UPDATE_IGNORED:
+          break;
+        case SyncStatus.ERROR:
+          console.log("codesync error");
+          break;
+      }
+    };
+
+    const options = {
+      installMode: InstallMode.ON_NEXT_RESTART, updateDialog: true
+    };
+
+    window.codePush.sync(codePushCallback, options);
   });
+});
 
   //keep user logged in after page refresh
   //http://jasonwatmore.com/post/2015/03/10/AngularJS-User-Registration-and-Login-Example.aspx
@@ -141,7 +153,7 @@ angular.module('starter', [
   })
   // Map detail page
   .state('tab.map-detail', {
-    url: '/map/:resourceId',
+    url: '/map/:postcode/:resourceId',
     views: {
       'tab-map': {
         templateUrl: 'templates/map-detail.html',

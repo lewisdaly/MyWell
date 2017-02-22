@@ -139,11 +139,10 @@ angular.module('controller.settings', [])
 	      return;
 			}
 
-			if ((form.id > 999) ||
-				  (form.id < 100)) {
+			if ((form.id > 9999) || (form.id < 1000)) {
 			  var alertPopup = $ionicPopup.alert({
 	        title: 'Error',
-	        template: "Id must be between 100-999"
+	        template: "Id must be between 1000-9999"
 	      });
 
 				return;

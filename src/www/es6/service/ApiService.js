@@ -9,7 +9,7 @@ angular.module('service.api', [])
     registerWell:registerWell,
     updateReading:updateReading,
     login:login,
-    getStatisticsForResourceId: getStatisticsForResourceId,
+    getStatisticsForResource: getStatisticsForResource,
     processExcelFile: processExcelFile
   });
 
@@ -89,30 +89,36 @@ angular.module('service.api', [])
    * Get the info and statistics for a resource
    * @returns Promise<[resource, villageAverage, historicalResourceAverages, historicalVillageAverages ]
    */
-  function getStatisticsForResourceId(resourceId) {
+  function getStatisticsForResource(postcode, resourceId) {
     //Get all of the needed statistics:
+    const villageId = resourceId.substring(0,2);
+
+    const skip404Error = (err) => {
+      console.log("err", err);
+      if (err.status !== 404) return Promise.reject(err);
+    }
 
     return Promise.all([
       $http({
         method:'get',
         headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resources/${resourceId}`,
-      }),
+        url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+      }).catch(err => skip404Error(err)),
       $http({
         method:'get',
         headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resource_stats/getCurrentVillageAverage?villageId=${resourceId[0]}`,
-      }),
+        url: `${apiUrl}/api/resource_stats/getCurrentVillageAverage?villageId=${villageId}&postcode=${postcode}`,
+      }).catch(err => skip404Error(err)),
       $http({
         method:'get',
         headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resource_stats/getHistoricalResourceAverages?resourceId=${resourceId}`,
-      }),
+        url: `${apiUrl}/api/resource_stats/getHistoricalResourceAverages?resourceId=${resourceId}&postcode=${postcode}`,
+      }).catch(err => skip404Error(err)),
       $http({
         method:'get',
         headers: {'Content-Type':'application/json'},
-        url: `${apiUrl}/api/resource_stats/getHistoricalVillageAverages?villageId=${resourceId[0]}`,
-      })
+        url: `${apiUrl}/api/resource_stats/getHistoricalVillageAverages?villageId=${villageId}&postcode=${postcode}`,
+      }).catch(err => skip404Error(err))
     ]);
   }
 

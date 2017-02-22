@@ -6,16 +6,28 @@ angular.module('controller.map-detail', ['nvd3'])
 
   });
 
+  console.log($stateParams);
+
   $scope.resourceId = $stateParams.resourceId;
 
   //Get the data from the api service
-  ApiService.getStatisticsForResourceId($scope.resourceId)
-  .then(function(data) {
-    const resource = data[0].data;
-    const villageAverage = data[1].data;
+  ApiService.getStatisticsForResource($stateParams.postcode, $scope.resourceId)
+  .then(data => {
+
+    const emptyAverage = {last_value:0}
+    let resource = emptyAverage;
+    let villageAverage = emptyAverage;
+
+    if (!angular.isNullOrUndefined(data[0])) {
+      resource = data[0].data;
+    }
+
+    if (!angular.isNullOrUndefined(data[1])) {
+      villageAverage = data[1].data;
+    }
+
     let historicalResourceAverages = data[2].data.readings;
     let historicalVillageAverages = data[3].data.readings;
-
 
     $scope.resource = resource;
     $scope.village = villageAverage;
@@ -23,6 +35,9 @@ angular.module('controller.map-detail', ['nvd3'])
     //Calculate the % full
     const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
     $scope.resource.percentageFull = percentageFull;
+    const watertableHeight = resource.well_depth - resource.last_value;
+    $scope.watertableHeight = watertableHeight;
+
 
     //Add the current village and resource readings to the historical:
     const thisMonthString = new Date().toISOString().slice(0,7);

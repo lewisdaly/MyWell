@@ -22,34 +22,46 @@ angular.module('controller.map', [])
   .then(function(response) {
     $scope.data = response.data;
 
-    var fullIcon = L.icon({
-      iconUrl: 'img/icon_full.png',
+    var raingaugeIcon = L.icon({
+      iconUrl: 'img/ball.png',
+      iconSize:     [36, 36], // size of the icon
+      iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var checkdamIcon = L.icon({
+      iconUrl: 'img/wall.png',
+      iconSize:     [36, 36], // size of the icon
+      iconAnchor:   [-15, 0], // point of the icon which will correspond to marker's location
+      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var wellIcon = L.icon({
+      iconUrl: 'img/raindrop.svg',
       iconSize:     [36, 56], // size of the icon
       iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
       popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
     });
 
-    var medIcon = L.icon({
-      iconUrl: 'img/icon_med.png',
-      iconSize:     [36, 56], // size of the icon
-      iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-    });
-
-    var lowIcon = L.icon({
-      iconUrl: 'img/icon_low.png',
-      iconSize:     [36, 56], // size of the icon
-      iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-      popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-    });
-
-    //TODO: change icon based on well level!
-    $scope.data.forEach(function(resource) {
+    $scope.data.forEach(resource => {
       //Calculate the well % level:
       const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
       resource.percentageFull = percentageFull;
 
-      var marker = L.marker([resource.geo.lat, resource.geo.lng]).addTo(leafletMap);
+      let icon = null;
+      switch (resource.type) {
+        case 'well':
+          icon = wellIcon;
+          break;
+        case 'dam':
+          icon = checkdamIcon;
+          break;
+        case 'rain_gauge':
+          icon = raingaugeIcon;
+          break;
+      }
+
+      var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
       marker.bindPopup(getPopupContentForResource(resource));
 
       $scope.markers[resource.id] = marker;
@@ -275,7 +287,7 @@ angular.module('controller.map', [])
     }
 
     function saftelyGetLevelString(value) {
-      if (!value) {
+      if (angular.isNullOrUndefined(value)) {
         return "";
       }
       return value.toFixed(2);
@@ -304,14 +316,19 @@ angular.module('controller.map', [])
 
       const watertableHeight = resource.well_depth - resource.last_value;
 
+      //TODO:
+      let villageName = "";
+      if (!angular.isNullOrUndefined(resource.village)) {
+        villageName = resource.village.name;
+      }
 
-      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${resource.village.name}
+      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${villageName}
       <br/>Well ID : ${resource.id}
       <br/>Watertable Height: ${saftelyGetLevelString(watertableHeight)} m
       <br/>Percentage Full: ${resource.percentageFull}% <img src="img/${iconImage}.png" style="
           height: 50px;
           transform: rotate(90deg);
           "/>
-      <br/><a href=#/tab/map/${resource.id}>More</a>`;
+      <br/><a href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;
     }
   })
