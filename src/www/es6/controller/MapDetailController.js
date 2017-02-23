@@ -6,8 +6,6 @@ angular.module('controller.map-detail', ['nvd3'])
 
   });
 
-  console.log($stateParams);
-
   $scope.resourceId = $stateParams.resourceId;
 
   //Get the data from the api service

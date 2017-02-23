@@ -17,6 +17,7 @@ angular.module('starter', [
   'controller.signup',
   'controller.login',
   'controller.map',
+  'controller.register',
   'controller.map-detail',
   'service.authentication',
   'service.login',
@@ -33,6 +34,9 @@ angular.module('starter', [
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
+    } else {
+      //Don't the followind codepush things if we don't have cordova
+      return;
     }
 
     const codePushCallback = syncStatus => {
@@ -53,7 +57,7 @@ angular.module('starter', [
 
     window.codePush.sync(codePushCallback, options);
   });
-});
+// });
 
   //keep user logged in after page refresh
   //http://jasonwatmore.com/post/2015/03/10/AngularJS-User-Registration-and-Login-Example.aspx
@@ -91,7 +95,6 @@ angular.module('starter', [
     $ionicLoading.hide();
   })
 })
-
 
 //The ADAL Provider - Auth and Stuff
 .config(['$compileProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', 'adalAuthenticationServiceProvider',
@@ -189,6 +192,17 @@ angular.module('starter', [
       'tab-settings': {
         templateUrl: 'templates/tab-settings.html',
         controller: 'SettingsController'
+      }
+    }
+  })
+
+  //Register  page
+  .state('tab.settings-register', {
+    url: '/settings/register',
+    views: {
+      'tab-settings': {
+        templateUrl: 'templates/register.html',
+        controller: 'RegisterController'
       }
     }
   });
