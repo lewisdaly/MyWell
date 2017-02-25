@@ -10,8 +10,26 @@ angular.module('service.api', [])
     updateReading:updateReading,
     login:login,
     getStatisticsForResource: getStatisticsForResource,
-    processExcelFile: processExcelFile
+    processExcelFile: processExcelFile,
+    getDifferenceFromJune: getDifferenceFromJune,
   });
+
+  /**
+   * Get all the villages, with their
+   */
+
+  function getDifferenceFromJune(resourceType, readingType, resourceId, postcode) {
+    let requestUrl = `/api/resource_stats/getDifferenceFromJune?readingType=${readingType}&resourceId=${resourceId}&postcode=${postcode}`
+    if (!angular.isNullOrUndefined(resourceType)) {
+      requestUrl = requestUrl + `&resourceType={$resourceType}`
+    }
+
+    return $http({
+      method:'get',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + requestUrl
+    });
+  }
 
   //Load all of the things
   //fallback to cache if fails

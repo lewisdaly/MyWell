@@ -17,6 +17,7 @@ angular.module('controller.map', [])
 
 
   //Set up the Leaflet Map
+  //TODO: look into this: https://github.com/gregallensworth/L.TileLayer.Cordova
   var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 16);
   //TODO: make these offline!
   // L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/mapbox.mapbox-streets-v7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
@@ -28,7 +29,7 @@ angular.module('controller.map', [])
   .then(function(response) {
     $scope.data = response.data;
 
-    var raingaugeIcon = L.icon({
+    var wellIcon = L.icon({
       iconUrl: 'img/ball.png',
       iconSize:     [36, 36], // size of the icon
       iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
@@ -42,13 +43,16 @@ angular.module('controller.map', [])
       popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
     });
 
-    var wellIcon = L.icon({
+    var raingaugeIcon = L.icon({
       iconUrl: 'img/raindrop.svg',
       iconSize:     [36, 56], // size of the icon
       iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
       popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
     });
 
+    //Add village tooltips
+    let villages = {};
+    
     $scope.data.forEach(resource => {
       //Calculate the well % level:
       const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
@@ -69,8 +73,27 @@ angular.module('controller.map', [])
 
       var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
       marker.bindPopup(getPopupContentForResource(resource));
-
       $scope.markers[resource.id] = marker;
+
+      if (angular.isNullOrUndefined(resource.village)) {
+        return;
+      }
+
+      if (!villages[resource.village.id]) {
+        villages[resource.village.id] = resource.village;
+      }
+    });
+
+    Object.values(villages).forEach(village => {
+      const icon = L.divIcon({
+        html:`\
+        <div class=""> \
+          <a class="centerText" href="#/tab/map/${village.postcode}/village/${village.id}"> \
+            <h4>${village.name}</h4> \
+          </a> \
+        </div>`,
+        className: 'village-div-icon'});
+      const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
     });
   });
 
@@ -167,9 +190,9 @@ angular.module('controller.map', [])
       const watertableHeight = resource.well_depth - resource.last_value;
       return `
       <br/>Watertable Height: ${saftelyGetLevelString(watertableHeight)} m
-      <br/>Percentage Full: ${resource.percentageFull}% <img src="img/${iconImage}.png" style="
+      <br/>Percentage Full: ${resource.percentageFull}%
+      <br/> <img src="img/${iconImage}.png" style="
           height: 50px;
-          transform: rotate(90deg);
           "/>`
     }
 

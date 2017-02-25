@@ -186,3 +186,16 @@
   margin-left: 50%;
   margin-top: 40px;
 }
+
+
+.village-div-icon {
+  width: 125px !important;
+  height: 45px !important;
+  padding: 3px;
+  background-color: #001f3f;
+  border: 1px solid #001f3f;
+  border-radius: 3px;
+  color: #222;
+  background: #0074D9;
+  opacity: 0.8;
+}

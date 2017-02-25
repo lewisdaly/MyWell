@@ -7,10 +7,27 @@ angular.module('controller.map-detail', ['nvd3'])
   });
 
   $scope.resourceId = $stateParams.resourceId;
+  $scope.juneData = null;
 
   //Get the data from the api service
-  ApiService.getStatisticsForResource($stateParams.postcode, $scope.resourceId)
-  .then(data => {
+  Promise.all([
+    ApiService.getStatisticsForResource($stateParams.postcode, $scope.resourceId),
+    ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
+      .catch(err => console.log(err))
+  ])
+  .then(results => {
+    const data = results[0];
+    if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
+      let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
+      let difference = `${results[1].data.difference.toFixed(2)} m`;
+
+      $scope.juneData = {
+        pastReadingDate: pastReadingDate,
+        difference: difference
+      };
+    }
+
+    console.log("$Scope.juneData", $scope.juneData);
 
     const emptyAverage = {last_value:0}
     let resource = emptyAverage;

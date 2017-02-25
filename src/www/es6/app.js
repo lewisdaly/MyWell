@@ -19,6 +19,8 @@ angular.module('starter', [
   'controller.map',
   'controller.register',
   'controller.map-detail',
+  'controller.village-detail',
+  
   'service.authentication',
   'service.login',
   'service.signup',
@@ -161,6 +163,16 @@ angular.module('starter', [
       'tab-map': {
         templateUrl: 'templates/map-detail.html',
         controller: 'MapDetailController'
+      }
+    }
+  })
+  //Village Detail Page
+  .state('tab.village-detail', {
+    url: '/map/:postcode/village/:villageId',
+    views: {
+      'tab-map': {
+        templateUrl: 'templates/village-detail.html',
+        controller: 'VillageDetailController'
       }
     }
   })
