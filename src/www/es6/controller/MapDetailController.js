@@ -8,6 +8,73 @@ angular.module('controller.map-detail', ['nvd3'])
 
   $scope.resourceId = $stateParams.resourceId;
   $scope.juneData = null;
+  let detailChart = null;
+
+  const getChartDataAndLabel = (dataRange) => {
+    let dataAndLabel = {
+      data: null,
+      labels: null
+    };
+
+    console.log("dataRange", dataRange);
+    switch (dataRange) {
+      case 'month':
+        dataAndLabel.data = [12.4, 56.4, 20.0, 19.3];
+        dataAndLabel.labels = ["5th Feb", "12th Feb", "19th Feb", "26th Feb"];
+        break;
+      case '3month':
+        dataAndLabel.data = [12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3];
+        dataAndLabel.labels = ["5th Feb", "12th Feb", "19th Feb", "26th Feb"];
+        break;
+      case 'year':
+        dataAndLabel.data = [12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3];
+        dataAndLabel.labels = ["5th Feb", "12th Feb", "19th Feb", "26th Feb"];
+        break;
+      default:
+        throw new Error(`dataRange ${dataRange} not found`);
+    }
+
+    return dataAndLabel;
+  }
+
+  const setupChart = () => {
+    let chartData = getChartDataAndLabel("month");
+    const ctx = document.getElementById("detailChart");
+    detailChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: chartData.labels,
+          datasets: [{
+              label: 'Water Table Height (m)',
+              data: chartData.data,
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero:true
+                  }
+              }]
+          }
+      }
+    });
+  }
+
+  const init = () => {
+    setupChart();
+  }
+
+  $scope.updateData = (dataRange) => {
+    console.log("update chart data", dataRange);
+
+    const chartData = getChartDataAndLabel(dataRange);
+    console.log(detailChart.data);
+    detailChart.data.datasets[0].data = chartData.data;
+    detailChart.data.labels = chartData.labels;
+    detailChart.update();
+  }
 
   //Get the data from the api service
   Promise.all([
@@ -26,6 +93,8 @@ angular.module('controller.map-detail', ['nvd3'])
         difference: difference
       };
     }
+
+    //TODO: configure chart data and buttons
 
     console.log("$Scope.juneData", $scope.juneData);
 
@@ -163,4 +232,6 @@ angular.module('controller.map-detail', ['nvd3'])
       values: values
     };
   }
+
+  init();
 });

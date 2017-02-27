@@ -14,7 +14,15 @@
 
     <h4>Historical Readings:</h4>
 
-    <nvd3 options="options" data="data"></nvd3>
+    <!-- <nvd3 options="options" data="data"></nvd3> -->
+    <div class="row">
+      <button class="col" ng-click="updateData('month')">1 Month</button>
+      <button class="col" ng-click="updateData('3month')">3 Months</button>
+      <button class="col" ng-click="updateData('year')">1 Year</button>
+    </div>
+    <div>
+      <canvas id="detailChart" width="400" height="300"></canvas>
+    </div>
 
   </ion-content>
 </ion-view>
