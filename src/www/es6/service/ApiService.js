@@ -12,12 +12,24 @@ angular.module('service.api', [])
     getStatisticsForResource: getStatisticsForResource,
     processExcelFile: processExcelFile,
     getDifferenceFromJune: getDifferenceFromJune,
+    getResourceReadings: getResourceReadings,
   });
+
+
+  function getResourceReadings(postcode, resourceId) {
+    //TODO: optimize this later on to only get the past year...
+    const requestUrl = `/api/readings?filter=%7B%22where%22%3A%7B%22and%22%3A%5B%7B%22postcode%22%3A${postcode}%7D%2C%7B%22resourceId%22%3A${resourceId}%7D%5D%7D%2C%20%22order%22%3A%20%22date%20ASC%22%7D&access_token=${AuthenticationService.getAccessToken()}`
+
+    return $http({
+      method: 'get',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + requestUrl
+    });
+  }
 
   /**
    * Get all the villages, with their
    */
-
   function getDifferenceFromJune(resourceType, readingType, resourceId, postcode) {
     let requestUrl = `/api/resource_stats/getDifferenceFromJune?readingType=${readingType}&resourceId=${resourceId}&postcode=${postcode}`
     if (!angular.isNullOrUndefined(resourceType)) {

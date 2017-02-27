@@ -9,6 +9,7 @@ angular.module('controller.map-detail', ['nvd3'])
   $scope.resourceId = $stateParams.resourceId;
   $scope.juneData = null;
   let detailChart = null;
+  let allWeeklyReadings = [];
 
   const getChartDataAndLabel = (dataRange) => {
     let dataAndLabel = {
@@ -16,25 +17,51 @@ angular.module('controller.map-detail', ['nvd3'])
       labels: null
     };
 
-    console.log("dataRange", dataRange);
     switch (dataRange) {
       case 'month':
-        dataAndLabel.data = [12.4, 56.4, 20.0, 19.3];
-        dataAndLabel.labels = ["5th Feb", "12th Feb", "19th Feb", "26th Feb"];
+        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-4);
+        dataAndLabel.labels = weekStartForWeeksAgo(4).map(dateTime => dateTime.format('DD-MMM'));
         break;
       case '3month':
-        dataAndLabel.data = [12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3];
-        dataAndLabel.labels = ["5th Feb", "12th Feb", "19th Feb", "26th Feb"];
+        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-4 * 3);;
+        dataAndLabel.labels = weekStartForWeeksAgo(4 * 3).map(dateTime => dateTime.format('DD-MMM'));
         break;
       case 'year':
-        dataAndLabel.data = [12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3, 12.4, 56.4, 20.0, 19.3];
-        dataAndLabel.labels = ["5th Feb", "12th Feb", "19th Feb", "26th Feb"];
+        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-52);
+        dataAndLabel.labels = weekStartForWeeksAgo(52).map(dateTime => dateTime.format('DD-MMM'));
         break;
       default:
         throw new Error(`dataRange ${dataRange} not found`);
     }
 
     return dataAndLabel;
+  }
+
+  /**
+   * Iteratively go back a bunch of weeks
+   */
+
+  const weekStartForWeeksAgo = (weeksAgo, startDate, weeks) => {
+    if (angular.isNullOrUndefined(weeks)) {
+      weeks = [];
+    }
+
+    if (weeksAgo == 0) {
+      return weeks;
+    }
+
+    //First time - set everything up
+    if (angular.isNullOrUndefined(startDate)) {
+      //Get monday UTC
+      startDate = moment.utc().startOf('week').add(1, 'days');
+      weeks = [startDate];
+
+      return weekStartForWeeksAgo(weeksAgo - 1, startDate, weeks);
+    }
+
+    let previousWeekStart = startDate.clone().subtract(1, 'week');
+    weeks.unshift(previousWeekStart);
+    return weekStartForWeeksAgo(weeksAgo -1 , previousWeekStart, weeks);
   }
 
   const setupChart = () => {
@@ -63,7 +90,7 @@ angular.module('controller.map-detail', ['nvd3'])
   }
 
   const init = () => {
-    setupChart();
+    // setupChart();
   }
 
   $scope.updateData = (dataRange) => {
@@ -78,12 +105,12 @@ angular.module('controller.map-detail', ['nvd3'])
 
   //Get the data from the api service
   Promise.all([
-    ApiService.getStatisticsForResource($stateParams.postcode, $scope.resourceId),
+    ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
     ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
       .catch(err => console.log(err))
   ])
   .then(results => {
-    const data = results[0];
+    const pastReadings = results[0].data;
     if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
       let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
       let difference = `${results[1].data.difference.toFixed(2)} m`;
@@ -95,44 +122,35 @@ angular.module('controller.map-detail', ['nvd3'])
     }
 
     //TODO: configure chart data and buttons
+    let weeks = weekStartForWeeksAgo(52);
+    allWeeklyReadings = [];
+    let addedCount = 0; //optimize - we can skip once we have added readings from this index
+    const avg = array => array.reduce((p, c) => p + c, 0)/ array.length;
+    console.log(pastReadings);
 
-    console.log("$Scope.juneData", $scope.juneData);
+    weeks.forEach(weekEnd => {
+      let weekStart = weekEnd.clone().subtract(1, 'week');
 
-    const emptyAverage = {last_value:0}
-    let resource = emptyAverage;
-    let villageAverage = emptyAverage;
+      let readingsThisWeek = [];
+      for (var i = addedCount; i < pastReadings.length; i++) {
+        let reading = pastReadings[i];
+        let readingMoment = moment.utc(reading.date);
+        if (readingMoment.isBetween(weekStart, weekEnd)) {
+          readingsThisWeek.push(reading.value);
+        }
+      }
 
-    if (!angular.isNullOrUndefined(data[0])) {
-      resource = data[0].data;
-    }
+      const weeklyAverage = Math.round(avg(readingsThisWeek) * 100) / 100;
+      if (isNaN(weeklyAverage)) {
+        allWeeklyReadings.push(0);
+      } else {
+        allWeeklyReadings.push(0 + weeklyAverage);
+      }
 
-    if (!angular.isNullOrUndefined(data[1])) {
-      villageAverage = data[1].data;
-    }
+      addedCount = addedCount + readingsThisWeek.length;
+    });
 
-    let historicalResourceAverages = data[2].data.readings;
-    let historicalVillageAverages = data[3].data.readings;
-
-    $scope.resource = resource;
-    $scope.village = villageAverage;
-
-    //Calculate the % full
-    const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
-    $scope.resource.percentageFull = percentageFull;
-    const watertableHeight = resource.well_depth - resource.last_value;
-    $scope.watertableHeight = watertableHeight;
-
-
-    //Add the current village and resource readings to the historical:
-    const thisMonthString = new Date().toISOString().slice(0,7);
-    historicalResourceAverages.push({month:thisMonthString, aveReading:resource.last_value});
-    historicalVillageAverages.push({month:thisMonthString, aveReading:villageAverage.last_value});
-
-    console.log(resource);
-
-    //Convert to the right format for d3
-    $scope.data.push(mapHistoricalDataToD3(historicalResourceAverages, 'Well Average', '#1f77b4'));
-    $scope.data.push(mapHistoricalDataToD3(historicalVillageAverages, 'Village Average', '#d62728'));
+    setupChart();
   })
   .catch(function(err) {
     console.log(err);
