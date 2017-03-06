@@ -1,6 +1,7 @@
 <!-- The well detail view, with history etc. -->
 <ion-view view-title="{{resourceId}}">
   <ion-content class="padding">
+    <img data-ng-src="data:image/png;base64,{{resource.image}}" data-err-src="images/png/avatar.png"/>
     <h2>ResourceId: {{resourceId}} - {{resource.owner}}</h2>
     <h2>Resource Type: {{resource.type}}</h2>
 

@@ -107,7 +107,8 @@ angular.module('controller.map-detail', ['nvd3'])
   Promise.all([
     ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
     ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
-      .catch(err => console.log(err))
+      .catch(err => console.log(err)),
+    ApiService.getResource($stateParams.postcode, $scope.resourceId),
   ])
   .then(results => {
     const pastReadings = results[0].data;
@@ -120,8 +121,10 @@ angular.module('controller.map-detail', ['nvd3'])
         difference: difference
       };
     }
+    
+    $scope.resource = results[2].data;
 
-    //TODO: configure chart data and buttons
+    //configure chart data and buttons
     let weeks = weekStartForWeeksAgo(52);
     allWeeklyReadings = [];
     let addedCount = 0; //optimize - we can skip once we have added readings from this index

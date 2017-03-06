@@ -189,6 +189,7 @@
 
 
 .village-div-icon {
+  z-index: 100000 !important;
   width: 125px !important;
   height: 45px !important;
   padding: 3px;

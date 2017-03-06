@@ -13,8 +13,29 @@ angular.module('service.api', [])
     processExcelFile: processExcelFile,
     getDifferenceFromJune: getDifferenceFromJune,
     getResourceReadings: getResourceReadings,
+    getResource: getResource,
+    uploadImageForResource: uploadImageForResource
   });
 
+
+  function uploadImageForResource(resourceId, data) {
+    return $http({
+      method:'put',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+      data: {
+        image: data
+      }
+    });
+  }
+
+  function getResource(postcode, resourceId) {
+    return $http({
+      method:'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+    });
+  }
 
   function getResourceReadings(postcode, resourceId) {
     //TODO: optimize this later on to only get the past year...
@@ -49,7 +70,7 @@ angular.module('service.api', [])
     return $http({
       method:'get',
       headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/resources?filter=%7B%22include%22%3A%22village%22%7D'
+      url: apiUrl + '/api/resources?filter=%7B%22fields%22%3A%7B%22image%22%3Afalse%7D%2C%20%22include%22%3A%22village%22%7D&access_token=wb5ucoIwwxZOhuLTQ9tA0NwTwbBBDTtwGAyPNid2PkBMECB0IX6omWJhgPaI9Sou'
     })
     .then(function(response) {
       //cache the response
