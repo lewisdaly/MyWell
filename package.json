@@ -12,7 +12,7 @@
     "babel-preset-stage-2": "^6.11.0"
   },
   "scripts": {
-    "development": "./node_modules/nodemon/bin/nodemon.js server.js",
-    "production": "PORT=80 ./node_modules/nodemon/bin/nodemon.js --watch src server.js"
+    "development": "./node_modules/nodemon/bin/nodemon.js --ignore src/platforms server.js",
+    "production": "PORT=80 ./node_modules/nodemon/bin/nodemon.js --ignore src/platforms --watch src server.js"
   }
 }

@@ -44,55 +44,80 @@ angular.module('controller.settings', [])
 	}
 
   /**
-   * Camera Methods
+   * Add new image for resource
    */
-
-  // Triggered on a button click, or some other target
   $scope.showGetImagePopup = function() {
-    const isResourceIdValid = (resourceId) => {
+    const isDataValid = (data) => {
       let valid = true;
-      if (angular.isNullOrUndefined(resourceId)) { valid = false;}
-      if (resourceId < 999) { valid = false;}
-      if (resourceId > 9999) { valid = false;}
+
+      if (angular.isNullOrUndefined(data)) { valid = false; return false; }
+      if (angular.isNullOrUndefined(data.postcode)){ valid = false; return false; }
+      if (angular.isNullOrUndefined(data.imageResourceId)) { valid = false; return false; }
+
+      if (data.postcode > 999999) { valid = false; }
+      if (data.postcode < 99999) { valid = false; }
+      if (data.imageResourceId < 999) { valid = false; }
+      if (data.imageResourceId > 9999) { valid = false; }
+
+      console.log(valid);
 
       return valid;
     }
 
+    $scope.data = {};
+
     var popup = $ionicPopup.show({
-     template: '<input type="number" ng-model="imageResourceId">',
-     title: 'ResourceId',
-     subTitle: 'Enter the resourceId of the new image',
+     template: '<div>\
+       <input type="number" placeholder="Pin Code" ng-model="data.postcode">\
+       <input type="number" placeholder="ResourceId" ng-model="data.imageResourceId">\
+      </div>',
+     title: 'Details',
+     subTitle: 'Enter the details of the resource to attach the image to.',
      scope: $scope,
      buttons: [
-       { text: 'Cancel',
-        onTap: function(e) { }
-       },
-       {
-         text: '<b>Next</b>',
-         type: 'button-positive'
+      {
+        text: 'Cancel',
+        onTap: function(e) {
+          console.log('closing');
+        }
+      },
+      {
+        text: '<b>Next</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          console.log($scope.data);
+          if (!isDataValid($scope.data)) {
+           e.preventDefault();
+          } else {
+           return $scope.data;
+          }
+         }
        }
      ]
     });
 
    popup
-    .then(res => {
-      if
-        if (!isResourceIdValid($scope.imageResourceId)) {
-          //don't allow the user to close unless he enters wifi password
-          e.preventDefault();
-        } else {
-          return $scope.imageResourceId;
-        }
+    .then(response => {
+      console.log("hey");
+      if (angular.isNullOrUndefined(response)) {
+        //Do nothing!
+        return null;
       }
+      const postcode = response.postcode;
+      const imageResourceId = response.imageResourceId;
+
+      return getImage()
+        .then(data => {
+          console.log('get image data', data);
+          return ApiService.uploadImageForResource(postcode, imageResourceId, data)
+        })
     })
-    .then(() => getImage())
-    .then(data => {
-      console.log('get image data', data);
-      return ApiService.uploadImageForResource($scope.imageResourceId, data)
+    .then(() => {
+      displayMessage('Thanks.', 'Updated image successfully!');
     })
     .catch(err => {
       console.log('Error getting image', err);
-      //TODO: display to user?
+      displayMessage('Error updating image', err.statusText);
     });
  }
 
@@ -100,14 +125,22 @@ angular.module('controller.settings', [])
     return new Promise((resolve, reject) => {
       if (angular.isNullOrUndefined(navigator) || angular.isNullOrUndefined(navigator.camera)) {
         displayMessage("Error", "The camera is not available on your device");
-        return;
+
+        //Right now for testing
+        return reject(new Error('Unsupported device'));
       }
 
+      //TODO: tweak these settings
       navigator.camera.getPicture(resolve, reject, {
-        quality: 25,
+        quality: 10,
         destinationType: Camera.DestinationType.DATA_URL,
-        sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+        targetWidth: 500,
+        targetHeight: 250,
+        // destinationType: Camera.DestinationType.FILE_URI
+        sourceType: Camera.PictureSourceType.CAMERA
       });
+
+      //We need to read the image back, and then squash it!
     });
   }
 

@@ -18,13 +18,14 @@ angular.module('service.api', [])
   });
 
 
-  function uploadImageForResource(resourceId, data) {
+  function uploadImageForResource(postcode, resourceId, data) {
     return $http({
       method:'put',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+      url: `${apiUrl}/api/resources/${resourceId}?access_token=${AuthenticationService.getAccessToken()}`,
       data: {
-        image: data
+        image: data,
+        postcode: postcode
       }
     });
   }

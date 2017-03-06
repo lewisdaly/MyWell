@@ -31,13 +31,18 @@ gulp.task('sass', function(done) {
 });
 
 gulp.task("babel", function () {
+  const handleError = (error) => {
+    gutil.log(`\nError running babel: ${error.name}\n${error.message}` );
+    process.exit(1);
+  }
   return gulp.src(paths.es6)
     .pipe(plumber())
     .pipe(babel({
       presets: ['es2015'],
       plugins:["transform-strict-mode"]
     }))
-    .pipe(gulp.dest("www/js"));
+    .on('error', handleError)
+    .pipe(gulp.dest("www/js"))
 });
 
 gulp.task('watch', function() {
