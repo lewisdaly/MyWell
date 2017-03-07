@@ -10,24 +10,31 @@ angular.module('controller.map-detail', ['nvd3'])
   $scope.juneData = null;
   let detailChart = null;
   let allWeeklyReadings = [];
+  let splitWeeklyReadings = []; //all weekly readings split per year
 
   const getChartDataAndLabel = (dataRange) => {
     let dataAndLabel = {
-      data: null,
+      data: [],
       labels: null
     };
 
     switch (dataRange) {
       case 'month':
-        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-4);
+        dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-4);
+        dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-4);
+        dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-4);
         dataAndLabel.labels = weekStartForWeeksAgo(4).map(dateTime => dateTime.format('DD-MMM'));
         break;
       case '3month':
-        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-4 * 3);;
+        dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-4 * 3);
+        dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-4 * 3);
+        dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-4 * 3);
         dataAndLabel.labels = weekStartForWeeksAgo(4 * 3).map(dateTime => dateTime.format('DD-MMM'));
         break;
       case 'year':
-        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-52);
+        dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-52);
+        dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-52);
+        dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-52);
         dataAndLabel.labels = weekStartForWeeksAgo(52).map(dateTime => dateTime.format('DD-MMM'));
         break;
       default:
@@ -71,11 +78,23 @@ angular.module('controller.map-detail', ['nvd3'])
       type: 'line',
       data: {
           labels: chartData.labels,
-          datasets: [{
-              label: 'Water Table Height (m)',
-              data: chartData.data,
-              borderWidth: 1
-          }]
+          datasets: [
+          {
+            label: 'WT Depth this year',
+            data: chartData.data[0],
+            borderWidth: 1
+          },
+          {
+            label: 'WT Depth 1 year ago',
+            data: chartData.data[1],
+            borderWidth: 1
+          },
+          {
+            label: 'WT Depth 2 years ago',
+            data: chartData.data[2],
+            borderWidth: 1
+          }
+        ]
       },
       options: {
           scales: {
@@ -94,11 +113,11 @@ angular.module('controller.map-detail', ['nvd3'])
   }
 
   $scope.updateData = (dataRange) => {
-    console.log("update chart data", dataRange);
-
     const chartData = getChartDataAndLabel(dataRange);
-    console.log(detailChart.data);
-    detailChart.data.datasets[0].data = chartData.data;
+
+    detailChart.data.datasets[0].data = chartData.data[0];
+    detailChart.data.datasets[1].data = chartData.data[1];
+    detailChart.data.datasets[2].data = chartData.data[2];
     detailChart.data.labels = chartData.labels;
     detailChart.update();
   }
@@ -121,15 +140,20 @@ angular.module('controller.map-detail', ['nvd3'])
         difference: difference
       };
     }
-    
+
     $scope.resource = results[2].data;
+    //TODO: calculate these stats
+    $scope.stats = {
+      watertableHeight: 0,
+      percentageFull: 0,
+      villageAverageReading: 0
+    }
 
     //configure chart data and buttons
-    let weeks = weekStartForWeeksAgo(52);
+    let weeks = weekStartForWeeksAgo(52 * 3); //Three years of data!
     allWeeklyReadings = [];
     let addedCount = 0; //optimize - we can skip once we have added readings from this index
     const avg = array => array.reduce((p, c) => p + c, 0)/ array.length;
-    console.log(pastReadings);
 
     weeks.forEach(weekEnd => {
       let weekStart = weekEnd.clone().subtract(1, 'week');
@@ -152,6 +176,15 @@ angular.module('controller.map-detail', ['nvd3'])
 
       addedCount = addedCount + readingsThisWeek.length;
     });
+
+    //Split into 3, one for each year
+    const slicePoints = [0, 51, 103, allWeeklyReadings.length]
+    splitWeeklyReadings = [
+      allWeeklyReadings.slice(slicePoints[2], slicePoints[3]),//This year
+      allWeeklyReadings.slice(slicePoints[1], slicePoints[2]),
+      allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
+    ];
+
 
     setupChart();
   })
@@ -255,4 +288,9 @@ angular.module('controller.map-detail', ['nvd3'])
   }
 
   init();
+})
+.filter('capitalize', function() {
+    return function(input) {
+      return (!!input) ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+    }
 });
