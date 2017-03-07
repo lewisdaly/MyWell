@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' https://*.mapbox.com data:; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+
+  <!-- Setup for iOS Web App -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="white">
+
+  <link rel="apple-touch-icon" href="/img/ionic.png">
+  <link rel="apple-touch-startup-image" href="/startup.png">
+
+  <title>MyWell</title>
+
+  <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <!-- <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script> -->
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+  -->
+
+  <!-- ionic/angularjs js -->
+  <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+  <!-- cordova script (this will be a 404 during development) -->
+  <script src="cordova.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/controller/AppController.js"></script>
+  <script src="js/controller/LoginController.js"></script>
+  <script src="js/controller/MapController.js"></script>
+  <script src="js/controller/MapDetailController.js"></script>
+  <script src="js/controller/VillageDetailController.js"></script>
+  <script src="js/controller/ReportController.js"></script>
+  <script src="js/controller/SettingsController.js"></script>
+  <script src="js/controller/SignupController.js"></script>
+  <script src="js/controller/RegisterController.js"></script>
+
+  <script src="js/service/LoginService.js"></script>
+  <script src="js/service/AuthenticationService.js"></script>
+  <script src="js/service/SignupService.js"></script>
+  <script src="js/service/UserService.js"></script>
+  <script src="js/service/ApiService.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/constants.js"></script>
+
+
+  <!-- iOS 9 Webview Patch -->
+  <script src="lib/angular-ios9-uiwebview.patch.js"></script>
+
+  <!-- Other Libraries -->
+  <script type="text/javascript" src="lib/geojson.min.js"></script>
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCCmTuyGRYMK3__gNb1QN_RCn3NNs049H8&libraries=visualization&amp;sensor=true_or_false"></script> -->
+  <script src="lib/ngmap/build/scripts/ng-map.min.js"></script>
+  <!-- <script src="lib/angular-azure-mobile-service/src/angular-azure-mobile-service.js"></script> -->
+  <script src="lib/adal.js"></script>
+  <script src="lib/adal-angular.js"></script>
+
+  <!-- leaflet -->
+  <link rel="stylesheet" href="lib/leaflet/leaflet.css" />
+  <script src="lib/leaflet/leaflet.js"></script>
+
+  <!-- d3 -->
+  <script src="lib/d3/d3.js"></script>
+  <script src="lib/nvd3/build/nv.d3.js"></script> <!-- or use another assembly -->
+  <script src="lib/angular-nvd3/dist/angular-nvd3.js"></script>
+
+  <!-- Polyfill  -->
+  <script src="lib/babel-polyfill/browser.js"></script>
+
+  <!-- Angular file upload -->
+  <!-- <script src="lib/angular-file-upload.js"></script> -->
+
+  <script src="lib/ng-file-upload/ng-file-upload-shim.js"></script>
+  <script src="lib/ng-file-upload/ng-file-upload.js"></script>
+
+  <!-- Chart.js -->
+  <script src="lib/Chart.min.js"></script>
+
+  <!-- MomentJS -->
+  <script src="lib/moment.min.js"></script>
+
+
+
+</head>
+<body ng-app="starter" class="platform-ios platform-cordova platform-webview">
+  <ion-nav-bar class="bar-stable" ng-controller="AppController">
+    <ion-nav-back-button></ion-nav-back-button>
+    <ion-nav-buttons side="right">
+      <button class="button" ng-click="login()" ng-hide="isLoggedIn">
+        Login
+      </button>
+      <button class="button" ng-click="logout()" ng-hide="!isLoggedIn">
+        Logout
+      </button>
+  </ion-nav-buttons>
+  </ion-nav-bar>
+  <!-- in case we want a silly header...  -->
+  <!-- <div class="bar bar-subheader">
+    <div class="button-bar">
+      <a class="button">Wells</a>
+      <a class="button">Rain</a>
+      <a class="button">Checkdams</a>
+    </div>
+  </div> -->
+
+  <ion-nav-view scroll="false"></ion-nav-view>
+</body>
+</html>

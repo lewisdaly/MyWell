@@ -1,0 +1,27 @@
+<ion-view view-title="Settings">
+<ion-content class="padding">
+
+<div class="center-text">
+  <p ng-if="isUserNotLoggedIn" class="verify-text">Log in access settings</p>
+</div>
+<div class="center-text" ng-if="isUserNotVerified">
+  <p class="vefify-text">Your account is not verified. Please wait for an admin to verifiy your account</p>
+  <button class="button button-clear button-outline button-assertive" ng-click="refreshUser()">Refresh Status</button>
+</div>
+
+<div ng-if="isUserLoggedInAndVerified">
+	<!-- <button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="register()">Register a New Well</button> -->
+	<a class="button button-outline button-block button-clear button-positive" ng-show="isVerified" href="#/tab/settings/register">Register a New Well</a>
+	<button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="getImage()">Change a well image</a>
+</div>
+<div>
+  <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/template.xlsx" download="template.xlsx">Download a template</a>
+</div>
+<div class="bottom-text">
+	<p>This project is part of MARVI</p>
+  <p>For more information, visit <a href="http://marvi.org.in">marvi.org.in</a> </p>
+  <p>Questions? Email <a href="mailto:info@marvi.org.in">info@marvi.org.in</a></p>
+</div>
+
+</ion-content>
+</ion-view>

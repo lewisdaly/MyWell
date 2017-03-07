@@ -33,7 +33,7 @@ gulp.task('sass', function(done) {
 gulp.task("babel", function () {
   const handleError = (error) => {
     gutil.log(`\nError running babel: ${error.name}\n${error.message}` );
-    process.exit(1);
+    // process.exit(1);
   }
   return gulp.src(paths.es6)
     .pipe(plumber())

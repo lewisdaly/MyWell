@@ -1,0 +1,80 @@
+<ion-view view-title="Report">
+<ion-content scroll="false">
+
+<style>
+          .drop-box { border: dotted 3px lightgray; width: 100%}
+          .drop-box-form { width: 100%}
+          .nv-file-over { border: dotted 3px red; } /* Default class applied to drop zones on over */
+          html, body { height: 100%; }
+</style>
+
+<div class="center-text">
+  <p class="verify-text" ng-if="isUserNotLoggedIn">Log in to submit well levels</p>
+</div>
+<div class="center-text" ng-if="isUserNotVerified">
+  <p class="verify-text">Your account is not verified. Please wait for an admin to verifiy your account</p>
+</div>
+
+<!-- Postcode, Date, Well ID, WT Depth,  -->
+<div ng-if="isUserLoggedInAndVerified">
+  <div class="row">
+    <h4 class="centerText">Report a new well reading:</h4>
+  </div>
+
+  <form class="list list-inset simple-form">
+    <label class="item item-input">
+      <input ng-model="form.postcode" type="tel" placeholder="Postcode">
+    </label>
+    <label class="item item-input">
+      <input ng-model="form.date" type="date" placeholder="Date">
+    </label>
+    <label class="item item-input">
+      <input ng-model="form.resourceId" type="tel" placeholder="Resource ID">
+    </label>
+    <label class="item item-input">
+      <input ng-model="form.value" type="number" placeholder="WT Depth (m)" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+    </label>
+  </form>
+
+  <div class="padding">
+    <button class="button button-block button-positive" ng-click="sendReport(form)">
+      Submit
+    </button>
+  </div>
+
+  <h4 ng-if="cachedReports.length > 0" class="centerText">Saved Reports:</h4>
+  <div ng-if="cachedReports.length > 0" class="reportCache drop-box">
+    <div class="row" ng-class-odd="'odd'" ng-class-even="'even'" ng-repeat="report in cachedReports">
+      <p class="col col-75">ID: {{report.resourceId}} Reading: {{report.value}}m</p>
+      <button class="col button button-small button-clear button-positive" ng-click=submit($index)>submit</button>
+      <button class="col button button-small button-clear button-assertive" ng-click=delete($index)>delete</button>
+    </div>
+  </div>
+
+<div class="row">
+  <h4 class="centerText paddingTop">Upload a spreadsheet of past readings:</h4>
+</div>
+<div class="row">
+  <form ng-app="fileUpload" ng-controller="ReportController" name="form" class="drop-box-form">
+    <div ngf-drop ng-model="file" name="file" ngf-pattern=".xlsx" class="drop-box centerText">
+      <h5 class="paddingTop" ng-show="!file">Drag and drop or
+      <div class="button button-clear button-stable inlineTextButton" ngf-select ng-model="file" name="file" ngf-pattern=".xlsx" ngf-max-size="20MB">select</div>
+      a .xlsx file.</h5>
+      <!-- <a class="button button-clear button-dark">Download a template file</a> -->
+
+      <h5 class="paddingTop" ng-if="file">Selected: {{file.name}}
+        <div class="button button-clear button-assertive inlineTextButton" ng-click=clearFile()>remove</div>
+      </h5>
+
+    </div>
+    <div ng-if="file" class="padding">
+      <button class="button button-block button-positive" ng-click="submitFile()">
+        Submit File
+      </button>
+    </div>
+  </form>
+</div>
+
+</div>
+</ion-content>
+</ion-view>

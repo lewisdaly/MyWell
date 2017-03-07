@@ -1,0 +1,66 @@
+<ion-view view-title="MyWell">
+<ion-content class="padding" scroll="false" data-tap-disabled="true">
+
+
+  <!-- TODO: replace with "current village" banner -->
+  <label id="searchBox" class="item item-input">
+    <input class="positive" ng-model="searchResource" type="text" placeholder="Search by Id or Postcode">
+  </label>
+  <button class="locateButton button icon ion-android-locate" ng-click=locate()></button>
+
+
+  <!-- <select>
+    <option ng-repeat="resource in well_data | filter:searchResource">
+      {{resource}}
+    </option>
+  </select> -->
+
+<!--TODO: flexbox layouts nicely  -->
+<div class="searchPanel" id="panel" ng-show='searchResource.length > 2'>
+  <div class="row top-row">
+    <div class="col col-10"></div>
+    <div class="col">Village</div>
+    <div class="col col-10"></div>
+    <div class="col">ResourceId</div>
+    <div class="col col-10"></div>
+    <div class="col">Postcode</div>
+  </div>
+  <div>
+    <!-- a little hacky, but the only way to clear the text box -->
+    <button
+      class="button button-full row"
+      ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource.id)"
+      ng-repeat="resource in data | filter:searchResource as results">
+
+        <div class="col">{{resource.village.name}}</div>
+        <div class="col">{{resource.id}}</div>
+        <div class="col">{{resource.postcode}}</div>
+    </button>
+  </div>
+  <div ng-show="results.length == 0" class="no-results">
+    <p>
+      No results found.
+    </p>
+  </div>
+</div>
+
+  <div id="leafletMap"></div>
+
+      <!-- <map id="map-canvas" center="24.57138, 74.21638" zoom="15" map-type-id="hybrid" disable-default-u-i="true" class="map-main">
+        <custom-control class= "button button-med" id="location" position="TOP_LEFT" index="1" ng-click="locate()">
+        <icon class="ion-android-locate"></icon>
+      </custom-control>
+    </map> -->
+
+    <!-- <div id="LegendKey">
+      <div id="LegendGradient"></div>
+      <div class="scale" id="0">O m</div>
+      <div class="scale" id="1" style="left: 15%;"></div>
+      <div class="scale" id="2" style="left: 32%;"></div>
+      <div class="scale" id="3" style="left: 48%;"></div>
+      <div class="scale" id="4" style="left: 64%;"></div>
+      <div class="scale" id="5" style="left: 80%;"></div>
+      <div class="scale" id="6" style="left: 95%;"></div>
+    </div> -->
+  </ion-content>
+</ion-view>

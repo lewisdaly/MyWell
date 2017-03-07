@@ -1,0 +1,21 @@
+<!-- The well detail view, with history etc. -->
+<ion-view view-title="{{resourceId}}">
+  <ion-content class="padding">
+    <h2>ResourceId: {{resourceId}} - {{resource.owner}}</h2>
+    <h2>Resource Type: {{resource.type}}</h2>
+
+    <h4 ng-show="{{resource.type === 'well'}}">Watertable Height:{{watertable_height}}m - This well is {{resource.percentageFull}}% full</h4>
+    <h5 ng-show="{{village.aveReading}}">Current Village Average:{{village.aveReading}}</h5>
+    <h5 ng-show="{{!village.aveReading}}">Current Village Average: N/A</h5>
+
+    </br>
+    </br>
+
+
+
+    <h4>Historical Readings:</h4>
+
+    <nvd3 options="options" data="data"></nvd3>
+
+  </ion-content>
+</ion-view>

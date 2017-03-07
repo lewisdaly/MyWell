@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <div class="stats row responsive-sm">
+    <div ng-if="stats" class="stats row responsive-sm">
       <div class="col">
         <span>
           <p class="greyText">Watertable Height:</p>
@@ -32,16 +32,23 @@
 
       <div class="col">
         <span>
-          <p class="greyText">Difference from <br/>{{juneData.pastReadingDate}}:</p>
-          <p class="blueText">{{juneData.difference}}</p>
+          <p class="greyText">Difference from <br/>{{stats.juneData.pastReadingDate}}:</p>
+          <p class="blueText">{{stats.juneData.difference}}</p>
         </span>
       </div>
     </div>
 
-    <div class="graphs">
-      <!-- <nvd3 options="options" data="data"></nvd3> -->
+    <div ng-if="!stats" class="stats">
+      <span>
+        <strong>Recent statistics are unavailable.</strong> </br>
+        Looks like we haven't recorded any recent readings for this resource.
+      </span>
+
+    </div>
+
+    <div class="graphs padding">
       <div>
-        <canvas id="detailChart" width="400" height="200"></canvas>
+        <canvas id="detailChart" width="400" height="350"></canvas>
       </div>
       <div class="row">
         <button class="col" ng-click="updateData('month')">1 Month</button>

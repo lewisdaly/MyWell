@@ -1,0 +1,61 @@
+<!-- The well detail view, with history etc. -->
+<ion-view view-title="{{resourceId}}">
+  <ion-content>
+    <div class="banner">
+      <div class="topImage">
+        <img data-ng-src="data:image/png;base64,{{resource.image}}" data-err-src="images/png/avatar.png"/>
+      </div>
+      <div class="heading">
+        <h3>{{resource.type | capitalize}}: {{resourceId}} - {{resource.owner}}</h3>
+      </div>
+    </div>
+
+    <div ng-if="stats" class="stats row responsive-sm">
+      <div class="col">
+        <span>
+          <p class="greyText">Watertable Height:</p>
+          <p class="blueText">{{stats.watertableHeight}} m</p>
+        </span>
+      </div>
+      <div class="col">
+        <span>
+          <p class="blueText">{{stats.percentageFull}} %</p> <p class="greyText">full</p>
+        </span>
+      </div>
+
+      <div class="col">
+        <span>
+          <p class="greyText">Average Village Waterable Depth:</p>
+          <p class="blueText">{{stats.villageAverageReading}} m</p>
+        </span>
+      </div>
+
+      <div class="col">
+        <span>
+          <p class="greyText">Difference from <br/>{{stats.juneData.pastReadingDate}}:</p>
+          <p class="blueText">{{stats.juneData.difference}}</p>
+        </span>
+      </div>
+    </div>
+
+    <div ng-if="!stats" class="stats">
+      <span>
+        <strong>Recent statistics are unavailable.</strong> </br>
+        Looks like we haven't recorded any recent readings for this resource.
+      </span>
+
+    </div>
+
+    <div class="graphs padding">
+      <div>
+        <canvas id="detailChart" width="400" height="200"></canvas>
+      </div>
+      <div class="row">
+        <button class="col" ng-click="updateData('month')">1 Month</button>
+        <button class="col" ng-click="updateData('3month')">3 Months</button>
+        <button class="col" ng-click="updateData('year')">1 Year</button>
+      </div>
+    </div>
+
+  </ion-content>
+</ion-view>
