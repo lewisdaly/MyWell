@@ -36,7 +36,7 @@ angular.module('controller.map-detail', ['nvd3'])
         dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-52);
         dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-52);
         dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-52);
-        dataAndLabel.labels = weeks.slice(-4 * 3).map(dateTime => moment(dateTime).format('DD-MMM'));
+        dataAndLabel.labels = weeks.slice(-52).map(dateTime => moment(dateTime).format('DD-MMM'));
         break;
       default:
         throw new Error(`dataRange ${dataRange} not found`);
@@ -126,17 +126,14 @@ angular.module('controller.map-detail', ['nvd3'])
     ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
       .catch(err => console.log(err)),
     ApiService.getResource($stateParams.postcode, $scope.resourceId),
+    ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
   ])
   .then(results => {
-    console.log("finished getting data from server");
-
-    console.log("transforming data");
     const readingsByWeek = results[0].data;
     allWeeklyReadings = readingsByWeek.readings;
     weeks = readingsByWeek.weeks;
 
-
-    let juneData = {}
+    let juneData = null;
     if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
       let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
       let difference = `${results[1].data.difference.toFixed(2)} m`;
@@ -146,13 +143,32 @@ angular.module('controller.map-detail', ['nvd3'])
       };
     }
 
-    $scope.resource = results[2].data;
-    //TODO: calculate these stats
-    $scope.stats = {
-      watertableHeight: 0,
-      percentageFull: 0,
-      villageAverageReading: 0,
-      juneData: juneData
+    let readingValue = null;
+    let percentageFull = null;
+    if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
+      //TODO: check if we are a rain_gauge or checkdam
+      const reading = results[2].data;
+      $scope.resource = reading;
+      readingValue = reading.last_value.toFixed(2);
+      percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
+    }
+
+    let villageAverageReading = null;
+    if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
+      villageAverageReading = results[3].data.avgReading;
+    }
+
+    if (!angular.isNullOrUndefined(readingValue) ||
+        !angular.isNullOrUndefined(percentageFull) ||
+        !angular.isNullOrUndefined(villageAverageReading) ||
+        !angular.isNullOrUndefined(juneData)) {
+
+      $scope.stats = {
+        readingValue: readingValue,
+        percentageFull: percentageFull,
+        villageAverageReading: villageAverageReading,
+        juneData: juneData
+      }
     }
 
     //Split into 3, one for each year
@@ -173,6 +189,13 @@ angular.module('controller.map-detail', ['nvd3'])
     console.log(err);
 
   });
+
+  function saftelyGetLevelString(value) {
+    if (angular.isNullOrUndefined(value)) {
+      return "";
+    }
+    return value.toFixed(2);
+  }
 
   init();
 })
