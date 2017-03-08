@@ -14,7 +14,8 @@ angular.module('service.api', [])
     getDifferenceFromJune: getDifferenceFromJune,
     getResourceReadings: getResourceReadings,
     getResource: getResource,
-    uploadImageForResource: uploadImageForResource
+    uploadImageForResource: uploadImageForResource,
+    getReadingsByWeek: getReadingsByWeek
   });
 
 
@@ -35,6 +36,14 @@ angular.module('service.api', [])
       method:'get',
       headers: {'Content-Type':'application/json'},
       url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+    });
+  }
+
+  function getReadingsByWeek(postcode, resourceId) {
+    return $http({
+      method: 'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/readings/readingsByWeek?postcode=${postcode}&resourceId=${resourceId}`
     });
   }
 

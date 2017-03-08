@@ -7,7 +7,7 @@ angular.module('controller.map-detail', ['nvd3'])
   });
 
   $scope.resourceId = $stateParams.resourceId;
-  $scope.juneData = null;
+  $scope.stats = null;
   let detailChart = null;
   let allWeeklyReadings = [];
   let splitWeeklyReadings = []; //all weekly readings split per year
@@ -157,7 +157,6 @@ angular.module('controller.map-detail', ['nvd3'])
     console.log("finished getting data from server");
 
     console.log("transforming data");
-
     const pastReadings = results[0].data;
     let juneData = {}
     if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
@@ -178,19 +177,20 @@ angular.module('controller.map-detail', ['nvd3'])
       juneData: juneData
     }
 
-    // $scope.stats = null;
-
     //configure chart data and buttons
+    //TODO: optimize the crap out of this!!! Do it in linear time!
     let weeks = weekStartForWeeksAgo(52 * 3); //Three years of data!
     allWeeklyReadings = [];
     let addedCount = 0; //optimize - we can skip once we have added readings from this index
     const avg = array => array.reduce((p, c) => p + c, 0)/ array.length;
 
     weeks.forEach(weekEnd => {
+      console.log("each week");
       let weekStart = weekEnd.clone().subtract(1, 'week');
 
       let readingsThisWeek = [];
       for (var i = addedCount; i < pastReadings.length; i++) {
+        console.log("each reading");
         let reading = pastReadings[i];
         let readingMoment = moment.utc(reading.date);
         if (readingMoment.isBetween(weekStart, weekEnd)) {

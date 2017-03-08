@@ -45,22 +45,10 @@
       <div class="col col-25">
         <input class="col" ng-model="form.lng" type="number" placeholder="Longitude">
       </div>
-
-      <!-- <p class="col">Coordinates:</p>
-      <button class="col button button-small icon ion-android-locate" ng-click=locate()></button>
-		  <input class="col" ng-model="form.lat" type="number" placeholder="Latitude">
-		  <input class="col" ng-model="form.lng" type="number" placeholder="Longitude"> -->
     </div>
 </form>
 
-<div id="leafletMapRegister">
-
-</div>
-
-<!-- Remove the map for now - it causes issues with the main map, that I can't seem to figure out... -->
-<!-- <label class="padding">Center Map On new Well Location:</label> -->
-<!-- <map id="map-modal-canvas" center="24.57138, 74.21638" zoom="15" map-type-id="hybrid" disable-default-u-i="true" class="map-modal">
-</map> -->
+<div id="leafletMapRegister"></div>
 
 <div class="padding">
 	<a class="button button-positive button-clear button-block button-outline" ng-click="closeModal(form)">Save</a>
