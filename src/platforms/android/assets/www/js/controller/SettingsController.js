@@ -6,6 +6,8 @@ angular.module('controller.settings', []).controller('SettingsController', funct
   $scope.apiBaseUrl = apiUrl;
   $scope.imageResourceId = null;
 
+  $scope.isDesktop = angular.isNullOrUndefined(window.cordova);
+
   $scope.$on('$ionicView.enter', function (e) {
     checkUserStatus();
   });

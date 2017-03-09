@@ -13,7 +13,9 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
     getDifferenceFromJune: getDifferenceFromJune,
     getResourceReadings: getResourceReadings,
     getResource: getResource,
-    uploadImageForResource: uploadImageForResource
+    uploadImageForResource: uploadImageForResource,
+    getReadingsByWeek: getReadingsByWeek,
+    getCurrentVillageAverage: getCurrentVillageAverage
   };
 
   function uploadImageForResource(postcode, resourceId, data) {
@@ -33,6 +35,14 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
       method: 'get',
       headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/resources/' + resourceId + '&postcode=' + postcode
+    });
+  }
+
+  function getReadingsByWeek(postcode, resourceId) {
+    return $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/readings/readingsByWeek?postcode=' + postcode + '&resourceId=' + resourceId
     });
   }
 
@@ -130,6 +140,19 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
       headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/Users/login',
       data: { username: username, password: password }
+    });
+  }
+
+  function getCurrentVillageAverage(postcode, resourceId) {
+    var villageId = resourceId.substring(0, 2);
+
+    return $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resource_stats/getCurrentVillageAverage?villageId=' + villageId + '&postcode=' + postcode
+    }).catch(function (err) {
+      if (err.status !== 404) return Promise.reject(err);
+      console.log("No current village reading");
     });
   }
 

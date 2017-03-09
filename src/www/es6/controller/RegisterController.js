@@ -13,8 +13,6 @@ angular.module('controller.register', [])
       return;
     }
 
-    console.log("HEY");
-
     const center = leafletMap.getCenter();
     console.log("center", center);
     $scope.form.lat = null;

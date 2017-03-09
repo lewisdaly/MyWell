@@ -11,26 +11,26 @@
     </div>
 
     <div ng-if="stats" class="stats row responsive-sm">
-      <div class="col">
+      <div ng-if="stats.readingValue" class="col">
         <span>
           <p class="greyText">Watertable Height:</p>
-          <p class="blueText">{{stats.watertableHeight}} m</p>
+          <p class="blueText">{{stats.readingValue}} m</p>
         </span>
       </div>
-      <div class="col">
+      <div ng-if="stats.percentageFull" class="col">
         <span>
-          <p class="blueText">{{stats.percentageFull}} %</p> <p class="greyText">full</p>
+          <p class="blueText">{{stats.percentageFull}}%</p> <p class="greyText">full</p>
         </span>
       </div>
 
-      <div class="col">
+      <div ng-if="stats.villageAverageReading" class="col">
         <span>
           <p class="greyText">Average Village Waterable Depth:</p>
           <p class="blueText">{{stats.villageAverageReading}} m</p>
         </span>
       </div>
 
-      <div class="col">
+      <div ng-if="stats.juneData.difference" class="col">
         <span>
           <p class="greyText">Difference from <br/>{{stats.juneData.pastReadingDate}}:</p>
           <p class="blueText">{{stats.juneData.difference}}</p>

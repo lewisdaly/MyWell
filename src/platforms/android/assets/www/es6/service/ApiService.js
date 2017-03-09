@@ -14,7 +14,9 @@ angular.module('service.api', [])
     getDifferenceFromJune: getDifferenceFromJune,
     getResourceReadings: getResourceReadings,
     getResource: getResource,
-    uploadImageForResource: uploadImageForResource
+    uploadImageForResource: uploadImageForResource,
+    getReadingsByWeek: getReadingsByWeek,
+    getCurrentVillageAverage: getCurrentVillageAverage
   });
 
 
@@ -35,6 +37,14 @@ angular.module('service.api', [])
       method:'get',
       headers: {'Content-Type':'application/json'},
       url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+    });
+  }
+
+  function getReadingsByWeek(postcode, resourceId) {
+    return $http({
+      method: 'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/readings/readingsByWeek?postcode=${postcode}&resourceId=${resourceId}`
     });
   }
 
@@ -136,6 +146,21 @@ angular.module('service.api', [])
       data: {username:username, password:password}
     });
   }
+
+
+  function getCurrentVillageAverage(postcode, resourceId) {
+    const villageId = resourceId.substring(0,2);
+
+    return $http({
+      method:'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/resource_stats/getCurrentVillageAverage?villageId=${villageId}&postcode=${postcode}`,
+    }).catch(err => {
+      if (err.status !== 404) return Promise.reject(err);
+      console.log("No current village reading");
+    });
+  }
+
 
   /**
    * Get the info and statistics for a resource

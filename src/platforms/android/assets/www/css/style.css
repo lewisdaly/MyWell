@@ -149,18 +149,10 @@ body {
 }
 
 /* Add resource page */
-.locateRow {
-
-}
-
-.locateRow .button {
-  width: 40px;
-}
-
 
 #leafletMapRegister {
   /*position: absolute;*/
-  height: 200px;
+  height: 130px;
   width: 100%;
   z-index: 1;
 }
@@ -189,7 +181,10 @@ body {
   position: absolute;
   z-index: 1000000;
   margin-left: 50%;
-  margin-top: 40px;
+  margin-top: 18px;
+  text-align: left;
+  top: 0;
+  left: 0;
 }
 
 

@@ -104,8 +104,8 @@ angular.module('controller.map-detail', ['nvd3'])
     });
   }
 
-  const init = () => {
-    // setupChart();
+  function init() {
+    setupData();
   }
 
   $scope.updateData = (dataRange) => {
@@ -120,75 +120,74 @@ angular.module('controller.map-detail', ['nvd3'])
 
   //Get the data from the api service
   console.log("Getting data from server");
-  Promise.all([
-    // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
-    ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
-    ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
-      .catch(err => console.log(err)),
-    ApiService.getResource($stateParams.postcode, $scope.resourceId),
-    ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
-  ])
-  .then(results => {
-    const readingsByWeek = results[0].data;
-    allWeeklyReadings = readingsByWeek.readings;
-    weeks = readingsByWeek.weeks;
+  function setupData() {
+    return Promise.all([
+      // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
+      ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
+      ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
+        .catch(err => console.log(err)),
+      ApiService.getResource($stateParams.postcode, $scope.resourceId),
+      ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
+    ])
+    .then(results => {
+      const readingsByWeek = results[0].data;
+      allWeeklyReadings = readingsByWeek.readings;
+      weeks = readingsByWeek.weeks;
 
-    let juneData = null;
-    if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
-      let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
-      let difference = `${results[1].data.difference.toFixed(2)} m`;
-      juneData =  {
-        pastReadingDate: pastReadingDate,
-        difference: difference
-      };
-    }
-
-    let readingValue = null;
-    let percentageFull = null;
-    if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
-      //TODO: check if we are a rain_gauge or checkdam
-      const reading = results[2].data;
-      $scope.resource = reading;
-      readingValue = reading.last_value.toFixed(2);
-      percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
-    }
-
-    let villageAverageReading = null;
-    if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
-      villageAverageReading = results[3].data.avgReading;
-    }
-
-    if (!angular.isNullOrUndefined(readingValue) ||
-        !angular.isNullOrUndefined(percentageFull) ||
-        !angular.isNullOrUndefined(villageAverageReading) ||
-        !angular.isNullOrUndefined(juneData)) {
-
-      $scope.stats = {
-        readingValue: readingValue,
-        percentageFull: percentageFull,
-        villageAverageReading: villageAverageReading,
-        juneData: juneData
+      let juneData = null;
+      if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
+        let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
+        let difference = `${results[1].data.difference.toFixed(2)} m`;
+        juneData =  {
+          pastReadingDate: pastReadingDate,
+          difference: difference
+        };
       }
-    }
 
-    //Split into 3, one for each year
-    const slicePoints = [0, 51, 103, allWeeklyReadings.length]
-    splitWeeklyReadings = [
-      allWeeklyReadings.slice(slicePoints[2], slicePoints[3]),//This year
-      allWeeklyReadings.slice(slicePoints[1], slicePoints[2]),
-      allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
-    ];
+      let readingValue = null;
+      let percentageFull = null;
+      if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
+        //TODO: check if we are a rain_gauge or checkdam
+        const reading = results[2].data;
+        $scope.resource = reading;
+        readingValue = reading.last_value.toFixed(2);
+        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
+      }
 
-    console.log("finished transforming data");
+      let villageAverageReading = null;
+      if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
+        villageAverageReading = results[3].data.avgReading;
+      }
 
-    console.log("setting up chart");
-    setupChart();
-    console.log("finished setting up chart");
-  })
-  .catch(function(err) {
-    console.log(err);
+      if (!angular.isNullOrUndefined(readingValue) ||
+          !angular.isNullOrUndefined(percentageFull) ||
+          !angular.isNullOrUndefined(villageAverageReading) ||
+          !angular.isNullOrUndefined(juneData)) {
+          console.log("Setting up stats!");
+        $scope.stats = {
+          readingValue: readingValue,
+          percentageFull: percentageFull,
+          villageAverageReading: villageAverageReading,
+          juneData: juneData
+        }
+      }
 
-  });
+      //Split into 3, one for each year
+      const slicePoints = [0, 51, 103, allWeeklyReadings.length]
+      splitWeeklyReadings = [
+        allWeeklyReadings.slice(slicePoints[2], slicePoints[3]),//This year
+        allWeeklyReadings.slice(slicePoints[1], slicePoints[2]),
+        allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
+      ];
+
+      setupChart();
+      $scope.$apply(); 
+      console.log("finished loading data etc.");
+    })
+    .catch(function(err) {
+      console.log('Error setting up data', err);
+    });
+  }
 
   function saftelyGetLevelString(value) {
     if (angular.isNullOrUndefined(value)) {

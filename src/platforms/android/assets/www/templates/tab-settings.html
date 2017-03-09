@@ -14,10 +14,10 @@
 	<a class="button button-outline button-block button-clear button-positive" ng-show="isVerified" href="#/tab/settings/register">Register a New Well</a>
 	<button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="showGetImagePopup()">Change a well image</a>
 </div>
-<div>
+<div ng-if="isDesktop">
   <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/template.xlsx" download="template.xlsx">Download a template</a>
 </div>
-<div>
+<div ng-if="isDesktop">
   <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/reading.csv" download="reading.csv">Download Reading Data</a>
 </div>
 <div class="bottom-text">

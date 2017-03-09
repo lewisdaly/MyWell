@@ -11,6 +11,7 @@ angular.module('controller.map-detail', ['nvd3'])
   let detailChart = null;
   let allWeeklyReadings = [];
   let splitWeeklyReadings = []; //all weekly readings split per year
+  let weeks = [];
 
   const getChartDataAndLabel = (dataRange) => {
     let dataAndLabel = {
@@ -23,19 +24,19 @@ angular.module('controller.map-detail', ['nvd3'])
         dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-4);
         dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-4);
         dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-4);
-        dataAndLabel.labels = weekStartForWeeksAgo(4).map(dateTime => dateTime.format('DD-MMM'));
+        dataAndLabel.labels = weeks.slice(-4).map(dateTime => moment(dateTime).format('DD-MMM'));
         break;
       case '3month':
         dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-4 * 3);
         dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-4 * 3);
         dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-4 * 3);
-        dataAndLabel.labels = weekStartForWeeksAgo(4 * 3).map(dateTime => dateTime.format('DD-MMM'));
+        dataAndLabel.labels = weeks.slice(-4 * 3).map(dateTime => moment(dateTime).format('DD-MMM'));
         break;
       case 'year':
         dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-52);
         dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-52);
         dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-52);
-        dataAndLabel.labels = weekStartForWeeksAgo(52).map(dateTime => dateTime.format('DD-MMM'));
+        dataAndLabel.labels = weeks.slice(-52).map(dateTime => moment(dateTime).format('DD-MMM'));
         break;
       default:
         throw new Error(`dataRange ${dataRange} not found`);
@@ -44,35 +45,7 @@ angular.module('controller.map-detail', ['nvd3'])
     return dataAndLabel;
   }
 
-  /**
-   * Iteratively go back a bunch of weeks
-   */
-
-  const weekStartForWeeksAgo = (weeksAgo, startDate, weeks) => {
-    if (angular.isNullOrUndefined(weeks)) {
-      weeks = [];
-    }
-
-    if (weeksAgo == 0) {
-      return weeks;
-    }
-
-    //First time - set everything up
-    if (angular.isNullOrUndefined(startDate)) {
-      //Get monday UTC
-      startDate = moment.utc().startOf('week').add(1, 'days');
-      weeks = [startDate];
-
-      return weekStartForWeeksAgo(weeksAgo - 1, startDate, weeks);
-    }
-
-    let previousWeekStart = startDate.clone().subtract(1, 'week');
-    weeks.unshift(previousWeekStart);
-    return weekStartForWeeksAgo(weeksAgo -1 , previousWeekStart, weeks);
-  }
-
   const setupChart = () => {
-
     const colors = [
       {border:'rgba(54, 162, 235, 1)',background:'rgba(54, 162, 235, 0.2)'},
       {border:'rgba(153, 102, 255, 1)', background:'rgba(153, 102, 255, 0.2)'},
@@ -131,8 +104,8 @@ angular.module('controller.map-detail', ['nvd3'])
     });
   }
 
-  const init = () => {
-    // setupChart();
+  function init() {
+    setupData();
   }
 
   $scope.updateData = (dataRange) => {
@@ -147,85 +120,81 @@ angular.module('controller.map-detail', ['nvd3'])
 
   //Get the data from the api service
   console.log("Getting data from server");
-  Promise.all([
-    ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
-    ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
-      .catch(err => console.log(err)),
-    ApiService.getResource($stateParams.postcode, $scope.resourceId),
-  ])
-  .then(results => {
-    console.log("finished getting data from server");
+  function setupData() {
+    return Promise.all([
+      // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
+      ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
+      ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
+        .catch(err => console.log(err)),
+      ApiService.getResource($stateParams.postcode, $scope.resourceId),
+      ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
+    ])
+    .then(results => {
+      const readingsByWeek = results[0].data;
+      allWeeklyReadings = readingsByWeek.readings;
+      weeks = readingsByWeek.weeks;
 
-    console.log("transforming data");
-    const pastReadings = results[0].data;
-    let juneData = {}
-    if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
-      let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
-      let difference = `${results[1].data.difference.toFixed(2)} m`;
-      juneData =  {
-        pastReadingDate: pastReadingDate,
-        difference: difference
-      };
-    }
+      let juneData = null;
+      if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
+        let pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0,10);
+        let difference = `${results[1].data.difference.toFixed(2)} m`;
+        juneData =  {
+          pastReadingDate: pastReadingDate,
+          difference: difference
+        };
+      }
 
-    $scope.resource = results[2].data;
-    //TODO: calculate these stats
-    $scope.stats = {
-      watertableHeight: 0,
-      percentageFull: 0,
-      villageAverageReading: 0,
-      juneData: juneData
-    }
+      let readingValue = null;
+      let percentageFull = null;
+      if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
+        //TODO: check if we are a rain_gauge or checkdam
+        const reading = results[2].data;
+        $scope.resource = reading;
+        readingValue = reading.last_value.toFixed(2);
+        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
+      }
 
-    //configure chart data and buttons
-    //TODO: optimize the crap out of this!!! Do it in linear time!
-    let weeks = weekStartForWeeksAgo(52 * 3); //Three years of data!
-    allWeeklyReadings = [];
-    let addedCount = 0; //optimize - we can skip once we have added readings from this index
-    const avg = array => array.reduce((p, c) => p + c, 0)/ array.length;
+      let villageAverageReading = null;
+      if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
+        villageAverageReading = results[3].data.avgReading;
+      }
 
-    weeks.forEach(weekEnd => {
-      console.log("each week");
-      let weekStart = weekEnd.clone().subtract(1, 'week');
-
-      let readingsThisWeek = [];
-      for (var i = addedCount; i < pastReadings.length; i++) {
-        console.log("each reading");
-        let reading = pastReadings[i];
-        let readingMoment = moment.utc(reading.date);
-        if (readingMoment.isBetween(weekStart, weekEnd)) {
-          readingsThisWeek.push(reading.value);
+      if (!angular.isNullOrUndefined(readingValue) ||
+          !angular.isNullOrUndefined(percentageFull) ||
+          !angular.isNullOrUndefined(villageAverageReading) ||
+          !angular.isNullOrUndefined(juneData)) {
+          console.log("Setting up stats!");
+        $scope.stats = {
+          readingValue: readingValue,
+          percentageFull: percentageFull,
+          villageAverageReading: villageAverageReading,
+          juneData: juneData
         }
       }
 
-      const weeklyAverage = Math.round(avg(readingsThisWeek) * 100) / 100;
-      if (isNaN(weeklyAverage)) {
-        allWeeklyReadings.push(null);
-      } else {
-        allWeeklyReadings.push(0 + weeklyAverage);
-      }
+      //Split into 3, one for each year
+      const slicePoints = [0, 51, 103, allWeeklyReadings.length]
+      splitWeeklyReadings = [
+        allWeeklyReadings.slice(slicePoints[2], slicePoints[3]),//This year
+        allWeeklyReadings.slice(slicePoints[1], slicePoints[2]),
+        allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
+      ];
 
-      addedCount = addedCount + readingsThisWeek.length;
+      setupChart();
+      $scope.$apply(); 
+      console.log("finished loading data etc.");
+    })
+    .catch(function(err) {
+      console.log('Error setting up data', err);
     });
+  }
 
-    //Split into 3, one for each year
-    const slicePoints = [0, 51, 103, allWeeklyReadings.length]
-    splitWeeklyReadings = [
-      allWeeklyReadings.slice(slicePoints[2], slicePoints[3]),//This year
-      allWeeklyReadings.slice(slicePoints[1], slicePoints[2]),
-      allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
-    ];
-
-    console.log("finished transforming data");
-
-    console.log("setting up chart");
-    setupChart();
-    console.log("finished setting up chart");
-  })
-  .catch(function(err) {
-    console.log(err);
-
-  });
+  function saftelyGetLevelString(value) {
+    if (angular.isNullOrUndefined(value)) {
+      return "";
+    }
+    return value.toFixed(2);
+  }
 
   init();
 })
