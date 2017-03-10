@@ -102,6 +102,7 @@ body {
 .locateButton {
   position: absolute;
   z-index: 2;
+  left: 15px;
 }
 
 /* New Well Popup*/
@@ -152,7 +153,7 @@ body {
 
 #leafletMapRegister {
   /*position: absolute;*/
-  height: 130px;
+  height: 200px;
   width: 100%;
   z-index: 1;
 }
@@ -181,7 +182,7 @@ body {
   position: absolute;
   z-index: 1000000;
   margin-left: 50%;
-  margin-top: 18px;
+  margin-top: 50px;
   text-align: left;
   top: 0;
   left: 0;

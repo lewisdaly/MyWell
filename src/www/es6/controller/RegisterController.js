@@ -14,7 +14,6 @@ angular.module('controller.register', [])
     }
 
     const center = leafletMap.getCenter();
-    console.log("center", center);
     $scope.form.lat = null;
     $scope.form.lng = null;
 
