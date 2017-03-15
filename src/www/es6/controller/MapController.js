@@ -18,7 +18,7 @@ angular.module('controller.map', [])
 
   //Set up the Leaflet Map
   //TODO: look into this: https://github.com/gregallensworth/L.TileLayer.Cordova
-  var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 16);
+  var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:10, maxZoom:17}).setView([24.593, 74.198], 16);
   //TODO: make these offline!
   // L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/mapbox.mapbox-streets-v7/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
@@ -52,7 +52,7 @@ angular.module('controller.map', [])
 
     //Add village tooltips
     let villages = {};
-    
+
     $scope.data.forEach(resource => {
       //Calculate the well % level:
       const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);

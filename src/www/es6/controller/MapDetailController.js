@@ -167,7 +167,7 @@ angular.module('controller.map-detail', ['nvd3'])
         $scope.stats = {
           readingValue: readingValue,
           percentageFull: percentageFull,
-          villageAverageReading: villageAverageReading,
+          villageAverageReading: 10.11,
           juneData: juneData
         }
       }
@@ -181,7 +181,7 @@ angular.module('controller.map-detail', ['nvd3'])
       ];
 
       setupChart();
-      $scope.$apply(); 
+      $scope.$apply();
       console.log("finished loading data etc.");
     })
     .catch(function(err) {
