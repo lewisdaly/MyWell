@@ -203,11 +203,12 @@ angular.module('service.api', [])
     //TODO: make url parameters load properly
     //TODO: inject hide and show loading indicator into every request...
     return Promise.resolve(true)
-      .then(() => showLoadingIndicator())
+      .then(() => showSlowLoadingIndicator())
       .then(() => $http({
                   method:'get',
                   headers: {'Content-Type':'application/json'},
                   url: `${apiUrl}/api/readings/processExcelFile?container=${fileResponse.container}&name=${fileResponse.name}&access_token=${AuthenticationService.getAccessToken()}`,
+                  timeout: 1000 * 60 * 6 //6 mins
                 }))
       .then(res => {
         hideLoadingIndicator();
@@ -222,6 +223,11 @@ angular.module('service.api', [])
   function showLoadingIndicator() {
      $rootScope.$broadcast('loading:show');
   }
+
+  function showSlowLoadingIndicator() {
+     $rootScope.$broadcast('loading:show-slow');
+  }
+
 
   function hideLoadingIndicator() {
      $rootScope.$broadcast('loading:hide');
