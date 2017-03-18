@@ -95,7 +95,7 @@ angular.module('starter', [
 
   $rootScope.$on('loading:show-slow', function() {
     $ionicLoading.show({
-      template: 'Please wait, this may take up to 6 minutes</br><ion-spinner></ion-spinner>'
+      template: 'Please wait, this may take up to 10 minutes</br><ion-spinner></ion-spinner>'
     });
   })
 

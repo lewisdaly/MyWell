@@ -208,7 +208,11 @@ angular.module('service.api', [])
                   method:'get',
                   headers: {'Content-Type':'application/json'},
                   url: `${apiUrl}/api/readings/processExcelFile?container=${fileResponse.container}&name=${fileResponse.name}&access_token=${AuthenticationService.getAccessToken()}`,
-                  timeout: 1000 * 60 * 6 //6 mins
+                  timeout: 1000 * 60 * 10,// * 60 * 6 //6 mins
+                  headers: {
+                    'timeout': 1000,
+                    'Connection': 'Keep-Alive'
+                  }
                 }))
       .then(res => {
         hideLoadingIndicator();
