@@ -40,14 +40,14 @@ gulp.task("babel", function () {
   return gulp.src(paths.es6)
     .pipe(plumber())
     .pipe(sourcemaps.init()) // must be before all plugins that change js
-    .pipe(concat('dist.js'))
     .pipe(babel({
       presets: ['es2015'],
       plugins:["transform-strict-mode"]
     }))
     .on('error', handleError)
+		.pipe(concat('dist.js'))
     .pipe(uglify({
-      mangle: true,
+      mangle: false,
       compress: true,
     }))
     .pipe(sourcemaps.write('maps'))
