@@ -8,6 +8,8 @@ var rename = require('gulp-rename');
 var sh = require('shelljs');
 var babel = require("gulp-babel");
 var plumber = require("gulp-plumber");
+var uglify = require('gulp-uglify');
+var sourcemaps = require('gulp-sourcemaps');
 
 var paths = {
   sass: ['./scss/**/*.scss'],
@@ -37,11 +39,18 @@ gulp.task("babel", function () {
   }
   return gulp.src(paths.es6)
     .pipe(plumber())
+    .pipe(sourcemaps.init()) // must be before all plugins that change js
     .pipe(babel({
       presets: ['es2015'],
       plugins:["transform-strict-mode"]
     }))
     .on('error', handleError)
+		.pipe(concat('dist.js'))
+    .pipe(uglify({
+      mangle: false,
+      compress: true,
+    }))
+    .pipe(sourcemaps.write('maps'))
     .pipe(gulp.dest("www/js"))
 });
 
