@@ -33,11 +33,13 @@ angular.module('report.controllers', [])
 
   const readingTypes = {
     well: {
+      id: 'well',
       name: 'Well',
       valuePlaceholder: 'WT Depth (m)'
     },
     raingauge: {
-      name: 'Rain Gauge',
+      id: 'raingauge',
+      name: 'Rainfall',
       valuePlaceholder: 'Rainfall amount (mm)'
     }
   }
