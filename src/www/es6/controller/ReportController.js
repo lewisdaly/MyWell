@@ -31,6 +31,22 @@ angular.module('report.controllers', [])
     });
   }
 
+  const readingTypes = {
+    well: {
+      name: 'Well',
+      valuePlaceholder: 'WT Depth (m)'
+    },
+    raingauge: {
+      name: 'Rain Gauge',
+      valuePlaceholder: 'Rainfall amount (mm)'
+    }
+  }
+
+  $scope.readingType = readingTypes.well;
+  $scope.setReadingType = (readingType) => {
+    $scope.readingType = readingTypes[readingType];
+  }
+
 
   function checkUserStatus() {
     $scope.isUserNotLoggedIn = false;
