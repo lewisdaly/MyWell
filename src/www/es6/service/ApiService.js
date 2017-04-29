@@ -5,6 +5,7 @@ angular.module('service.api', [])
 
   return({
     getResources:getResources,
+    getVillages:getVillages,
     getClosestVillage:getClosestVillage,
     registerWell:registerWell,
     updateReading:updateReading,
@@ -75,13 +76,21 @@ angular.module('service.api', [])
     });
   }
 
+  function getVillages() {
+    return $http({
+      method:'get',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + '/api/villages'
+    });
+  }
+
   //Load all of the things
   //fallback to cache if fails
   function getResources() {
     return $http({
       method:'get',
       headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/resources?filter=%7B%22fields%22%3A%7B%22image%22%3Afalse%7D%2C%20%22include%22%3A%22village%22%7D&access_token=wb5ucoIwwxZOhuLTQ9tA0NwTwbBBDTtwGAyPNid2PkBMECB0IX6omWJhgPaI9Sou'
+      url: apiUrl + '/api/resources?filter=%7B%22fields%22%3A%7B%22image%22%3Afalse%7D%7D'
     })
     .then(function(response) {
       //cache the response
