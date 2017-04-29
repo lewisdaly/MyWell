@@ -15,7 +15,6 @@ angular.module('controller.map', [])
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
-
   //Set up the Leaflet Map
   var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:10, maxZoom:20}).setView([24.593, 74.198], 16);
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
@@ -42,55 +41,56 @@ angular.module('controller.map', [])
    popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
   });
 
-  Promise.all([
-    ApiService.getResources()
-      .then(function(response) {
-        $scope.data = response.data;
-        $scope.data.forEach(resource => {
-          //Calculate the well % level:
-          const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
-          resource.percentageFull = percentageFull;
+  ApiService.getVillages()
+    .then(villages => {
+      $scope.villages = villages;
+      villages.forEach(village => {
+        const icon = L.divIcon({
+          html:`\
+          <div class=""> \
+            <a class="centerText" href="#/tab/map/${village.postcode}/village/${village.id}"> \
+              <h4>${village.name}</h4> \
+            </a> \
+          </div>`,
+          className: 'village-div-icon'});
+        const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
+      });
+    })
+    .then(() => ApiService.getResources())
+    .then(function(response) {
 
-          let icon = null;
-          switch (resource.type) {
-            case ResourceType.WELL:
-              icon = wellIcon;
-              break;
-            case ResourceType.CHECKDAM:
-              icon = checkdamIcon;
-              break;
-            case ResourceType.RAINGAUGE:
-              icon = raingaugeIcon;
-              break;
-          }
+      //Manually join the village name
+      $scope.data = response.data.map(resource => {
+        resource.villageName = $scope.getVillageName(resource.postcode, resource.villageId);
+        return resource;
+      });
 
-          var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
-          marker.bindPopup(getPopupContentForResource(resource));
-          $scope.markers[resource.id] = marker;
-        });
-      }),
-    ApiService.getVillages()
-      .then(villages => {
-        console.log("got villages:", villages);
-        // Object.values(villages).forEach(village => {
-        //   const icon = L.divIcon({
-        //     html:`\
-        //     <div class=""> \
-        //       <a class="centerText" href="#/tab/map/${village.postcode}/village/${village.id}"> \
-        //         <h4>${village.name}</h4> \
-        //       </a> \
-        //     </div>`,
-        //     className: 'village-div-icon'});
-        //   const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
-        // });
-      })
-  ]);
+      $scope.data.forEach(resource => {
+        //Calculate the well % level:
+        const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
+        resource.percentageFull = percentageFull;
 
-  /*
-  Convenience method to lazily get the village name
-  */
-  function getVillageName(postcodeVillage) {
-    return "FRED";
+        let icon = null;
+        switch (resource.type) {
+          case ResourceType.WELL:
+            icon = wellIcon;
+            break;
+          case ResourceType.CHECKDAM:
+            icon = checkdamIcon;
+            break;
+          case ResourceType.RAINGAUGE:
+            icon = raingaugeIcon;
+            break;
+        }
+
+        var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
+        marker.bindPopup(getPopupContentForResource(resource));
+        $scope.markers[resource.id] = marker;
+      });
+    });
+
+  $scope.getVillageName = (postcode, villageId) => {
+    return $scope.villages.filter(village => village.postcode === postcode && village.id === villageId)[0]['name'];
   };
 
   $scope.$on('$ionicView.enter', function(e) {
@@ -114,21 +114,6 @@ angular.module('controller.map', [])
     marker.openPopup();
   }
 
-  function distanceBetween(lat1, lng1, lat2, lng2) {
-    var R = 6371000; // metres
-    var φ1 = lat1 * Math.PI / 180; //convert to radians
-    var φ2 = lat2 * Math.PI / 180;
-    var Δφ = (lat2-lat1) * Math.PI / 180;
-    var Δλ = (lng2-lng1) * Math.PI / 180;
-
-    var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-            Math.cos(φ1) * Math.cos(φ2) *
-            Math.sin(Δλ/2) * Math.sin(Δλ/2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    var d = R * c;
-    return d;
-  }
-
   $scope.locate = function() {
     //TODO: re enable for leaflet
     if (navigator.geolocation) {
@@ -143,16 +128,6 @@ angular.module('controller.map', [])
     }
   }
 
-  function ConvertDMSToDD(degrees, minutes, seconds, decimal) {
-    //TODO: implement better...
-    degrees = parseFloat(degrees.toFixed(10));
-    minutes = minutes.toFixed(10)/60.00;
-    var decString = "0." + decimal;
-    seconds = seconds + parseFloat(decString);
-    var dd =  degrees + minutes + seconds/(60*60);
-
-    return dd;
-  }
 
   function saftelyGetLevelString(value) {
     if (angular.isNullOrUndefined(value)) {
@@ -222,7 +197,7 @@ angular.module('controller.map', [])
           specificContent = getSpecificContentForRainGauge(resource);
       }
 
-      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${postcodeVillage}
+      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${$scope.getVillageName(resource.postcode, resource.villageId)}
       <br/>ResourceId : ${resource.id}
       ${specificContent}
       <br/><a href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;

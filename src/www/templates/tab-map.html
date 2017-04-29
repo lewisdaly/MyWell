@@ -33,7 +33,7 @@
       ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource.id)"
       ng-repeat="resource in data | filter:searchResource as results">
 
-        <div class="col">{{resource.village.name}}</div>
+        <div class="col">{{resource.villageName}}</div>
         <div class="col">{{resource.id}}</div>
         <div class="col">{{resource.postcode}}</div>
     </button>

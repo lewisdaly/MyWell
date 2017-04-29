@@ -81,6 +81,9 @@ angular.module('service.api', [])
       method:'get',
       headers: {'Content-Type':'application/json'},
       url: apiUrl + '/api/villages'
+    })
+    .then(function(response) {
+      return response.data;
     });
   }
 
