@@ -151,7 +151,7 @@ angular.module('controller.map-detail', ['nvd3'])
         const reading = results[2].data;
         $scope.resource = reading;
         readingValue = reading.last_value.toFixed(2);
-        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
+        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(0);
       }
 
       let villageAverageReading = null;
