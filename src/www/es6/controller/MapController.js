@@ -81,6 +81,8 @@ angular.module('controller.map', [])
           case ResourceType.RAINGAUGE:
             icon = raingaugeIcon;
             break;
+          default:
+            console.error(`Unknown ResourceType: ${resource.type}`);
         }
 
         var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
@@ -90,14 +92,20 @@ angular.module('controller.map', [])
     });
 
   $scope.getVillageName = (postcode, villageId) => {
-    return $scope.villages.filter(village => village.postcode === postcode && village.id === villageId)[0]['name'];
+    const village = $scope.villages.filter(village => village.postcode === postcode && village.id === villageId)[0]
+    if (!village) {
+      console.error(`Village not found for postcode: ${postcode} and villageId: ${villageId}`);
+      return "null";
+    }
+
+    return village.name;
   };
 
-  $scope.$on('$ionicView.enter', function(e) {
-    if ($scope.map) {
-      google.maps.event.trigger($scope.map, 'resize');
-    }
-  });
+  // $scope.$on('$ionicView.enter', function(e) {
+  //   if ($scope.map) {
+  //     google.maps.event.trigger($scope.map, 'resize');
+  //   }
+  // });
 
   /**
    * Someone has clicked search. Get the resource from id, and navigate, also show popup
