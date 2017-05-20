@@ -48,9 +48,7 @@ angular.module('controller.map', [])
         const icon = L.divIcon({
           html:`\
           <div class=""> \
-            <a class="centerText" href="#/tab/map/${village.postcode}/village/${village.id}"> \
               <h4>${village.name}</h4> \
-            </a> \
           </div>`,
           className: 'village-div-icon'});
         const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
@@ -158,20 +156,10 @@ angular.module('controller.map', [])
   }
 
   const getSpecificContentForWell = (resource) => {
-    let iconImage = "icon_low";
-    if (resource.percentageFull > 33) {
-      iconImage = "icon_med";
-    } else if (resource.percentageFull >= 66) {
-      iconImage = "icon_full";
-    }
-
-    const watertableHeight = resource.well_depth - resource.last_value;
+    const watertableHeight = resource.last_value;
     return `
-    <br/>Watertable Height: ${saftelyGetLevelString(watertableHeight)} m
-    <br/>Percentage Full: ${resource.percentageFull}%
-    <br/> <img src="img/${iconImage}.png" style="
-        height: 50px;
-        "/>`
+    <br/>Depth to Water Table: ${saftelyGetLevelString(watertableHeight)} m
+    `
   }
 
     const getSpecificContentForCheckDam = (resource) => {
