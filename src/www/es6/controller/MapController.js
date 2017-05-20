@@ -19,6 +19,10 @@ angular.module('controller.map', [])
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
+  const getMarkerIdForResource = (resource) => {
+    return `${resource.postcode}-${resource.id}`;
+  }
+
   const loadDataAndSetupMap = () => {
     ApiService.getVillages()
       .then(villages => {
@@ -64,7 +68,7 @@ angular.module('controller.map', [])
 
           var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
           marker.bindPopup(getPopupContentForResource(resource));
-          $scope.markers[resource.id] = marker;
+          $scope.markers[getMarkerIdForResource(resource)] = marker;
         });
       });
   }
@@ -95,14 +99,13 @@ angular.module('controller.map', [])
   /**
    * Someone has clicked search. Get the resource from id, and navigate, also show popup
    */
-  $scope.searchItemPressed = function(event, resourceId) {
+  $scope.searchItemPressed = function(event, resource) {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.close();
     }
 
-    var resource = getResourceFromId(resourceId);
-    var marker = $scope.markers[resourceId];
-
+    //This is sometimes getting the wrong one!
+    var marker = $scope.markers[getMarkerIdForResource(resource)];
     leafletMap.panTo(new L.LatLng(resource.geo.lat, resource.geo.lng));
     marker.openPopup();
   }
@@ -122,7 +125,6 @@ angular.module('controller.map', [])
   }
 
   $scope.refreshDataPressed = () => {
-    console.log("refreshing data");
     loadDataAndSetupMap();
   }
 
@@ -139,12 +141,6 @@ angular.module('controller.map', [])
       title: title,
       template: message
     });
-  }
-
-  function getResourceFromId(id) {
-    return $scope.data.filter(function(resource) {
-      return resource.id === id;
-    }).shift();
   }
 
   const getSpecificContentForWell = (resource) => {

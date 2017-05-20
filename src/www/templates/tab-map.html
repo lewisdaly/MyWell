@@ -38,7 +38,7 @@
     <!-- a little hacky, but the only way to clear the text box -->
     <button
       class="button button-full row"
-      ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource.id)"
+      ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource)"
       ng-repeat="resource in data | filter:searchResource as results">
 
         <div class="col">{{resource.villageName}}</div>
