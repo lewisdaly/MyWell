@@ -1,6 +1,6 @@
 angular.module('controller.settings', [])
-.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService, apiUrl) {
-
+.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService, apiUrl, version_number) {
+  $scope.version_number = version_number;
   $scope.templateUrl = `${apiUrl}/containers/container1/download/template`;
   $scope.apiBaseUrl = apiUrl;
   $scope.imageResourceId = null;

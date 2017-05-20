@@ -13,6 +13,7 @@ ADD package.json /usr/src/app/
 RUN npm install
 
 ENV ENABLE_LOGS=false
+ENV VERSION_NUMBER=
 
 EXPOSE 8100
 

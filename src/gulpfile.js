@@ -21,6 +21,8 @@ let plugins = [
 ];
 
 console.log("ENABLE_LOGS:", process.env.ENABLE_LOGS);
+console.log("VERSION_NUMBER", process.env.VERSION_NUMBER);
+
 if (process.env.ENABLE_LOGS === false) {
   plugins.push("transform-remove-console");
 }
@@ -106,14 +108,9 @@ gulp.task('replace', function () {
 gulp.src('config/constants.js')
   .pipe(replace({
     patterns: [
-      {
-        match: 'apiUrl',
-        replacement: settings.apiUrl
-      },
-      {
-        match: 'debug',
-        replacement: settings.debug
-      }
+      { match: 'apiUrl', replacement: settings.apiUrl},
+      { match: 'debug', replacement: settings.debug},
+      { match: 'version_number', replacement: process.env.VERSION_NUMBER}
     ]
   }))
   .pipe(gulp.dest('www/es6'));
