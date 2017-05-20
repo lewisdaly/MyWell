@@ -15,7 +15,6 @@
   <p class="verify-text">Your account is not verified. Please wait for an admin to verifiy your account</p>
 </div>
 
-<!-- Postcode, Date, Well ID, WT Depth,  -->
 <div ng-if="isUserLoggedInAndVerified">
   <div class="row">
     <h4 class="centerText">Select a reading type:</h4>
@@ -29,7 +28,7 @@
   <form class="list list-inset simple-form">
     <label><h4>Report a new {{readingType.name}} reading:</h4></label>
     <label class="item item-input">
-      <input ng-model="form.postcode" type="tel" placeholder="Postcode">
+      <input ng-model="form.postcode" type="tel" placeholder="Pincode">
     </label>
     <label class="item item-input">
       <input ng-model="form.date" type="date" placeholder="Date">
