@@ -8,6 +8,10 @@ angular.module('controller.map', [])
     CHECKDAM: 'checkdam'
   };
 
+  const wellIcon = L.icon({iconUrl: 'img/ball.png', iconSize:[36, 36], iconAnchor:[0, 0], popupAnchor:[17, 5]});
+  const checkdamIcon = L.icon({iconUrl: 'img/wall.png',iconSize: [36, 36], iconAnchor: [-15, 0], popupAnchor: [17, 5]});
+  const raingaugeIcon = L.icon({iconUrl: 'img/raindrop.svg', iconSize: [36, 56], iconAnchor: [0, 0], popupAnchor: [17, 5]});
+
   $scope.map;
   $scope.markers = {}; //dict of Leaflet Marker Objects
   $scope.data = []; //Data loaded from Server
@@ -15,79 +19,62 @@ angular.module('controller.map', [])
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
+  const loadDataAndSetupMap = () => {
+    ApiService.getVillages()
+      .then(villages => {
+        $scope.villages = villages;
+        villages.forEach(village => {
+          const icon = L.divIcon({
+            html:`\
+            <div class=""> \
+                <h4>${village.name}</h4> \
+            </div>`,
+            className: 'village-div-icon'});
+          const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
+        });
+      })
+      .then(() => ApiService.getResources())
+      .then(function(response) {
+
+        //Manually join the village name
+        $scope.data = response.data.map(resource => {
+          resource.villageName = $scope.getVillageName(resource.postcode, resource.villageId);
+          return resource;
+        });
+
+        $scope.data.forEach(resource => {
+          //Calculate the well % level:
+          const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
+          resource.percentageFull = percentageFull;
+
+          let icon = null;
+          switch (resource.type) {
+            case ResourceType.WELL:
+              icon = wellIcon;
+              break;
+            case ResourceType.CHECKDAM:
+              icon = checkdamIcon;
+              break;
+            case ResourceType.RAINGAUGE:
+              icon = raingaugeIcon;
+              break;
+            default:
+              console.error(`Unknown ResourceType: ${resource.type}`);
+          }
+
+          var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
+          marker.bindPopup(getPopupContentForResource(resource));
+          $scope.markers[resource.id] = marker;
+        });
+      });
+  }
+
   //Set up the Leaflet Map
   var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:10, maxZoom:20}).setView([24.593, 74.198], 16);
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
    .addTo(leafletMap);
 
-  var wellIcon = L.icon({
-   iconUrl: 'img/ball.png',
-   iconSize:     [36, 36], // size of the icon
-   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-  });
-
-  var checkdamIcon = L.icon({
-   iconUrl: 'img/wall.png',
-   iconSize:     [36, 36], // size of the icon
-   iconAnchor:   [-15, 0], // point of the icon which will correspond to marker's location
-   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-  });
-
-  var raingaugeIcon = L.icon({
-   iconUrl: 'img/raindrop.svg',
-   iconSize:     [36, 56], // size of the icon
-   iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-   popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-  });
-
-  ApiService.getVillages()
-    .then(villages => {
-      $scope.villages = villages;
-      villages.forEach(village => {
-        const icon = L.divIcon({
-          html:`\
-          <div class=""> \
-              <h4>${village.name}</h4> \
-          </div>`,
-          className: 'village-div-icon'});
-        const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
-      });
-    })
-    .then(() => ApiService.getResources())
-    .then(function(response) {
-
-      //Manually join the village name
-      $scope.data = response.data.map(resource => {
-        resource.villageName = $scope.getVillageName(resource.postcode, resource.villageId);
-        return resource;
-      });
-
-      $scope.data.forEach(resource => {
-        //Calculate the well % level:
-        const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
-        resource.percentageFull = percentageFull;
-
-        let icon = null;
-        switch (resource.type) {
-          case ResourceType.WELL:
-            icon = wellIcon;
-            break;
-          case ResourceType.CHECKDAM:
-            icon = checkdamIcon;
-            break;
-          case ResourceType.RAINGAUGE:
-            icon = raingaugeIcon;
-            break;
-          default:
-            console.error(`Unknown ResourceType: ${resource.type}`);
-        }
-
-        var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
-        marker.bindPopup(getPopupContentForResource(resource));
-        $scope.markers[resource.id] = marker;
-      });
-    });
+  loadDataAndSetupMap();
 
   $scope.getVillageName = (postcode, villageId) => {
     const village = $scope.villages.filter(village => village.postcode === postcode && village.id === villageId)[0]
@@ -132,6 +119,11 @@ angular.module('controller.map', [])
     else {
       console.log("Geolocation is not supported by this browser.");
     }
+  }
+
+  $scope.refreshDataPressed = () => {
+    console.log("refreshing data");
+    loadDataAndSetupMap();
   }
 
 

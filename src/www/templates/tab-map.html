@@ -2,12 +2,20 @@
 <ion-content class="padding" scroll="false" data-tap-disabled="true">
 
 
-  <!-- TODO: replace with "current village" banner -->
-  <label id="searchBox" class="item item-input">
-    <i class="ion-search"> </i>
-    <input class="positive" ng-model="searchResource" type="text" placeholder=" Search by Id or Pincode">
-  </label>
-  <button class="locateButton button icon ion-android-locate" ng-click=locate()></button>
+  <div class="row">
+    <div class="col col-75">
+      <label id="searchBox" class="item item-input">
+        <i class="ion-search"> </i>
+        <input class="positive" ng-model="searchResource" type="text" placeholder=" Search by Id or Pincode">
+      </label>
+    </div>
+    <div class="col">
+      <button class="button button-small icon ion-android-locate" ng-click=locate()></button>
+    </div>
+    <div class="col">
+      <button class="button button-small icon ion-refresh" ng-click=refreshDataPressed()></button>
+    </div>
+  </div>
 
 
   <!-- <select>

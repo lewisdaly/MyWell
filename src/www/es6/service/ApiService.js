@@ -77,14 +77,23 @@ angular.module('service.api', [])
   }
 
   function getVillages() {
-    return $http({
-      method:'get',
-      headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/villages'
+    return Promise.resolve(true)
+    .then(() => showLoadingIndicator())
+    .then(() => {
+      return $http({
+        method:'get',
+        headers: {'Content-Type':'application/json'},
+        url: apiUrl + '/api/villages'
+      });
     })
-    .then(function(response) {
+    .then(response => {
+      hideLoadingIndicator()
       return response.data;
-    });
+    })
+    .catch(err => {
+      hideLoadingIndicator()
+      return Promise.reject(err)
+    })
   }
 
   //Load all of the things
@@ -232,7 +241,7 @@ angular.module('service.api', [])
       })
       .catch((err) => {
         hideLoadingIndicator();
-        throw err
+        return Promise.reject(err);
       })
   }
 
