@@ -15,6 +15,7 @@ angular.module('controller.map', [])
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
+  console.log("FCUASD");
 
   //Set up the Leaflet Map
   //TODO: look into this: https://github.com/gregallensworth/L.TileLayer.Cordova
@@ -52,7 +53,7 @@ angular.module('controller.map', [])
 
     //Add village tooltips
     let villages = {};
-    
+
     $scope.data.forEach(resource => {
       //Calculate the well % level:
       const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);

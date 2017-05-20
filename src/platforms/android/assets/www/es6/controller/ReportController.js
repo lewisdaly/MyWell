@@ -70,7 +70,7 @@ angular.module('report.controllers', [])
         value: $scope.form.value,
         resourceId: $scope.form.resourceId,
         date: $scope.form.date
-      }
+      };
 
       ApiService.updateReading(data)
       .then(function(response) {

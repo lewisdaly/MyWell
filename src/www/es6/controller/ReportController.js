@@ -87,6 +87,7 @@ angular.module('report.controllers', [])
         postcode: $scope.form.postcode,
         value: $scope.form.value,
         resourceId: $scope.form.resourceId,
+        villageId: `${$scope.form.resourceId}`.substring(0,2),
         date: $scope.form.date
       }
 

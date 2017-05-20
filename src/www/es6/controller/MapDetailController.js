@@ -163,11 +163,10 @@ angular.module('controller.map-detail', ['nvd3'])
           !angular.isNullOrUndefined(percentageFull) ||
           !angular.isNullOrUndefined(villageAverageReading) ||
           !angular.isNullOrUndefined(juneData)) {
-          console.log("Setting up stats!");
         $scope.stats = {
           readingValue: readingValue,
           percentageFull: percentageFull,
-          villageAverageReading: 10.11,
+          villageAverageReading: villageAverageReading,
           juneData: juneData
         }
       }
@@ -182,7 +181,6 @@ angular.module('controller.map-detail', ['nvd3'])
 
       setupChart();
       $scope.$apply();
-      console.log("finished loading data etc.");
       $rootScope.$broadcast('loading:hide');
     })
     .catch(function(err) {

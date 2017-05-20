@@ -17,16 +17,18 @@
           <p class="blueText">{{stats.readingValue}} m</p>
         </span>
       </div>
-      <div ng-if="stats.percentageFull" class="col">
-        <span>
-          <p class="blueText">{{stats.percentageFull}}%</p> <p class="greyText">full</p>
-        </span>
-      </div>
 
       <div ng-if="stats.villageAverageReading" class="col">
         <span>
           <p class="greyText">Average Village Depth to Waterable Depth:</p>
           <p class="blueText">{{stats.villageAverageReading}} m</p>
+        </span>
+      </div>
+
+      <div ng-if="!stats.villageAverageReading" class="col">
+        <span>
+          <p class="greyText">Average Village Depth to Waterable Depth:</p>
+          <p class="blueText">No recent readings</p>
         </span>
       </div>
 
