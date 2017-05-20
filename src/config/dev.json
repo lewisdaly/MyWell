@@ -1,4 +1,4 @@
 {
-  "apiUrl":"http://docker.local:3000",
+  "apiUrl":"https://docker.local:3000",
   "debug":"1"
 }
