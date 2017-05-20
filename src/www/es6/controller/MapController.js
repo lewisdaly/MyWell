@@ -74,7 +74,7 @@ angular.module('controller.map', [])
   }
 
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:10, maxZoom:20}).setView([24.593, 74.198], 16);
+  var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:12, maxZoom:18}).setView([24.593, 74.198], 16);
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
    .addTo(leafletMap);
 
@@ -158,7 +158,7 @@ angular.module('controller.map', [])
 
     const getSpecificContentForRainGauge = (resource) => {
       return `
-      <br/>Latest Reading: ${saftelyGetLevelString(resource.last_value)} m
+      <br/>Latest Reading: ${saftelyGetLevelString(resource.last_value)} mm
       `
     }
 
