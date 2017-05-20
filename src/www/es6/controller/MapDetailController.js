@@ -1,6 +1,6 @@
 "use strict";
 angular.module('controller.map-detail', ['nvd3'])
-.controller('MapDetailController', function($scope, $state, ApiService, $stateParams) {
+.controller('MapDetailController', function($scope, $state, $rootScope, ApiService, $stateParams) {
 
   $scope.$on('$ionicView.enter', function(e) {
 
@@ -119,8 +119,8 @@ angular.module('controller.map-detail', ['nvd3'])
   }
 
   //Get the data from the api service
-  console.log("Getting data from server");
   function setupData() {
+    $rootScope.$broadcast('loading:show');
     return Promise.all([
       // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
       ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
@@ -183,6 +183,7 @@ angular.module('controller.map-detail', ['nvd3'])
       setupChart();
       $scope.$apply();
       console.log("finished loading data etc.");
+      $rootScope.$broadcast('loading:hide');
     })
     .catch(function(err) {
       console.log('Error setting up data', err);
