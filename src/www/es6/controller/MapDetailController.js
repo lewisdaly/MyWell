@@ -13,6 +13,30 @@ angular.module('controller.map-detail', ['nvd3'])
   let splitWeeklyReadings = []; //all weekly readings split per year
   let weeks = [];
 
+
+  let graphLabel = null;
+  let shouldReverseGraph = null;
+
+  const setupResourceType = () => {
+    switch ($scope.resource.type) {
+      case 'well':
+        $scope.readableResourceType = "Well";
+        graphLabel = 'Depth to Water Level (m)';
+        shouldReverseGraph = true;
+        break;
+      case 'raingauge':
+        $scope.readableResourceType = "Rainfall Station";
+        graphLabel = "Rainfall Amount (mm)";
+        shouldReverseGraph = false;
+        break;
+      case 'checkdam':
+        $scope.readableResourceType = "Checkdam";
+        graphLabel = "Water Column Height (m)"
+        shouldReverseGraph = false;
+        break;
+    }
+  }
+
   const getChartDataAndLabel = (dataRange) => {
     let dataAndLabel = {
       data: [],
@@ -88,15 +112,14 @@ angular.module('controller.map-detail', ['nvd3'])
       options: {
         title: {
             display: true,
-            text: 'Depth to Water Level (m)'
+            text: graphLabel
         },
         spanGaps: false,
         scales: {
-          // reverse: true,
           yAxes: [{
             ticks: {
               beginAtZero:true,
-              reverse:true
+              reverse:shouldReverseGraph
             }
           }]
         }
@@ -122,7 +145,6 @@ angular.module('controller.map-detail', ['nvd3'])
   function setupData() {
     $rootScope.$broadcast('loading:show');
     return Promise.all([
-      // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
       ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
       ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
         .catch(err => console.log(err)),
@@ -179,6 +201,7 @@ angular.module('controller.map-detail', ['nvd3'])
         allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
       ];
 
+      setupResourceType();
       setupChart();
       $scope.$apply();
       $rootScope.$broadcast('loading:hide');
