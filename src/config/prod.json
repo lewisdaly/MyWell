@@ -1,4 +1,4 @@
 {
-  "apiUrl":"https://mywell.marvi.org.in:3000",
+  "apiUrl":"https://mywell-server.marvi.org.in",
   "debug":"1"
 }
