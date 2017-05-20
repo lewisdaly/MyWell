@@ -35,12 +35,17 @@ angular.module('report.controllers', [])
     well: {
       id: 'well',
       name: 'Well',
-      valuePlaceholder: 'WT Depth (m)'
+      valuePlaceholder: 'Depth to Water Level (m)'
     },
     raingauge: {
       id: 'raingauge',
       name: 'Rainfall',
       valuePlaceholder: 'Rainfall amount (mm)'
+    },
+    checkdam: {
+      id: 'checkdam',
+      name: 'Checkdam',
+      valuePlaceholder: 'Water Column Height (m)'
     }
   }
 
