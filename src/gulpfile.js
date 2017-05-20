@@ -16,6 +16,15 @@ var paths = {
   es6: ['./www/es6/**/*.js']
 };
 
+let plugins = [
+  "transform-strict-mode"
+];
+
+console.log("ENABLE_LOGS:", process.env.ENABLE_LOGS);
+if (process.env.ENABLE_LOGS === false) {
+  plugins.push("transform-remove-console");
+}
+
 gulp.task('default', ['babel', 'sass']);
 
 gulp.task('sass', function(done) {
@@ -42,7 +51,7 @@ gulp.task("babel", function () {
     .pipe(sourcemaps.init()) // must be before all plugins that change js
     .pipe(babel({
       presets: ['es2015'],
-      plugins:["transform-strict-mode"]
+      plugins: plugins
     }))
     .on('error', handleError)
 		.pipe(concat('dist.js'))

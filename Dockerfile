@@ -12,6 +12,8 @@ WORKDIR /usr/src/app
 ADD package.json /usr/src/app/
 RUN npm install
 
+ENV ENABLE_LOGS=false
+
 EXPOSE 8100
 
 CMD [ "npm" "run" "prod"]
