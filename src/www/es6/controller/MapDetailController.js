@@ -156,7 +156,7 @@ angular.module('controller.map-detail', ['nvd3'])
 
       let villageAverageReading = null;
       if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
-        villageAverageReading = results[3].data.avgReading;
+        villageAverageReading = results[3].data.avgReading.value;
       }
 
       if (!angular.isNullOrUndefined(readingValue) ||
