@@ -184,6 +184,6 @@ angular.module('controller.map', [])
       return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${$scope.getVillageName(resource.postcode, resource.villageId)}
       <br/>ResourceId : ${resource.id}
       ${specificContent}
-      <br/><a href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;
+      <br/><a ng-href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;
     }
 });
