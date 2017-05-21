@@ -208,6 +208,7 @@ angular.module('controller.map-detail', ['nvd3'])
     })
     .catch(function(err) {
       console.log('Error setting up data', err);
+      $rootScope.$broadcast('loading:hide');
     });
   }
 

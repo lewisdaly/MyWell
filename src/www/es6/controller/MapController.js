@@ -12,15 +12,29 @@ angular.module('controller.map', [])
   const checkdamIcon = L.icon({iconUrl: 'img/wall.png',iconSize: [36, 36], iconAnchor: [-15, 0], popupAnchor: [17, 5]});
   const raingaugeIcon = L.icon({iconUrl: 'img/raindrop.svg', iconSize: [36, 56], iconAnchor: [0, 0], popupAnchor: [17, 5]});
 
-  $scope.map;
   $scope.markers = {}; //dict of Leaflet Marker Objects
   $scope.data = []; //Data loaded from Server
   $scope.isPageActive = true;
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
+  const getMarkerIdForVillage = (village) => {
+    return `${village.postcode}-${village.id}`;
+  }
+
   const getMarkerIdForResource = (resource) => {
     return `${resource.postcode}-${resource.id}`;
+  }
+
+  const resetMap = () => {
+    Object.keys($scope.markers).forEach(_key => {
+      let marker = $scope.markers[_key];
+      if (!marker) {
+        console.log("no marker for key:", _key);
+        return;
+      }
+      leafletMap.removeLayer(marker);
+    });
   }
 
   const loadDataAndSetupMap = () => {
@@ -35,6 +49,8 @@ angular.module('controller.map', [])
             </div>`,
             className: 'village-div-icon'});
           const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
+          $scope.markers[getMarkerIdForVillage(village)] = marker;
+
         });
       })
       .then(() => ApiService.getResources())
@@ -125,6 +141,7 @@ angular.module('controller.map', [])
   }
 
   $scope.refreshDataPressed = () => {
+    resetMap();
     loadDataAndSetupMap();
   }
 

@@ -17,38 +17,29 @@
     </div>
   </div>
 
+  <div class="searchPanel" id="panel" ng-show='searchResource.length > 2'>
+    <div class="row top-row">
+      <div class="col">Village</div>
+      <div class="col">ResourceId</div>
+      <div class="col">Pincode</div>
+    </div>
+    <div>
+      <button
+        class="button button-full row"
+        ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource)"
+        ng-repeat="resource in data | filter:searchResource as results">
 
-  <!-- <select>
-    <option ng-repeat="resource in well_data | filter:searchResource">
-      {{resource}}
-    </option>
-  </select> -->
-
-<!--TODO: flexbox layouts nicely  -->
-<div class="searchPanel" id="panel" ng-show='searchResource.length > 2'>
-  <div class="row top-row">
-    <div class="col">Village</div>
-    <div class="col">ResourceId</div>
-    <div class="col">Pincode</div>
+          <div class="col">{{resource.villageName}}</div>
+          <div class="col">{{resource.id}}</div>
+          <div class="col">{{resource.postcode}}</div>
+      </button>
+    </div>
+    <div ng-show="results.length == 0" class="no-results">
+      <p>
+        No results found.
+      </p>
+    </div>
   </div>
-  <div>
-    <!-- a little hacky, but the only way to clear the text box -->
-    <button
-      class="button button-full row"
-      ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource)"
-      ng-repeat="resource in data | filter:searchResource as results">
-
-        <div class="col">{{resource.villageName}}</div>
-        <div class="col">{{resource.id}}</div>
-        <div class="col">{{resource.postcode}}</div>
-    </button>
-  </div>
-  <div ng-show="results.length == 0" class="no-results">
-    <p>
-      No results found.
-    </p>
-  </div>
-</div>
 
   <div class="map-container">
     <div id="leafletMap"></div>
