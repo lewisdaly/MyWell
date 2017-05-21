@@ -1,6 +1,6 @@
 "use strict";
 angular.module('controller.map-detail', ['nvd3'])
-.controller('MapDetailController', function($scope, $state, ApiService, $stateParams) {
+.controller('MapDetailController', function($scope, $state, $rootScope, ApiService, $stateParams) {
 
   $scope.$on('$ionicView.enter', function(e) {
 
@@ -12,6 +12,30 @@ angular.module('controller.map-detail', ['nvd3'])
   let allWeeklyReadings = [];
   let splitWeeklyReadings = []; //all weekly readings split per year
   let weeks = [];
+
+
+  let graphLabel = null;
+  let shouldReverseGraph = null;
+
+  const setupResourceType = () => {
+    switch ($scope.resource.type) {
+      case 'well':
+        $scope.readableResourceType = "Well";
+        graphLabel = 'Depth to Water Level (m)';
+        shouldReverseGraph = true;
+        break;
+      case 'raingauge':
+        $scope.readableResourceType = "Rainfall Station";
+        graphLabel = "Rainfall Amount (mm)";
+        shouldReverseGraph = false;
+        break;
+      case 'checkdam':
+        $scope.readableResourceType = "Checkdam";
+        graphLabel = "Water Column Height (m)"
+        shouldReverseGraph = false;
+        break;
+    }
+  }
 
   const getChartDataAndLabel = (dataRange) => {
     let dataAndLabel = {
@@ -88,15 +112,14 @@ angular.module('controller.map-detail', ['nvd3'])
       options: {
         title: {
             display: true,
-            text: 'Depth to Water Level (m)'
+            text: graphLabel
         },
         spanGaps: false,
         scales: {
-          // reverse: true,
           yAxes: [{
             ticks: {
               beginAtZero:true,
-              reverse:true
+              reverse:shouldReverseGraph
             }
           }]
         }
@@ -119,10 +142,9 @@ angular.module('controller.map-detail', ['nvd3'])
   }
 
   //Get the data from the api service
-  console.log("Getting data from server");
   function setupData() {
+    $rootScope.$broadcast('loading:show');
     return Promise.all([
-      // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
       ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
       ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
         .catch(err => console.log(err)),
@@ -151,19 +173,18 @@ angular.module('controller.map-detail', ['nvd3'])
         const reading = results[2].data;
         $scope.resource = reading;
         readingValue = reading.last_value.toFixed(2);
-        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
+        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(0);
       }
 
       let villageAverageReading = null;
       if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
-        villageAverageReading = results[3].data.avgReading;
+        villageAverageReading = results[3].data.avgReading.value;
       }
 
       if (!angular.isNullOrUndefined(readingValue) ||
           !angular.isNullOrUndefined(percentageFull) ||
           !angular.isNullOrUndefined(villageAverageReading) ||
           !angular.isNullOrUndefined(juneData)) {
-          console.log("Setting up stats!");
         $scope.stats = {
           readingValue: readingValue,
           percentageFull: percentageFull,
@@ -180,12 +201,14 @@ angular.module('controller.map-detail', ['nvd3'])
         allWeeklyReadings.slice(slicePoints[0], slicePoints[1])
       ];
 
+      setupResourceType();
       setupChart();
-      $scope.$apply(); 
-      console.log("finished loading data etc.");
+      $scope.$apply();
+      $rootScope.$broadcast('loading:hide');
     })
     .catch(function(err) {
       console.log('Error setting up data', err);
+      $rootScope.$broadcast('loading:hide');
     });
   }
 

@@ -20,7 +20,7 @@ angular.module('starter', [
   'controller.register',
   'controller.map-detail',
   'controller.village-detail',
-  
+
   'service.authentication',
   'service.login',
   'service.signup',
@@ -90,6 +90,12 @@ angular.module('starter', [
   $rootScope.$on('loading:show', function() {
     $ionicLoading.show({
       template: '<ion-spinner></ion-spinner>'
+    });
+  })
+
+  $rootScope.$on('loading:show-slow', function() {
+    $ionicLoading.show({
+      template: 'Please wait, this may take up to 10 minutes</br><ion-spinner></ion-spinner>'
     });
   })
 

@@ -156,7 +156,7 @@ angular.module('controller.map-detail', ['nvd3']).controller('MapDetailControlle
         $scope.stats = {
           readingValue: readingValue,
           percentageFull: percentageFull,
-          villageAverageReading: villageAverageReading,
+          villageAverageReading: 10.11,
           juneData: juneData
         };
       }

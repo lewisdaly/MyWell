@@ -1,5 +1,7 @@
 'use strict';
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 angular.module('service.api', []).service('ApiService', function ($http, $q, $rootScope, apiUrl, AuthenticationService, $localstorage, CachingService) {
 
   return {
@@ -200,13 +202,16 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
     //TODO: make url parameters load properly
     //TODO: inject hide and show loading indicator into every request...
     return Promise.resolve(true).then(function () {
-      return showLoadingIndicator();
+      return showSlowLoadingIndicator();
     }).then(function () {
-      return $http({
+      return $http(_defineProperty({
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
-        url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken()
-      });
+        url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken(),
+        timeout: 1000 * 60 * 10 }, 'headers', {
+        'timeout': 1000,
+        'Connection': 'Keep-Alive'
+      }));
     }).then(function (res) {
       hideLoadingIndicator();
       return res;
@@ -218,6 +223,10 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
 
   function showLoadingIndicator() {
     $rootScope.$broadcast('loading:show');
+  }
+
+  function showSlowLoadingIndicator() {
+    $rootScope.$broadcast('loading:show-slow');
   }
 
   function hideLoadingIndicator() {

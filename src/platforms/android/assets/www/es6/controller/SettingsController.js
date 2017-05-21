@@ -1,6 +1,6 @@
 angular.module('controller.settings', [])
-.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService, apiUrl) {
-
+.controller('SettingsController', function($scope, AuthenticationService, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService, apiUrl, version_number) {
+  $scope.version_number = version_number;
   $scope.templateUrl = `${apiUrl}/containers/container1/download/template`;
   $scope.apiBaseUrl = apiUrl;
   $scope.imageResourceId = null;
@@ -49,6 +49,7 @@ angular.module('controller.settings', [])
    * Add new image for resource
    */
   $scope.showGetImagePopup = function() {
+    let shouldCloseSilently = false;
     const isDataValid = (data) => {
       let valid = true;
 
@@ -60,8 +61,6 @@ angular.module('controller.settings', [])
       if (data.postcode < 99999) { valid = false; }
       if (data.imageResourceId < 999) { valid = false; }
       if (data.imageResourceId > 9999) { valid = false; }
-
-      console.log(valid);
 
       return valid;
     }
@@ -80,7 +79,7 @@ angular.module('controller.settings', [])
       {
         text: 'Cancel',
         onTap: function(e) {
-          console.log('closing');
+          shouldCloseSilently = true;
         }
       },
       {
@@ -100,7 +99,6 @@ angular.module('controller.settings', [])
 
    popup
     .then(response => {
-      console.log("hey");
       if (angular.isNullOrUndefined(response)) {
         //Do nothing!
         return null;
@@ -115,7 +113,9 @@ angular.module('controller.settings', [])
         })
     })
     .then(() => {
-      displayMessage('Thanks.', 'Updated image successfully!');
+      if (!shouldCloseSilently) {
+        displayMessage('Thanks.', 'Updated image successfully!');
+      }
     })
     .catch(err => {
       console.log('Error getting image', err);

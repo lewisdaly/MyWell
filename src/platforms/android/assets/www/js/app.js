@@ -71,6 +71,12 @@ angular.module('starter', ['ionic', 'ngMap', 'ngFileUpload', 'starter.controller
     });
   });
 
+  $rootScope.$on('loading:show-slow', function () {
+    $ionicLoading.show({
+      template: 'Please wait, this may take up to 10 minutes</br><ion-spinner></ion-spinner>'
+    });
+  });
+
   $rootScope.$on('loading:hide', function () {
     $ionicLoading.hide();
   });

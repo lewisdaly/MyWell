@@ -3,118 +3,125 @@ angular.module('controller.map', [])
 .controller('MapCtrl', function($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
 
   const ResourceType = {
-      WELL: 'well',
-      RAINGAUGE: 'raingauge',
-      CHECKDAM: 'checkdam'
-    };
+    WELL: 'well',
+    RAINGAUGE: 'raingauge',
+    CHECKDAM: 'checkdam'
+  };
 
-  var wellIcon = L.icon({
-    iconUrl: 'img/ball.png',
-    iconSize:     [36, 36], // size of the icon
-    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-    popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-  });
+  const wellIcon = L.icon({iconUrl: 'img/ball.png', iconSize:[36, 36], iconAnchor:[0, 0], popupAnchor:[17, 5]});
+  const checkdamIcon = L.icon({iconUrl: 'img/wall.png',iconSize: [36, 36], iconAnchor: [-15, 0], popupAnchor: [17, 5]});
+  const raingaugeIcon = L.icon({iconUrl: 'img/raindrop.svg', iconSize: [36, 56], iconAnchor: [0, 0], popupAnchor: [17, 5]});
 
-  var checkdamIcon = L.icon({
-    iconUrl: 'img/wall.png',
-    iconSize:     [36, 36], // size of the icon
-    iconAnchor:   [-15, 0], // point of the icon which will correspond to marker's location
-    popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-  });
-
-  var raingaugeIcon = L.icon({
-    iconUrl: 'img/raindrop.svg',
-    iconSize:     [36, 56], // size of the icon
-    iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-    popupAnchor:  [17, 5] // point from which the popup should open relative to the iconAnchor
-  });
-
-  $scope.map;
   $scope.markers = {}; //dict of Leaflet Marker Objects
   $scope.data = []; //Data loaded from Server
   $scope.isPageActive = true;
   $scope.closestVillage = "Varni"; //default
   $scope.searchResource = '';
 
+  const getMarkerIdForVillage = (village) => {
+    return `${village.postcode}-${village.id}`;
+  }
 
-  const loadDataAndSetupMap() => {
-    return ApiService.getResources()
-    .then(function(response) {
-      $scope.data = response.data;
+  const getMarkerIdForResource = (resource) => {
+    return `${resource.postcode}-${resource.id}`;
+  }
 
-      //Add village tooltips
-      let villages = {};
-
-      $scope.data.forEach(resource => {
-        //Calculate the well % level:
-        const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
-        resource.percentageFull = percentageFull;
-
-        let icon = null;
-        switch (resource.type) {
-          case ResourceType.WELL:
-            icon = wellIcon;
-            break;
-          case ResourceType.CHECKDAM:
-            icon = checkdamIcon;
-            break;
-          case ResourceType.RAINGAUGE:
-            icon = raingaugeIcon;
-            break;
-        }
-
-        var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
-        marker.bindPopup(getPopupContentForResource(resource));
-        $scope.markers[resource.id] = marker;
-
-        if (angular.isNullOrUndefined(resource.village)) {
-          return;
-        }
-
-        if (!villages[resource.village.id]) {
-          villages[resource.village.id] = resource.village;
-        }
-      });
-
-      Object.values(villages).forEach(village => {
-        const icon = L.divIcon({
-          html:`\
-          <div class=""> \
-            <a class="centerText" href="#/tab/map/${village.postcode}/village/${village.id}"> \
-              <h4>${village.name}</h4> \
-            </a> \
-          </div>`,
-          className: 'village-div-icon'});
-        const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
-      });
+  const resetMap = () => {
+    Object.keys($scope.markers).forEach(_key => {
+      let marker = $scope.markers[_key];
+      if (!marker) {
+        console.log("no marker for key:", _key);
+        return;
+      }
+      leafletMap.removeLayer(marker);
     });
   }
 
+  const loadDataAndSetupMap = () => {
+    ApiService.getVillages()
+      .then(villages => {
+        $scope.villages = villages;
+        villages.forEach(village => {
+          const icon = L.divIcon({
+            html:`\
+            <div class=""> \
+                <h4>${village.name}</h4> \
+            </div>`,
+            className: 'village-div-icon'});
+          const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
+          $scope.markers[getMarkerIdForVillage(village)] = marker;
+
+        });
+      })
+      .then(() => ApiService.getResources())
+      .then(function(response) {
+
+        //Manually join the village name
+        $scope.data = response.data.map(resource => {
+          resource.villageName = $scope.getVillageName(resource.postcode, resource.villageId);
+          return resource;
+        });
+
+        $scope.data.forEach(resource => {
+          //Calculate the well % level:
+          const percentageFull = (((resource.well_depth - resource.last_value)/resource.well_depth) * 100).toFixed(2);
+          resource.percentageFull = percentageFull;
+
+          let icon = null;
+          switch (resource.type) {
+            case ResourceType.WELL:
+              icon = wellIcon;
+              break;
+            case ResourceType.CHECKDAM:
+              icon = checkdamIcon;
+              break;
+            case ResourceType.RAINGAUGE:
+              icon = raingaugeIcon;
+              break;
+            default:
+              console.error(`Unknown ResourceType: ${resource.type}`);
+          }
+
+          var marker = L.marker([resource.geo.lat, resource.geo.lng], {icon:icon}).addTo(leafletMap);
+          marker.bindPopup(getPopupContentForResource(resource));
+          $scope.markers[getMarkerIdForResource(resource)] = marker;
+        });
+      });
+  }
+
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:false }).setView([24.593, 74.198], 16);
+  var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:12, maxZoom:18}).setView([24.593, 74.198], 16);
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
    .addTo(leafletMap);
 
   loadDataAndSetupMap();
 
-  $scope.$on('$ionicView.enter', function(e) {
-    if ($scope.map) {
-      //TODO: maybe something like this for leaflet
-      google.maps.event.trigger($scope.map, 'resize');
+  $scope.getVillageName = (postcode, villageId) => {
+    const village = $scope.villages.filter(village => village.postcode === postcode && village.id === villageId)[0]
+    if (!village) {
+      console.error(`Village not found for postcode: ${postcode} and villageId: ${villageId}`);
+      return "null";
     }
-  });
+
+    return village.name;
+  };
+
+  // $scope.$on('$ionicView.enter', function(e) {
+  //   if ($scope.map) {
+  //     google.maps.event.trigger($scope.map, 'resize');
+  //   }
+  // });
 
   /**
    * Someone has clicked search. Get the resource from id, and navigate, also show popup
    */
-  $scope.searchItemPressed = function(event, resourceId) {
+  $scope.searchItemPressed = function(event, resource) {
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.close();
     }
 
-    var resource = getResourceFromId(resourceId);
-    var marker = $scope.markers[resourceId];
-
+    //This is sometimes getting the wrong one!
+    var marker = $scope.markers[getMarkerIdForResource(resource)];
     leafletMap.panTo(new L.LatLng(resource.geo.lat, resource.geo.lng));
     marker.openPopup();
   }
@@ -134,47 +141,31 @@ angular.module('controller.map', [])
   }
 
   $scope.refreshDataPressed = () => {
-    console.log("refreshing data");
+    resetMap();
     loadDataAndSetupMap();
   }
 
 
-    function saftelyGetLevelString(value) {
-      if (angular.isNullOrUndefined(value)) {
-        return "";
-      }
-      return value.toFixed(2);
+  function saftelyGetLevelString(value) {
+    if (angular.isNullOrUndefined(value)) {
+      return "";
     }
+    return value.toFixed(2);
+  }
 
-    function displayMessage(title, message) {
-      var alertPopup = $ionicPopup.alert({
-        title: title,
-        template: message
-      });
-    }
+  function displayMessage(title, message) {
+    var alertPopup = $ionicPopup.alert({
+      title: title,
+      template: message
+    });
+  }
 
-    function getResourceFromId(id) {
-      return $scope.data.filter(function(resource) {
-        return resource.id === id;
-      }).shift();
-    }
-
-    const getSpecificContentForWell = (resource) => {
-      let iconImage = "icon_low";
-      if (resource.percentageFull > 33) {
-        iconImage = "icon_med";
-      } else if (resource.percentageFull >= 66) {
-        iconImage = "icon_full";
-      }
-
-      const watertableHeight = resource.well_depth - resource.last_value;
-      return `
-      <br/>Watertable Height: ${saftelyGetLevelString(watertableHeight)} m
-      <br/>Percentage Full: ${resource.percentageFull}%
-      <br/> <img src="img/${iconImage}.png" style="
-          height: 50px;
-          "/>`
-    }
+  const getSpecificContentForWell = (resource) => {
+    const watertableHeight = resource.last_value;
+    return `
+    <br/>Depth to Water Table: ${saftelyGetLevelString(watertableHeight)} m
+    `
+  }
 
     const getSpecificContentForCheckDam = (resource) => {
       return `
@@ -184,12 +175,13 @@ angular.module('controller.map', [])
 
     const getSpecificContentForRainGauge = (resource) => {
       return `
-      <br/>Latest Reading: ${saftelyGetLevelString(resource.last_value)} m
+      <br/>Latest Reading: ${saftelyGetLevelString(resource.last_value)} mm
       `
     }
 
     function getPopupContentForResource(resource) {
-      let villageName = "";
+      let postcodeVillage = `${resource.postcode}:${resource.villageId}`;
+
       if (!angular.isNullOrUndefined(resource.village)) {
         villageName = resource.village.name;
       }
@@ -206,9 +198,9 @@ angular.module('controller.map', [])
           specificContent = getSpecificContentForRainGauge(resource);
       }
 
-      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${villageName}
+      return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${$scope.getVillageName(resource.postcode, resource.villageId)}
       <br/>ResourceId : ${resource.id}
       ${specificContent}
       <br/><a href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;
     }
-  })
+});

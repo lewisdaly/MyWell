@@ -3,40 +3,69 @@
   <ion-content>
     <div class="banner">
       <div class="topImage">
-        <img data-ng-src="data:image/png;base64,{{resource.image}}" data-err-src="images/png/avatar.png"/>
+        <img ng-if="resource.image" data-ng-src="data:image/png;base64,{{resource.image}}"/>
+        <img ng-if="!resource.image" ng-src="img/marvi_logo.png"/>
       </div>
       <div class="heading">
-        <h3>{{resource.type | capitalize}}: {{resourceId}} - {{resource.owner}}</h3>
+        <h3>{{readableResourceType}}: {{resourceId}} - {{resource.owner}}</h3>
       </div>
     </div>
 
-    <div ng-if="stats" class="stats row responsive-sm">
-      <div ng-if="stats.readingValue" class="col">
-        <span>
-          <p class="greyText">Watertable Height:</p>
-          <p class="blueText">{{stats.readingValue}} m</p>
-        </span>
-      </div>
-      <div ng-if="stats.percentageFull" class="col">
-        <span>
-          <p class="blueText">{{stats.percentageFull}}%</p> <p class="greyText">full</p>
-        </span>
-      </div>
 
-      <div ng-if="stats.villageAverageReading" class="col">
-        <span>
-          <p class="greyText">Average Village Waterable Depth:</p>
-          <p class="blueText">{{stats.villageAverageReading}} m</p>
-        </span>
-      </div>
+    <div ng-if="resource.type === 'well'">
+      <div ng-if="stats" class="stats row responsive-sm">
+        <div ng-if="stats.readingValue" class="col">
+          <span>
+            <p class="greyText">Depth to Water Table:</p>
+            <p class="blueText">{{stats.readingValue}} m</p>
+          </span>
+        </div>
 
-      <div ng-if="stats.juneData.difference" class="col">
-        <span>
-          <p class="greyText">Difference from <br/>{{stats.juneData.pastReadingDate}}:</p>
-          <p class="blueText">{{stats.juneData.difference}}</p>
-        </span>
+        <div ng-if="stats.villageAverageReading" class="col">
+          <span>
+            <p class="greyText">Average Village Depth to Waterable Depth:</p>
+            <p class="blueText">{{stats.villageAverageReading}} m</p>
+          </span>
+        </div>
+
+        <div ng-if="!stats.villageAverageReading" class="col">
+          <span>
+            <p class="greyText">Average Village Depth to Waterable Depth:</p>
+            <p class="blueText">No recent readings</p>
+          </span>
+        </div>
+
+        <div ng-if="stats.juneData.difference" class="col">
+          <span>
+            <p class="greyText">Difference from <br/>{{stats.juneData.pastReadingDate}}:</p>
+            <p class="blueText">{{stats.juneData.difference}}</p>
+          </span>
+        </div>
       </div>
     </div>
+
+    <div ng-if="resource.type === 'raingauge'">
+      <div ng-if="stats" class="stats row responsive-sm">
+        <div ng-if="stats.readingValue" class="col">
+          <span>
+            <p class="greyText">Last Rainfall Amount:</p>
+            <p class="blueText">{{stats.readingValue}} mm</p>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div ng-if="resource.type === 'checkdam'">
+      <div ng-if="stats" class="stats row responsive-sm">
+        <div ng-if="stats.readingValue" class="col">
+          <span>
+            <p class="greyText">Water Column Height:</p>
+            <p class="blueText">{{stats.readingValue}} m</p>
+          </span>
+        </div>
+      </div>
+    </div>
+
 
     <div ng-if="!stats" class="stats">
       <span>
@@ -51,9 +80,9 @@
         <canvas id="detailChart" width="400" height="350"></canvas>
       </div>
       <div class="row">
-        <button class="col" ng-click="updateData('month')">1 Month</button>
-        <button class="col" ng-click="updateData('3month')">3 Months</button>
-        <button class="col" ng-click="updateData('year')">1 Year</button>
+        <button class="col button button-outline" ng-click="updateData('month')">1 Month</button>
+        <button class="col button button-outline" ng-click="updateData('3month')">3 Months</button>
+        <button class="col button button-outline" ng-click="updateData('year')">1 Year</button>
       </div>
     </div>
 
