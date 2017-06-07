@@ -129,7 +129,7 @@ angular.module('controller.register', [])
     }
 
     //Transform to the format we need:
-    const villageId = parseInt(form.id.toString()[0]);
+    const villageId = parseInt(form.id.toString().substring(0, 2));
 
     const data = {
       id: form.id,
