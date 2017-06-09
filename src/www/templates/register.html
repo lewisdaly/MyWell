@@ -22,15 +22,23 @@
           <input class="col" ng-model="form.lng" type="number" placeholder="Longitude">
         </div>
       </div>
-    	<label class="item item-input">
-    		<input ng-model="form.postcode" type="tel" placeholder="Pincode *">
+      <label class="item item-input">
+    		<input ng-model="form.village_name" type="text" placeholder="Village/Town Name">
     	</label>
     	<label class="item item-input">
-    		<input ng-model="form.owner" type="text" placeholder="Well Owner *">
+    		<input ng-model="form.postcode" type="tel" placeholder="Pincode">
     	</label>
     	<label class="item item-input">
-    		<input ng-model="form.id" type="tel" placeholder="4 Digit Resource ID - eg. 1020 *">
+    		<input ng-model="form.owner" type="text" placeholder="Owner">
     	</label>
+    	<label class="item item-input">
+        +91
+    		<input ng-model="form.mobile" type="tel" placeholder="Mobile (India only)">
+    	</label>
+    	<label class="item item-input">
+    		<input ng-model="form.email" type="email" placeholder="email">
+    	</label>
+
       <label class="item item-input">
         <div class="row">
           <p class="col">Resource Type*</p>
