@@ -10,7 +10,7 @@ angular.module('controller.map', [])
 
   const wellIcon = L.icon({iconUrl: 'img/ball.png', iconSize:[36, 36], iconAnchor:[0, 0], popupAnchor:[17, 5]});
   const checkdamIcon = L.icon({iconUrl: 'img/wall.png',iconSize: [36, 36], iconAnchor: [-15, 0], popupAnchor: [17, 5]});
-  const raingaugeIcon = L.icon({iconUrl: 'img/raindrop.svg', iconSize: [36, 56], iconAnchor: [0, 0], popupAnchor: [17, 5]});
+  const raingaugeIcon = L.icon({iconUrl: 'img/raindrop.svg', iconSize: [36, 56], iconAnchor: [0,0], popupAnchor: [17, 5]});
 
   $scope.markers = {}; //dict of Leaflet Marker Objects
   $scope.data = []; //Data loaded from Server
@@ -45,7 +45,7 @@ angular.module('controller.map', [])
           const icon = L.divIcon({
             html:`\
             <div class=""> \
-                <h4>${village.name}</h4> \
+                <h2>${village.name}</h2> \
             </div>`,
             className: 'village-div-icon'});
           const marker = L.marker([village.coordinates.lat, village.coordinates.lng], {icon:icon}).addTo(leafletMap);
@@ -90,7 +90,7 @@ angular.module('controller.map', [])
   }
 
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:false, minZoom:12, maxZoom:18}).setView([24.593, 74.198], 16);
+  var leafletMap = L.map('leafletMap', { zoomControl:true, minZoom:5, maxZoom:18}).setView([24.593, 74.198], 16);
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
    .addTo(leafletMap);
 

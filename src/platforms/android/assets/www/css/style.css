@@ -199,15 +199,22 @@ body {
 
 .village-div-icon {
   z-index: 100000 !important;
-  width: 125px !important;
+  width: 300px !important;
   height: 45px !important;
   padding: 3px;
-  background-color: #001f3f;
-  border: 1px solid #001f3f;
-  border-radius: 3px;
-  color: #222;
-  background: #0074D9;
-  opacity: 0.8;
+  margin-left: -150px !important;
+  margin-top: -30px !important;
+  /*background-color: #001f3f;*/
+  /*border: 1px solid #001f3f;*/
+  /*border-radius: 3px;*/
+  /*color: #222;*/
+  /*background: #0074D9;*/
+  /*opacity: 0.8;*/
+}
+
+.village-div-icon h2 {
+  text-shadow: 2px 0 0 #222, -2px 0 0 #222, 0 2px 0 #222, 0 -2px 0 #222, 1px 1px #222, -1px -1px 0 #222, 1px -1px 0 #222, -1px 1px 0 #222;
+  color: #eee
 }
 
 /* Map Detail View */

@@ -10,8 +10,10 @@
 
 <ion-content scrollable="false">
 
-
 <form>
+	<label class="item item-input">
+		<input ng-model="form.village_name" type="text" placeholder="Village/Town Name">
+	</label>
 	<label class="item item-input">
 		<input ng-model="form.postcode" type="tel" placeholder="Pincode">
 	</label>
@@ -19,7 +21,11 @@
 		<input ng-model="form.owner" type="text" placeholder="Owner">
 	</label>
 	<label class="item item-input">
-		<input ng-model="form.id" type="tel" placeholder="3 digit Resource ID - eg. 102">
+    +91
+		<input ng-model="form.mobile" type="tel" placeholder="Mobile (India only)">
+	</label>
+	<label class="item item-input">
+		<input ng-model="form.email" type="email" placeholder="email">
 	</label>
 	<label class="item item-input">
 		<input ng-model="form.max_wt_depth" step="0.01" type="number" placeholder="Max WT Depth" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
