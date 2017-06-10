@@ -25,7 +25,7 @@ var plugins = [
 console.log("ENABLE_LOGS:", process.env.ENABLE_LOGS);
 console.log("VERSION_NUMBER", process.env.VERSION_NUMBER);
 
-if (process.env.ENABLE_LOGS === false) {
+if (process.env.ENABLE_LOGS === false || process.env.ENABLE_LOGS === 'false' ) {
   plugins.push("transform-remove-console");
 }
 
