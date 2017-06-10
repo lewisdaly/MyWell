@@ -168,9 +168,9 @@ angular.module('controller.map-detail', ['nvd3'])
 
       let readingValue = null;
       let percentageFull = null;
-      if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
+      if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2])) {
         //TODO: check if we are a rain_gauge or checkdam
-        const reading = results[2].data;
+        const reading = results[2];
         $scope.resource = reading;
         readingValue = reading.last_value.toFixed(2);
         percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(0);

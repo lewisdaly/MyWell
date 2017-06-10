@@ -119,9 +119,13 @@ angular.module('controller.map-detail', ['nvd3']).controller('MapDetailControlle
   function setupData() {
     return Promise.all([
     // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
-    ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId), ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode).catch(function (err) {
-      return console.log(err);
-    }), ApiService.getResource($stateParams.postcode, $scope.resourceId), ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)]).then(function (results) {
+      ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
+      ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
+        .catch(function (err) {
+          return console.log(err);
+        }),
+      ApiService.getResource($stateParams.postcode, $scope.resourceId),
+      ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)]).then(function (results) {
       var readingsByWeek = results[0].data;
       allWeeklyReadings = readingsByWeek.readings;
       weeks = readingsByWeek.weeks;

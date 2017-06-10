@@ -150,7 +150,7 @@ angular.module('controller.map-detail', ['nvd3'])
         .catch(err => console.log(err)),
       ApiService.getResource($stateParams.postcode, $scope.resourceId)
         .then(response => {
-          CachingService.saveFavouriteLocation(response.data.geo.lat, response.data.geo.lng);
+          CachingService.saveFavouriteLocation(response.geo.lat, response.geo.lng);
           return response;
         }),
       ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
@@ -172,9 +172,9 @@ angular.module('controller.map-detail', ['nvd3'])
 
       let readingValue = null;
       let percentageFull = null;
-      if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
+      if (!angular.isNullOrUndefined(results[2])) {
         //TODO: check if we are a rain_gauge or checkdam
-        const reading = results[2].data;
+        const reading = results[2];
         $scope.resource = reading;
 
         readingValue = reading.last_value.toFixed(2);

@@ -121,8 +121,8 @@ angular.module('controller.map-detail', ['nvd3'])
         difference: difference
       };
     }
-    
-    $scope.resource = results[2].data;
+
+    $scope.resource = results[2];
 
     //configure chart data and buttons
     let weeks = weekStartForWeeksAgo(52);
