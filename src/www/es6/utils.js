@@ -108,12 +108,14 @@ angular.module('rainapp.utils', [])
   }
 
   function saveFavouriteLocation(lat, lng) {
+    console.log("Saving favourite location:", lat, lng);
     const locationArray = [lat, lng];
     $localstorage.setObject('favouriteLocation', locationArray);
-
   }
 
   function getFavouriteLocation() {
-    return  $localstorage.getObject('favouriteLocation');
+    const location = $localstorage.getObject('favouriteLocation');
+    console.log("Getting favouriteLocation:", location);
+    return location;
   }
 });

@@ -148,7 +148,11 @@ angular.module('controller.map-detail', ['nvd3'])
       ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId),
       ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
         .catch(err => console.log(err)),
-      ApiService.getResource($stateParams.postcode, $scope.resourceId),
+      ApiService.getResource($stateParams.postcode, $scope.resourceId)
+        .then(response => {
+          CachingService.saveFavouriteLocation(response.data.geo.lat, response.data.geo.lng);
+          return response;
+        }),
       ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
     ])
     .then(results => {
@@ -172,8 +176,6 @@ angular.module('controller.map-detail', ['nvd3'])
         //TODO: check if we are a rain_gauge or checkdam
         const reading = results[2].data;
         $scope.resource = reading;
-
-        CachingService.saveFavouriteLocation(reading.geo.lat, reading.geo.lng);
 
         readingValue = reading.last_value.toFixed(2);
         percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(0);

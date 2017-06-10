@@ -96,13 +96,15 @@ angular.module('controller.map', [])
           marker.bindPopup(getPopupContentForResource(resource));
           $scope.markers[getMarkerIdForResource(resource)] = marker;
         });
+      })
+      .then(() => {
+        const firstLocation = getFirstLocation();
+        leafletMap.setView(firstLocation, 16);
       });
   }
 
-  const firstLocation = getFirstLocation();
-
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:true, minZoom:5, maxZoom:18}).setView(firstLocation, 16);
+  var leafletMap = L.map('leafletMap', { zoomControl:true, minZoom:5, maxZoom:18});
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
    .addTo(leafletMap);
 
