@@ -39,7 +39,9 @@ angular.module('rainapp.utils', [])
     deleteReportAtIndex:deleteReportAtIndex,
     addReportToCache:addReportToCache,
     addResourceToCache: addResourceToCache,
-    getResourceFromCache: getResourceFromCache
+    getResourceFromCache: getResourceFromCache,
+    saveFavouriteLocation: saveFavouriteLocation,
+    getFavouriteLocation: getFavouriteLocation
   });
 
   //get the cached reports from local storage.
@@ -103,5 +105,15 @@ angular.module('rainapp.utils', [])
     }
 
     return resourceCache;
+  }
+
+  function saveFavouriteLocation(lat, lng) {
+    const locationArray = [lat, lng];
+    $localstorage.setObject('favouriteLocation', locationArray);
+
+  }
+
+  function getFavouriteLocation() {
+    return  $localstorage.getObject('favouriteLocation');
   }
 });

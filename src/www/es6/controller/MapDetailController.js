@@ -1,6 +1,6 @@
 "use strict";
 angular.module('controller.map-detail', ['nvd3'])
-.controller('MapDetailController', function($scope, $state, $rootScope, ApiService, $stateParams) {
+.controller('MapDetailController', function($scope, $state, $rootScope, ApiService, $stateParams, CachingService) {
 
   $scope.$on('$ionicView.enter', function(e) {
 
@@ -172,6 +172,9 @@ angular.module('controller.map-detail', ['nvd3'])
         //TODO: check if we are a rain_gauge or checkdam
         const reading = results[2].data;
         $scope.resource = reading;
+
+        CachingService.saveFavouriteLocation(reading.geo.lat, reading.geo.lng);
+
         readingValue = reading.last_value.toFixed(2);
         percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(0);
       }

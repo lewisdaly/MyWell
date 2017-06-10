@@ -1,6 +1,6 @@
 angular.module('controller.map', [])
 //TODO: change this name
-.controller('MapCtrl', function($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService) {
+.controller('MapCtrl', function($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService, CachingService) {
 
   const ResourceType = {
     WELL: 'well',
@@ -24,6 +24,16 @@ angular.module('controller.map', [])
 
   const getMarkerIdForResource = (resource) => {
     return `${resource.postcode}-${resource.id}`;
+  }
+
+  const getFirstLocation = () => {
+    const savedResource = CachingService.getFavouriteLocation();
+    if (!savedResource) {
+      console.log("No first location!");
+      return [24.593, 74.198];
+    }
+
+    return savedResource;
   }
 
   const resetMap = () => {
@@ -89,8 +99,10 @@ angular.module('controller.map', [])
       });
   }
 
+  const firstLocation = getFirstLocation();
+
   //Set up the Leaflet Map
-  var leafletMap = L.map('leafletMap', { zoomControl:true, minZoom:5, maxZoom:18}).setView([24.593, 74.198], 16);
+  var leafletMap = L.map('leafletMap', { zoomControl:true, minZoom:5, maxZoom:18}).setView(firstLocation, 16);
   L.tileLayer('https://api.mapbox.com/styles/v1/lewisdaly/ciuqhjyzo00242iphq3wo7bm4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibGV3aXNkYWx5IiwiYSI6ImNpdXE3ajltaDAwMGYyb2tkdjk2emx3NGsifQ.wnqFweA7kdijEtsgjTJIPw')
    .addTo(leafletMap);
 
