@@ -18,7 +18,7 @@ var paths = {
   es6: ['./www/es6/**/*.js']
 };
 
-let plugins = [
+var plugins = [
   "transform-strict-mode"
 ];
 
