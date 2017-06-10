@@ -6,10 +6,11 @@
     "setup-dev": "./node_modules/gulp/bin/gulp.js replace --env dev",
     "setup-prod": "./node_modules/gulp/bin/gulp.js replace --env prod",
     "babel": "./node_modules/gulp/bin/gulp.js babel",
-    "watchify":  "./node_modules/gulp/bin/gulp.js watch",
+    "watchify": "./node_modules/gulp/bin/gulp.js watch",
     "help": "echo 'npm run options: \nsetup-dev\nsetup-prod\ngulp'"
   },
   "dependencies": {
+    "babel-plugin-transform-remove-console": "^6.8.3",
     "express": "^4.13.3",
     "gulp": "^3.5.6",
     "gulp-concat": "^2.2.0",

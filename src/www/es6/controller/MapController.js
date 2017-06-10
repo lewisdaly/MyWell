@@ -96,10 +96,6 @@ angular.module('controller.map', [])
           marker.bindPopup(getPopupContentForResource(resource));
           $scope.markers[getMarkerIdForResource(resource)] = marker;
         });
-      })
-      .then(() => {
-        const firstLocation = getFirstLocation();
-        leafletMap.setView(firstLocation, 16);
       });
   }
 
@@ -109,6 +105,8 @@ angular.module('controller.map', [])
    .addTo(leafletMap);
 
   loadDataAndSetupMap();
+  const firstLocation = getFirstLocation();
+  leafletMap.setView(firstLocation, 16);
 
   $scope.getVillageName = (postcode, villageId) => {
     const village = $scope.villages.filter(village => village.postcode === postcode && village.id === villageId)[0]

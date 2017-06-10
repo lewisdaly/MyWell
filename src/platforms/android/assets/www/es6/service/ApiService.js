@@ -34,11 +34,14 @@ angular.module('service.api', [])
   }
 
   function getResource(postcode, resourceId) {
+    const query = {"where":{"and":[{"postcode":postcode}, {"id":resourceId}]}}
+    const url = `${apiUrl}/api/resources?filter=${encodeURIComponent(JSON.stringify(query))}`;
+
     return $http({
       method:'get',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
-    });
+      url: url,
+    }).then(response => response.data[0]);
   }
 
   function getReadingsByWeek(postcode, resourceId) {
