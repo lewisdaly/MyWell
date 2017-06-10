@@ -4,7 +4,7 @@
     <div class="col col-75">
       <label id="searchBox" class="item item-input">
         <i class="ion-search"> </i>
-        <input class="positive" ng-model="searchResource" type="text" placeholder=" Search by Id or Pincode">
+        <input id="search-box-input" class="positive" ng-model="searchResource" type="text" placeholder=" Search by Id or Pincode" ng-change="watchSearch(searchResource)">
       </label>
     </div>
     <div class="col">
@@ -15,22 +15,23 @@
     </div>
   </div>
 
-  <div class="searchPanel" id="panel" ng-show='searchResource.length > 2'>
+  <div class="searchPanel" id="panel" ng-show='showSearchPanel'>
     <div class="row top-row">
       <div class="col">Village</div>
       <div class="col">ResourceId</div>
       <div class="col">Pincode</div>
     </div>
-    <div>
-      <button
-        class="button button-full row"
-        ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource)"
-        ng-repeat="resource in data | filter:searchResource as results">
-
-          <div class="col">{{resource.villageName}}</div>
-          <div class="col">{{resource.id}}</div>
-          <div class="col">{{resource.postcode}}</div>
-      </button>
+    <div scroll="true" class="search-scroll-container">
+      <div class="search-scroll-content">
+        <ion-item
+          class="button button-full row"
+          ng-click="$parent.searchItemPressed(this, resource)"
+          ng-repeat="resource in data | filter:searchResource as results">
+            <div class="col">{{resource.villageName}}</div>
+            <div class="col">{{resource.id}}</div>
+            <div class="col">{{resource.postcode}}</div>
+        </ion-item>
+      </div>
     </div>
     <div ng-show="results.length == 0" class="no-results">
       <p>

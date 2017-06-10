@@ -57,11 +57,7 @@ angular.module('controller.settings', [])
       if (angular.isNullOrUndefined(data.postcode)){ valid = false; return false; }
       if (angular.isNullOrUndefined(data.imageResourceId)) { valid = false; return false; }
 
-      if (data.postcode > 999999) { valid = false; }
-      if (data.postcode < 99999) { valid = false; }
-      if (data.imageResourceId < 999) { valid = false; }
-      if (data.imageResourceId > 9999) { valid = false; }
-
+      if (`${data.imageResourceId}`.length != 4) { valid = false; }
       return valid;
     }
 
@@ -86,9 +82,9 @@ angular.module('controller.settings', [])
         text: '<b>Next</b>',
         type: 'button-positive',
         onTap: function(e) {
-          console.log($scope.data);
           if (!isDataValid($scope.data)) {
            e.preventDefault();
+           console.log("Data is not valid, data", $scope.data);
           } else {
            return $scope.data;
           }

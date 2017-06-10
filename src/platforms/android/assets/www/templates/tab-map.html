@@ -21,17 +21,16 @@
       <div class="col">ResourceId</div>
       <div class="col">Pincode</div>
     </div>
-    <div>
-      <button
+    <ion-list>
+      <ion-item
         class="button button-full row"
         ng-click="$parent.searchResource = ''; $parent.searchItemPressed(this, resource)"
         ng-repeat="resource in data | filter:searchResource as results">
-
           <div class="col">{{resource.villageName}}</div>
           <div class="col">{{resource.id}}</div>
           <div class="col">{{resource.postcode}}</div>
-      </button>
-    </div>
+      </ion-item>
+    </ion-list>
     <div ng-show="results.length == 0" class="no-results">
       <p>
         No results found.
