@@ -1,7 +1,6 @@
 #!/bin/bash
 
 #configure and run gulp based on our environment
-
 case $ENVIRONMENT in
   production)
     cd src
