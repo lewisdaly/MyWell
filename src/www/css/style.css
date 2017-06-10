@@ -107,11 +107,10 @@ body {
 .no-results {
   text-align: center;
   background: #f8f8f8;
-  height: 50px;
+  height: 75px;
   vertical-align: middle;
-  margin-top: 50px;
+  padding-top:25px;
 }
-
 
 .locateButton {
   position: absolute;

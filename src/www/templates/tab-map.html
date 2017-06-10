@@ -31,12 +31,12 @@
             <div class="col">{{resource.id}}</div>
             <div class="col">{{resource.postcode}}</div>
         </ion-item>
+        <div ng-show="results.length == 0" class="no-results">
+          <p>
+            No results found.
+          </p>
+        </div>
       </div>
-    </div>
-    <div ng-show="results.length == 0" class="no-results">
-      <p>
-        No results found.
-      </p>
     </div>
   </div>
 
