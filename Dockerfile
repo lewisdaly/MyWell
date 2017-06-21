@@ -4,11 +4,11 @@ FROM node:7
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-RUN npm install nodemon -g -q
+RUN npm install nodemon -g -s
 
 #install dependencies
 COPY package.json /usr/src/app/
-RUN npm install -q
+RUN npm install -s
 
 COPY ./ /usr/src/app/
 

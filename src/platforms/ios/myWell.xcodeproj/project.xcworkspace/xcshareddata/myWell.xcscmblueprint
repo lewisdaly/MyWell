@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "D2FFACC4B2E89943402F9E6351BAD478A385A1B5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "DC730394E7D7C8B9EB6B118B63B0DAFFDF8545CF" : 9223372036854775807,
+    "D2FFACC4B2E89943402F9E6351BAD478A385A1B5" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "4DAFD391-08CA-45D2-A6D2-09636BE0252C",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "DC730394E7D7C8B9EB6B118B63B0DAFFDF8545CF" : "",
+    "D2FFACC4B2E89943402F9E6351BAD478A385A1B5" : "mywell-ui\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "myWell",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "src\/platforms\/ios\/myWell.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/lewisdaly\/mywell-ui.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D2FFACC4B2E89943402F9E6351BAD478A385A1B5"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/lewisdaly\/mywell-server.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "DC730394E7D7C8B9EB6B118B63B0DAFFDF8545CF"
+    }
+  ]
+}
