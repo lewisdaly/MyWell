@@ -4,12 +4,11 @@ FROM node:7
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
-RUN npm config set silent true
-RUN npm install nodemon -g
+RUN npm install nodemon -g -q
 
 #install dependencies
 COPY package.json /usr/src/app/
-RUN npm install
+RUN npm install -q
 
 COPY ./ /usr/src/app/
 
