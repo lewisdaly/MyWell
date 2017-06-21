@@ -1,5 +1,5 @@
 angular.module('starter.controllers', ['ionic'])
-.controller('AppController', function($scope, $ionicModal, AuthenticationService, $state, $rootScope, LoginService, ApiService) {
+.controller('AppController', function($scope, $ionicModal, Auth0Service, AuthenticationService, $state, $rootScope, LoginService, ApiService) {
 
 	//Init
 	//Check to see if user is logged in.
@@ -11,9 +11,10 @@ angular.module('starter.controllers', ['ionic'])
 		$scope.isLoggedIn = false;
 	}
 
-
 	$scope.login = function() {
-		$scope.modal.show();
+    Auth0Service.login();
+
+		// $scope.modal.show();
 	}
 
 	$scope.logout = function() {
@@ -37,35 +38,39 @@ angular.module('starter.controllers', ['ionic'])
 		}
 	})
 
-	$scope.performLogin = function(form) {
-    if (angular.isNullOrUndefined(form) || angular.isNullOrUndefined(form.password) || form.password.length === 0){
-      return;
-    }
+  $scope.performLogin = function(form) {
+    Auth0Service.login();
+  }
 
-    ApiService.login('marvi', form.password)
-    .then(function (response) {
-      console.log(response);
-      if (response.status === 200) {
-        //login
-        const user = {
-          id: response.data.userId,
-          authToken:response.data.id,
-          username: 'marvi',
-          verified: true,
-          service: 'none'
-        };
-        AuthenticationService.SetCredentials(user, response.data.id);
-        $scope.modal.hide();
-      } else {
-        window.alert('Login Error: '+ response.status);
-      }
-    })
-    .catch(function (err){
-      console.log("err", err);
-      window.alert('Login Error: '+ err.status);
-
-    });
-	}
+	// $scope.performLogin = function(form) {
+  //   if (angular.isNullOrUndefined(form) || angular.isNullOrUndefined(form.password) || form.password.length === 0){
+  //     return;
+  //   }
+  //
+  //   ApiService.login('marvi', form.password)
+  //   .then(function (response) {
+  //     console.log(response);
+  //     if (response.status === 200) {
+  //       //login
+  //       const user = {
+  //         id: response.data.userId,
+  //         authToken:response.data.id,
+  //         username: 'marvi',
+  //         verified: true,
+  //         service: 'none'
+  //       };
+  //       AuthenticationService.SetCredentials(user, response.data.id);
+  //       $scope.modal.hide();
+  //     } else {
+  //       window.alert('Login Error: '+ response.status);
+  //     }
+  //   })
+  //   .catch(function (err){
+  //     console.log("err", err);
+  //     window.alert('Login Error: '+ err.status);
+  //
+  //   });
+	// }
 
 	$ionicModal.fromTemplateUrl('templates/login.html', {
 		scope: $scope,

@@ -1,27 +1,80 @@
 <ion-view view-title="Settings">
 <ion-content class="padding">
 
-<div class="center-text">
-  <p ng-if="isUserNotLoggedIn" class="verify-text">Log in access settings</p>
-</div>
-<div class="center-text" ng-if="isUserNotVerified">
-  <p class="vefify-text">Your account is not verified. Please wait for an admin to verifiy your account</p>
-  <button class="button button-clear button-outline button-assertive" ng-click="refreshUser()">Refresh Status</button>
-</div>
-
-<div ng-if="isUserLoggedInAndVerified">
-	<!-- <button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="register()">Register a New Well</button> -->
-	<a class="button button-outline button-block button-clear button-positive" ng-show="isVerified" href="#/tab/settings/register">Register a New Well</a>
-	<button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-click="getImage()">Change a well image</a>
-</div>
-<div>
-  <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/template.xlsx" download="template.xlsx">Download a template</a>
-</div>
-<div class="bottom-text">
-	<p>This project is part of MARVI</p>
+<div class="">
+  <img class="marvi_logo" src="img/marvi_logo.png"/>
+  <p>MyWell version: {{version_number}}</p>
+	<p>MyWell is part of Project MARVI</p>
   <p>For more information, visit <a href="http://marvi.org.in">marvi.org.in</a> </p>
   <p>Questions? Email <a href="mailto:info@marvi.org.in">info@marvi.org.in</a></p>
+</br>
 </div>
 
+<div>
+  <!-- <div class="">
+    <p ng-if="isUserNotLoggedIn" class="verify-text">Log in access settings</p>
+  </div> -->
+  <!-- <div class="center-text" ng-if="isUserNotVerified"> -->
+    <!-- <p class="vefify-text">Your account is not verified. Please wait for an admin to verifiy your account</p> -->
+    <!-- <button class="button button-clear button-outline button-assertive" ng-click="refreshUser()">Refresh Status</button> -->
+  <!-- </div> -->
+
+  </br>
+  <h4>Settings</h4>
+  <div ng-if="isUserNotLoggedIn">
+    <p class="">Log in access settings</p>
+  </div>
+  <div ng-if="isUserLoggedInAndVerified">
+  	<a class="button button-outline button-block button-clear button-positive" ng-show="isVerified" href="#/tab/settings/register">Register a New Well Rain Gauge or Checkdam</a>
+	   <button class="button button-outline button-block button-clear button-positive" ng-show="isVerified" ng-if="!isDesktop" ng-click="showGetImagePopup()">Change an image</a>
+  </div>
+  </br>
+  <h4>Tools</h4>
+  <div ng-if="isDesktop">
+    <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/template.xlsx" download="template.xlsx">Download a template</a>
+  </div>
+  <div ng-if="isDesktop">
+    <a class="button button-outline button-block button-positive" target="_self" ng-href="{{apiBaseUrl}}/api/containers/container1/download/reading.csv" download="reading.csv">Download Reading Data</a>
+  </div>
+  </br>
+  <div ng-if="isDesktop">
+    <!-- TODO: download the pdf brochure? -->
+    <a class="button button-block button-light" target="_blank" ng-href="http://marvi.org.in">Learn more about MyWell and Marvi</a>
+  </div>
+  <div>
+    <a class="button button-block button-light" target="_blank" ng-href="https://docs.google.com/forms/d/e/1FAIpQLSfX4VBUaBTV8P4U4RQ6lpcKziorGKLTNkQvJf-JUn-L-DnH6g/viewform?usp=sf_link">Leave Feedback</a>
+  </div>
+  <div>
+    </br>
+    <h4>MyWell was Designed and Developed by:</h4>
+    <p>Lewis Daly and Basant Maheshwari</p>
+    </br>
+    <h5>With input from:</h5>
+    <p>Murlikrishna Viswanathan</p>
+    <p>James Laney</p>
+    <p>Constantin Baumgartner</p>
+    <p>Romin Parekh</p>
+    <p>Peter Dillon</p>
+    <p>Pennan Chinnasamy</p>
+    <p>Yogita Dashora</p>
+    <p>Prahlad Soni</p>
+    <div class="row responsive-sm">
+      <div class="col"><img class="small_logo" src="img/logos/logo0.png"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo1.jpg"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo2.png"/></div>
+    </div>
+    <div class="row responsive-sm">
+      <div class="col"><img class="small_logo" src="img/logos/logo3.jpg"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo4.png"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo5.png"/></div>
+    </div>
+    <div class="row responsive-sm">
+      <div class="col"><img class="small_logo" src="img/logos/logo6.png"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo7.png"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo8.png"/></div>
+      <div class="col"><img class="small_logo" src="img/logos/logo9.png"/></div>
+    </div>
+  </div>
+</div>
 </ion-content>
 </ion-view>

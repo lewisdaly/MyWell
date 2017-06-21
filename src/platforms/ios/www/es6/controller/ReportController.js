@@ -31,6 +31,29 @@ angular.module('report.controllers', [])
     });
   }
 
+  const readingTypes = {
+    well: {
+      id: 'well',
+      name: 'Well',
+      valuePlaceholder: 'Depth to Water Level (m)'
+    },
+    raingauge: {
+      id: 'raingauge',
+      name: 'Rainfall',
+      valuePlaceholder: 'Rainfall amount (mm)'
+    },
+    checkdam: {
+      id: 'checkdam',
+      name: 'Checkdam',
+      valuePlaceholder: 'Water Column Height (m)'
+    }
+  }
+
+  $scope.readingType = readingTypes.well;
+  $scope.setReadingType = (readingType) => {
+    $scope.readingType = readingTypes[readingType];
+  }
+
 
   function checkUserStatus() {
     $scope.isUserNotLoggedIn = false;
@@ -69,6 +92,7 @@ angular.module('report.controllers', [])
         postcode: $scope.form.postcode,
         value: $scope.form.value,
         resourceId: $scope.form.resourceId,
+        villageId: `${$scope.form.resourceId}`.substring(0,2),
         date: $scope.form.date
       }
 
@@ -136,6 +160,8 @@ angular.module('report.controllers', [])
    * File uploading
    */
   $scope.upload = function (file) {
+    //show loading indicator manually
+    $rootScope.$broadcast('loading:show');
       Upload.upload({
           url: `${apiUrl}/api/containers/container1/upload`,
           data: {file: file }

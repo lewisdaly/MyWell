@@ -140,6 +140,14 @@ angular.module('controller.map', [])
     marker.openPopup();
   }
 
+  document.getElementById("search-box-input").addEventListener('focus', function () {
+      console.log('focus on input ');
+  });
+
+  document.getElementById("search-box-input").addEventListener('click', function () {
+      console.log('click on input');
+  });
+
   $scope.locate = function() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position){
@@ -231,6 +239,6 @@ angular.module('controller.map', [])
       return `<div style="line-height:1.35;overflow:hidden;white-space:nowrap;"> Village: ${$scope.getVillageName(resource.postcode, resource.villageId)}
       <br/>ResourceId : ${resource.id}
       ${specificContent}
-      <br/><a href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;
+      <br/><a class="button button-small popup-more-button" href=#/tab/map/${resource.postcode}/${resource.id}>More</a>`;
     }
 });

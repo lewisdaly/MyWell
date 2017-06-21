@@ -13,10 +13,7 @@ angular.module('controller.register', [])
       return;
     }
 
-    console.log("HEY");
-
     const center = leafletMap.getCenter();
-    console.log("center", center);
     $scope.form.lat = null;
     $scope.form.lng = null;
 
@@ -98,10 +95,9 @@ angular.module('controller.register', [])
     let isFormValid = true;
 
     if ((form == null)
-        || (form.postcode == null)
+        || (form.village_name == null) || (form.village_name.trim() === "")
         || (form.owner == null)
         || (form.postcode == null)
-        || (form.id== null)
         || (form.type == null)
         || (form.lat == null)
         || (form.lng == null)) {
@@ -131,16 +127,18 @@ angular.module('controller.register', [])
       return;
     }
 
-    //Transform to the format we need:
-    const villageId = parseInt(form.id.toString()[0]);
+    //For now, assume all villages are just 11
+    const villageId = 11;
 
     const data = {
-      id: form.id,
       geo: {
         lat: form.lat,
         lng: form.lng
       },
       owner: form.owner,
+      village_name: form.village_name.trim(),
+      mobile: `91${form.mobile}`,
+      email: form.email,
       well_depth: form.max_wt_depth,
       type:form.type,
       postcode: form.postcode,
@@ -152,9 +150,8 @@ angular.module('controller.register', [])
     .then(function(response) {
       var alertPopup = $ionicPopup.alert({
         title: 'Thanks!',
-        template: "Created new resource with Id " + data.id
+        template: `Created a new ${form.type} in ${form.village_name.trim()}`
       });
-
     })
     .catch(function(err) {
       if (err.status === 0) {
@@ -166,7 +163,7 @@ angular.module('controller.register', [])
       console.log("err", err);
       var alertPopup = $ionicPopup.alert({
         title: 'Error',
-        template: err
+        template: err.statusText
       });
     });
   }

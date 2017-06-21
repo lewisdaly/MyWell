@@ -5,6 +5,7 @@ angular.module('service.api', [])
 
   return({
     getResources:getResources,
+    getVillages:getVillages,
     getClosestVillage:getClosestVillage,
     registerWell:registerWell,
     updateReading:updateReading,
@@ -14,14 +15,40 @@ angular.module('service.api', [])
     getDifferenceFromJune: getDifferenceFromJune,
     getResourceReadings: getResourceReadings,
     getResource: getResource,
+    uploadImageForResource: uploadImageForResource,
+    getReadingsByWeek: getReadingsByWeek,
+    getCurrentVillageAverage: getCurrentVillageAverage
   });
 
 
+  function uploadImageForResource(postcode, resourceId, data) {
+    return $http({
+      method:'put',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/resources/${resourceId}?access_token=${AuthenticationService.getAccessToken()}`,
+      data: {
+        image: data,
+        postcode: postcode
+      }
+    });
+  }
+
   function getResource(postcode, resourceId) {
+    const query = {"where":{"and":[{"postcode":postcode}, {"id":resourceId}]}}
+    const url = `${apiUrl}/api/resources?filter=${encodeURIComponent(JSON.stringify(query))}`;
+
     return $http({
       method:'get',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/resources/${resourceId}&postcode=${postcode}`,
+      url: url,
+    }).then(response => response.data[0]);
+  }
+
+  function getReadingsByWeek(postcode, resourceId) {
+    return $http({
+      method: 'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/readings/readingsByWeek?postcode=${postcode}&resourceId=${resourceId}`
     });
   }
 
@@ -52,13 +79,33 @@ angular.module('service.api', [])
     });
   }
 
+  function getVillages() {
+    return Promise.resolve(true)
+    .then(() => showLoadingIndicator())
+    .then(() => {
+      return $http({
+        method:'get',
+        headers: {'Content-Type':'application/json'},
+        url: apiUrl + '/api/villages'
+      });
+    })
+    .then(response => {
+      hideLoadingIndicator()
+      return response.data;
+    })
+    .catch(err => {
+      hideLoadingIndicator()
+      return Promise.reject(err)
+    })
+  }
+
   //Load all of the things
   //fallback to cache if fails
   function getResources() {
     return $http({
       method:'get',
       headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/resources?filter=%7B%22fields%22%3A%7B%22image%22%3Afalse%7D%2C%20%22include%22%3A%22village%22%7D&access_token=wb5ucoIwwxZOhuLTQ9tA0NwTwbBBDTtwGAyPNid2PkBMECB0IX6omWJhgPaI9Sou'
+      url: apiUrl + '/api/resources?filter=%7B%22fields%22%3A%7B%22image%22%3Afalse%7D%7D'
     })
     .then(function(response) {
       //cache the response
@@ -124,6 +171,21 @@ angular.module('service.api', [])
     });
   }
 
+
+  function getCurrentVillageAverage(postcode, resourceId) {
+    const villageId = resourceId.substring(0,2);
+
+    return $http({
+      method:'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/resource_stats/getCurrentVillageAverage?villageId=${villageId}&postcode=${postcode}`,
+    }).catch(err => {
+      if (err.status !== 404) return Promise.reject(err);
+      console.log("No current village reading");
+    });
+  }
+
+
   /**
    * Get the info and statistics for a resource
    * @returns Promise<[resource, villageAverage, historicalResourceAverages, historicalVillageAverages ]
@@ -165,11 +227,16 @@ angular.module('service.api', [])
     //TODO: make url parameters load properly
     //TODO: inject hide and show loading indicator into every request...
     return Promise.resolve(true)
-      .then(() => showLoadingIndicator())
+      .then(() => showSlowLoadingIndicator())
       .then(() => $http({
                   method:'get',
                   headers: {'Content-Type':'application/json'},
                   url: `${apiUrl}/api/readings/processExcelFile?container=${fileResponse.container}&name=${fileResponse.name}&access_token=${AuthenticationService.getAccessToken()}`,
+                  timeout: 1000 * 60 * 10,// * 60 * 6 //6 mins
+                  headers: {
+                    'timeout': 1000,
+                    'Connection': 'Keep-Alive'
+                  }
                 }))
       .then(res => {
         hideLoadingIndicator();
@@ -177,13 +244,18 @@ angular.module('service.api', [])
       })
       .catch((err) => {
         hideLoadingIndicator();
-        throw err
+        return Promise.reject(err);
       })
   }
 
   function showLoadingIndicator() {
      $rootScope.$broadcast('loading:show');
   }
+
+  function showSlowLoadingIndicator() {
+     $rootScope.$broadcast('loading:show-slow');
+  }
+
 
   function hideLoadingIndicator() {
      $rootScope.$broadcast('loading:hide');

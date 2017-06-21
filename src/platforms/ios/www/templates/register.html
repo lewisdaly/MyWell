@@ -1,8 +1,7 @@
 <ion-view view-title="{{resourceId}}">
-  <ion-content scrollable="false" scroll="false">
-    
-    <h5 class="center-text padding">Drag the Map or Enter Coordinates:</h5>
-    <div id="leafletMapRegister">
+  <ion-content>
+    <h5 class="center-text">Drag the Map or Enter Coordinates:</h5>
+    <div id="leafletMapRegister" scrollable="false" scroll="false">
       <div>
         <i class="ion-pin hereIcon" ></i>
       </div>
@@ -23,28 +22,40 @@
           <input class="col" ng-model="form.lng" type="number" placeholder="Longitude">
         </div>
       </div>
-    	<label class="item item-input">
-    		<input ng-model="form.postcode" type="tel" placeholder="Postcode">
+      <label class="item item-input">
+    		<input ng-model="form.village_name" type="text" placeholder="Village/Town Name">
     	</label>
     	<label class="item item-input">
-    		<input ng-model="form.owner" type="text" placeholder="Well Owner">
+    		<input ng-model="form.postcode" type="tel" placeholder="Pincode">
     	</label>
     	<label class="item item-input">
-    		<input ng-model="form.id" type="tel" placeholder="4 digit Resource ID - eg. 1020">
+    		<input ng-model="form.owner" type="text" placeholder="Owner">
     	</label>
+    	<label class="item item-input">
+        +91
+    		<input ng-model="form.mobile" type="tel" placeholder="Mobile (India only)">
+    	</label>
+    	<label class="item item-input">
+    		<input ng-model="form.email" type="email" placeholder="email">
+    	</label>
+
       <label class="item item-input">
         <div class="row">
-          <p class="col">Resource Type:</p>
+          <p class="col">Resource Type*</p>
     		  <select class="col" ng-model="form.type">
             <option ng-repeat="type in resources" value="{{type}}">{{type}}</option>
     		  </select>
         </div>
       </label>
 
-    	<label ng-if="form.type === 'well'" class="item item-input">
-    		<input ng-model="form.max_wt_depth" step="0.01" type="number" placeholder="Maximum Watertable Depth" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
-    	</label>
-
+      <div ng-if="form.type === 'well'">
+      	<label class="item item-input">
+      		<input ng-model="form.max_wt_depth" step="0.01" type="number" placeholder="Well Depth (m) *" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+      	</label>
+        <label class="item item-input">
+          <input ng-model="form.bore_elevation" step="0.01" type="number" placeholder="Bore Elevation (if known)" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+        </label>
+      </div>
     </form>
 
     <div class="padding">

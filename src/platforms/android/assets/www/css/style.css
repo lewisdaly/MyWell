@@ -70,17 +70,14 @@ body {
 
 /* Search buttons */
 .searchPanel {
-  position: absolute;
-  z-index: 3;
-  width: 96.3%;
-  /*background: #387ef5;*/
-  left: 1.7%;
-  padding: 4px 7px;
-  /*border-color: #ddd;*/
-  /*border-width: 1px;*/
-  border-style: solid;
-}
+    position: absolute;
+    z-index: 3;
+    width: 101%;
+    left: 1.7%;
+    border-style: solid;
+    margin-left: -2%;
 
+}
 .searchPanel .top-row {
   background: wheat;
 }
@@ -93,6 +90,15 @@ body {
 
 }
 
+.search-scroll-container {
+  height: 200px;
+  overflow: scroll;
+}
+
+.search-scroll-content {
+  height: 200px;
+}
+
 /*cols in search buttons*/
 .col.ng-binding {
   padding: 0;
@@ -101,11 +107,10 @@ body {
 .no-results {
   text-align: center;
   background: #f8f8f8;
-  height: 50px;
+  height: 75px;
   vertical-align: middle;
-  margin-top: 50px;
+  padding-top:25px;
 }
-
 
 .locateButton {
   position: absolute;

@@ -5,33 +5,41 @@ angular.module('controller.map-detail', ['nvd3']).controller('MapDetailControlle
   $scope.$on('$ionicView.enter', function (e) {});
 
   $scope.resourceId = $stateParams.resourceId;
-  $scope.juneData = null;
+  $scope.stats = null;
   var detailChart = null;
   var allWeeklyReadings = [];
+  var splitWeeklyReadings = []; //all weekly readings split per year
+  var weeks = [];
 
   var getChartDataAndLabel = function getChartDataAndLabel(dataRange) {
     var dataAndLabel = {
-      data: null,
+      data: [],
       labels: null
     };
 
     switch (dataRange) {
       case 'month':
-        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-4);
-        dataAndLabel.labels = weekStartForWeeksAgo(4).map(function (dateTime) {
-          return dateTime.format('DD-MMM');
+        dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-4);
+        dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-4);
+        dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-4);
+        dataAndLabel.labels = weeks.slice(-4).map(function (dateTime) {
+          return moment(dateTime).format('DD-MMM');
         });
         break;
       case '3month':
-        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-4 * 3);;
-        dataAndLabel.labels = weekStartForWeeksAgo(4 * 3).map(function (dateTime) {
-          return dateTime.format('DD-MMM');
+        dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-4 * 3);
+        dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-4 * 3);
+        dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-4 * 3);
+        dataAndLabel.labels = weeks.slice(-4 * 3).map(function (dateTime) {
+          return moment(dateTime).format('DD-MMM');
         });
         break;
       case 'year':
-        dataAndLabel.data = allWeeklyReadings.slice(1).slice(-52);
-        dataAndLabel.labels = weekStartForWeeksAgo(52).map(function (dateTime) {
-          return dateTime.format('DD-MMM');
+        dataAndLabel.data[0] = splitWeeklyReadings[0].slice(1).slice(-52);
+        dataAndLabel.data[1] = splitWeeklyReadings[1].slice(1).slice(-52);
+        dataAndLabel.data[2] = splitWeeklyReadings[2].slice(1).slice(-52);
+        dataAndLabel.labels = weeks.slice(-52).map(function (dateTime) {
+          return moment(dateTime).format('DD-MMM');
         });
         break;
       default:
@@ -41,34 +49,9 @@ angular.module('controller.map-detail', ['nvd3']).controller('MapDetailControlle
     return dataAndLabel;
   };
 
-  /**
-   * Iteratively go back a bunch of weeks
-   */
-
-  var weekStartForWeeksAgo = function weekStartForWeeksAgo(weeksAgo, startDate, weeks) {
-    if (angular.isNullOrUndefined(weeks)) {
-      weeks = [];
-    }
-
-    if (weeksAgo == 0) {
-      return weeks;
-    }
-
-    //First time - set everything up
-    if (angular.isNullOrUndefined(startDate)) {
-      //Get monday UTC
-      startDate = moment.utc().startOf('week').add(1, 'days');
-      weeks = [startDate];
-
-      return weekStartForWeeksAgo(weeksAgo - 1, startDate, weeks);
-    }
-
-    var previousWeekStart = startDate.clone().subtract(1, 'week');
-    weeks.unshift(previousWeekStart);
-    return weekStartForWeeksAgo(weeksAgo - 1, previousWeekStart, weeks);
-  };
-
   var setupChart = function setupChart() {
+    var colors = [{ border: 'rgba(54, 162, 235, 1)', background: 'rgba(54, 162, 235, 0.2)' }, { border: 'rgba(153, 102, 255, 1)', background: 'rgba(153, 102, 255, 0.2)' }, { border: 'rgba(255, 159, 64, 1)', background: 'rgba(255, 159, 64, 0.2)' }];
+
     var chartData = getChartDataAndLabel("month");
     var ctx = document.getElementById("detailChart");
     detailChart = new Chart(ctx, {
@@ -76,16 +59,40 @@ angular.module('controller.map-detail', ['nvd3']).controller('MapDetailControlle
       data: {
         labels: chartData.labels,
         datasets: [{
-          label: 'Water Table Height (m)',
-          data: chartData.data,
-          borderWidth: 1
+          label: 'This year',
+          data: chartData.data[0],
+          borderWidth: 1,
+          backgroundColor: colors[0].background,
+          borderColor: colors[0].border,
+          fill: 'bottom'
+        }, {
+          label: 'Last Year',
+          data: chartData.data[1],
+          borderWidth: 1,
+          backgroundColor: colors[1].background,
+          borderColor: colors[1].border,
+          fill: 'bottom'
+        }, {
+          label: '2 years ago',
+          data: chartData.data[2],
+          borderWidth: 1,
+          backgroundColor: colors[2].background,
+          borderColor: colors[2].border,
+          fill: 'bottom'
         }]
       },
       options: {
+        title: {
+          display: true,
+          text: 'Depth to Water Level (m)'
+        },
+        spanGaps: false,
         scales: {
+          // reverse: true,
           yAxes: [{
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
+              reverse: true
             }
           }]
         }
@@ -93,167 +100,90 @@ angular.module('controller.map-detail', ['nvd3']).controller('MapDetailControlle
     });
   };
 
-  var init = function init() {
-    // setupChart();
-  };
+  function init() {
+    setupData();
+  }
 
   $scope.updateData = function (dataRange) {
-    console.log("update chart data", dataRange);
-
     var chartData = getChartDataAndLabel(dataRange);
-    console.log(detailChart.data);
-    detailChart.data.datasets[0].data = chartData.data;
+
+    detailChart.data.datasets[0].data = chartData.data[0];
+    detailChart.data.datasets[1].data = chartData.data[1];
+    detailChart.data.datasets[2].data = chartData.data[2];
     detailChart.data.labels = chartData.labels;
     detailChart.update();
   };
 
   //Get the data from the api service
-  Promise.all([ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId), ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode).catch(function (err) {
-    return console.log(err);
-  }), ApiService.getResource($stateParams.postcode, $scope.resourceId)]).then(function (results) {
-    var pastReadings = results[0].data;
-    if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
-      var pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0, 10);
-      var difference = results[1].data.difference.toFixed(2) + ' m';
+  console.log("Getting data from server");
+  function setupData() {
+    return Promise.all([
+    // ApiService.getResourceReadings($stateParams.postcode, $scope.resourceId),
+    ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId), ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode).catch(function (err) {
+      return console.log(err);
+    }), ApiService.getResource($stateParams.postcode, $scope.resourceId), ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)]).then(function (results) {
+      var readingsByWeek = results[0].data;
+      allWeeklyReadings = readingsByWeek.readings;
+      weeks = readingsByWeek.weeks;
 
-      $scope.juneData = {
-        pastReadingDate: pastReadingDate,
-        difference: difference
-      };
-    }
-
-    $scope.resource = results[2].data;
-
-    //configure chart data and buttons
-    var weeks = weekStartForWeeksAgo(52);
-    allWeeklyReadings = [];
-    var addedCount = 0; //optimize - we can skip once we have added readings from this index
-    var avg = function avg(array) {
-      return array.reduce(function (p, c) {
-        return p + c;
-      }, 0) / array.length;
-    };
-    console.log(pastReadings);
-
-    weeks.forEach(function (weekEnd) {
-      var weekStart = weekEnd.clone().subtract(1, 'week');
-
-      var readingsThisWeek = [];
-      for (var i = addedCount; i < pastReadings.length; i++) {
-        var reading = pastReadings[i];
-        var readingMoment = moment.utc(reading.date);
-        if (readingMoment.isBetween(weekStart, weekEnd)) {
-          readingsThisWeek.push(reading.value);
-        }
+      var juneData = null;
+      if (!angular.isNullOrUndefined(results[1]) && !angular.isNullOrUndefined(results[1].data)) {
+        var pastReadingDate = new Date(results[1].data.pastReadingDate).toISOString().slice(0, 10);
+        var difference = results[1].data.difference.toFixed(2) + ' m';
+        juneData = {
+          pastReadingDate: pastReadingDate,
+          difference: difference
+        };
       }
 
-      var weeklyAverage = Math.round(avg(readingsThisWeek) * 100) / 100;
-      if (isNaN(weeklyAverage)) {
-        allWeeklyReadings.push(0);
-      } else {
-        allWeeklyReadings.push(0 + weeklyAverage);
+      var readingValue = null;
+      var percentageFull = null;
+      if (!angular.isNullOrUndefined(results[2]) && !angular.isNullOrUndefined(results[2].data)) {
+        //TODO: check if we are a rain_gauge or checkdam
+        var reading = results[2].data;
+        $scope.resource = reading;
+        readingValue = reading.last_value.toFixed(2);
+        percentageFull = ((reading.well_depth - reading.last_value) / reading.well_depth * 100).toFixed(2);
       }
 
-      addedCount = addedCount + readingsThisWeek.length;
+      var villageAverageReading = null;
+      if (!angular.isNullOrUndefined(results[3]) && !angular.isNullOrUndefined(results[3].data)) {
+        villageAverageReading = results[3].data.avgReading;
+      }
+
+      if (!angular.isNullOrUndefined(readingValue) || !angular.isNullOrUndefined(percentageFull) || !angular.isNullOrUndefined(villageAverageReading) || !angular.isNullOrUndefined(juneData)) {
+        console.log("Setting up stats!");
+        $scope.stats = {
+          readingValue: readingValue,
+          percentageFull: percentageFull,
+          villageAverageReading: 10.11,
+          juneData: juneData
+        };
+      }
+
+      //Split into 3, one for each year
+      var slicePoints = [0, 51, 103, allWeeklyReadings.length];
+      splitWeeklyReadings = [allWeeklyReadings.slice(slicePoints[2], slicePoints[3]), //This year
+      allWeeklyReadings.slice(slicePoints[1], slicePoints[2]), allWeeklyReadings.slice(slicePoints[0], slicePoints[1])];
+
+      setupChart();
+      $scope.$apply();
+      console.log("finished loading data etc.");
+    }).catch(function (err) {
+      console.log('Error setting up data', err);
     });
+  }
 
-    setupChart();
-  }).catch(function (err) {
-    console.log(err);
-  });
-
-  $scope.options = {
-    chart: {
-      type: 'multiBarChart',
-      height: 450,
-      margin: {
-        top: 20,
-        right: 20,
-        bottom: 100,
-        left: 55
-      },
-      x: function x(d) {
-        return d.label;
-      },
-      y: function y(d) {
-        return 0 - d.value;
-      },
-      showValues: false,
-      showControls: false,
-      valueFormat: function valueFormat(d) {
-        return d3.format(',.4f')(d);
-      },
-      duration: 500,
-      xAxis: {
-        axisLabel: 'Month',
-        rotateLabels: 30
-      },
-      yAxis: {
-        axisLabel: 'Depth to water level (m)',
-        axisLabelDistance: -10,
-        tickFormat: function tickFormat(d) {
-          return -d;
-        }
-      },
-      tooltip: {
-        enabled: false
-      }
+  function saftelyGetLevelString(value) {
+    if (angular.isNullOrUndefined(value)) {
+      return "";
     }
-  };
-
-  $scope.data = [
-    // {
-    //   "key" : "aveValueVillage",
-    //   "bar": true,
-    //   "color": "#d62728",
-    //   "values": [
-    //     {label:'2015-01', value:0.45},
-    //     {label:'2015-02', value:1},
-    //     {label:'2015-03', value:0.22},
-    //     {label:'2015-04', value:0.12},
-    //     {label:'2015-05', value:0.4},
-    //     {label:'2015-06', value:0.5},
-    //     {label:'2015-07', value:0.9},
-    //     {label:'2015-08', value:0.1},
-    //     {label:'2015-09', value:0.1},
-    //     {label:'2015-10', value:0.1},
-    //     {label:'2015-11', value:0.1},
-    //     {label:'2015-12', value:0.1}
-    //   ]
-    // },
-    // {
-    //   "key" : "aveValueWell",
-    //   "bar": true,
-    //   "color": "#1f77b4",
-    //   "values": [
-    //     {label:'2015-01', value:0.1},
-    //     {label:'2015-02', value:0.5},
-    //     {label:'2015-03', value:0.12},
-    //     {label:'2015-04', value:0.2},
-    //     {label:'2015-05', value:0.6},
-    //     {label:'2015-06', value:0.7},
-    //     {label:'2015-07', value:0.7},
-    //     {label:'2015-08', value:0.4},
-    //     {label:'2015-09', value:0.1},
-    //     {label:'2015-10', value:0.4},
-    //     {label:'2015-11', value:0.3},
-    //     {label:'2015-12', value:0.2}
-    //   ]
-    // }
-  ];
-
-  function mapHistoricalDataToD3(historicalData, graphKey, color) {
-    //We have an array containing months: [{aveReading:x, month:"YYYY-MM"}, ...]
-    var values = historicalData.map(function (value) {
-      return { label: value.month, value: value.aveReading };
-    });
-    return {
-      key: graphKey,
-      bar: true,
-      color: color,
-      values: values
-    };
+    return value.toFixed(2);
   }
 
   init();
+}).filter('capitalize', function () {
+  return function (input) {
+    return !!input ? input.charAt(0).toUpperCase() + input.substr(1).toLowerCase() : '';
+  };
 });

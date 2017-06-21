@@ -87,7 +87,10 @@ body {
   margin: 0;
   border-bottom-width: 0px;
   text-align: center;
+}
 
+popup-more-button {
+  width: 100%;
 }
 
 .search-scroll-container {

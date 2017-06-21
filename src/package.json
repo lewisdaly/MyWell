@@ -10,6 +10,8 @@
     "help": "echo 'npm run options: \nsetup-dev\nsetup-prod\ngulp'"
   },
   "dependencies": {
+    "angular-auth0": "^2.0.0-beta.2",
+    "auth0-js": "^8.7.0",
     "babel-plugin-transform-remove-console": "^6.8.3",
     "express": "^4.13.3",
     "gulp": "^3.5.6",

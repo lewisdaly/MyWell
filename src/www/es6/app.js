@@ -26,9 +26,11 @@ angular.module('starter', [
   'service.signup',
   'service.user',
   'service.api',
+  'service.auth0',
   'rainapp.utils',
-  // 'azure-mobile-service.module',
-  'AdalAngular'
+
+  'AdalAngular',
+  'auth0.auth0'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -72,19 +74,6 @@ angular.module('starter', [
     $rootScope.globals = {};
   }
 
-  // $rootScope.$on('$locationChangeStart', function (event, next, current) {
-  //   // redirect to login page if not logged in and trying to access a restricted page
-  //   //TODO: Add to this!
-  //   var pageArray = ['/login', '/signup'];
-  //   var restrictedPage = pageArray.indexOf($location.path()) === -1;
-  //   // var restrictedPage = $.inArray($location.path(), ) === -1;
-  //   var loggedIn = $rootScope.globals.currentUser;
-  //   if (restrictedPage && !loggedIn) {
-  //     console.log("Error: not logged in. Redirecting to /login");
-  //     $location.path('/login');
-  //   }
-  // });
-
   //Refer to: http://learn.ionicframework.com/formulas/loading-screen-with-interceptors/
   //Loading indicators and callbacks
   $rootScope.$on('loading:show', function() {
@@ -121,7 +110,7 @@ angular.module('starter', [
 
   }])
 
-.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider) {
+.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider, angularAuth0Provider) {
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -253,6 +242,16 @@ angular.module('starter', [
       }
     };
   }]);
+
+  // Initialization for the angular-auth0 library
+  angularAuth0Provider.init({
+   clientID: 'zLkp7B2NAsbk10anUI1LZsiMngQksoI0',
+   domain: 'vessels.au.auth0.com',
+   responseType: 'token id_token',
+   audience: 'https://vessels.au.auth0.com/userinfo',
+   redirectUri: 'http://localhost:3000/callback',
+   scope: 'openid'
+  });
 
   // catch exceptions out of angular
   window.onerror = function(message, url, line, col, error){

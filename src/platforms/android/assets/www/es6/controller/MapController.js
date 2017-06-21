@@ -128,18 +128,19 @@ angular.module('controller.map', [])
    * Someone has clicked search. Get the resource from id, and navigate, also show popup
    */
   $scope.searchItemPressed = function(event, resource) {
+    $scope.hideSearchResults();
+    //disable text box
+    document.getElementById("search-box-input").blur();
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.close();
     }
 
-    //This is sometimes getting the wrong one!
     var marker = $scope.markers[getMarkerIdForResource(resource)];
     leafletMap.panTo(new L.LatLng(resource.geo.lat, resource.geo.lng));
     marker.openPopup();
   }
 
   $scope.locate = function() {
-    //TODO: re enable for leaflet
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position){
         leafletMap.panTo(new L.LatLng(position.coords.latitude, position.coords.longitude));
@@ -150,6 +151,23 @@ angular.module('controller.map', [])
     else {
       console.log("Geolocation is not supported by this browser.");
     }
+  }
+
+  $scope.showSearchResults = () => {
+    $scope.showSearchPanel = true;
+  }
+
+  $scope.hideSearchResults = () => {
+    $scope.showSearchPanel = false;
+  }
+
+  $scope.watchSearch = (search) => {
+    $scope.searchResource = search;
+    if (search.length > 2) {
+      return $scope.showSearchResults();
+    }
+
+    return $scope.hideSearchResults();
   }
 
   $scope.refreshDataPressed = () => {

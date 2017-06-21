@@ -1,5 +1,5 @@
 <ion-view view-title="Report">
-<ion-content scroll="false">
+<ion-content scroll="true">
 
 <style>
           .drop-box { border: dotted 3px lightgray; width: 100%}
@@ -15,15 +15,21 @@
   <p class="verify-text">Your account is not verified. Please wait for an admin to verifiy your account</p>
 </div>
 
-<!-- Postcode, Date, Well ID, WT Depth,  -->
 <div ng-if="isUserLoggedInAndVerified">
   <div class="row">
-    <h4 class="centerText">Report a new well reading:</h4>
+    <h4 class="centerText">Select a reading type:</h4>
+  </div>
+
+  <div class="row">
+    <button class="col button button-outline button-small" ng-class="{'active': readingType.id === 'well'}" ng-click="setReadingType('well')">Well</button>
+    <button class="col button button-outline button-small" ng-class="{'active': readingType.id === 'raingauge'}" ng-click="setReadingType('raingauge')">Rain Gauge</button>
+    <button class="col button button-outline button-small" ng-class="{'active': readingType.id === 'checkdam'}" ng-click="setReadingType('checkdam')">Checkdam</button>
   </div>
 
   <form class="list list-inset simple-form">
+    <label><h4>Report a new {{readingType.name}} reading:</h4></label>
     <label class="item item-input">
-      <input ng-model="form.postcode" type="tel" placeholder="Postcode">
+      <input ng-model="form.postcode" type="tel" placeholder="Pincode">
     </label>
     <label class="item item-input">
       <input ng-model="form.date" type="date" placeholder="Date">
@@ -32,7 +38,7 @@
       <input ng-model="form.resourceId" type="tel" placeholder="Resource ID">
     </label>
     <label class="item item-input">
-      <input ng-model="form.value" type="number" placeholder="WT Depth (m)" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
+      <input ng-model="form.value" type="number" placeholder="{{readingType.valuePlaceholder}}" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/">
     </label>
   </form>
 

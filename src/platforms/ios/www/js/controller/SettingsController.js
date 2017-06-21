@@ -4,6 +4,9 @@ angular.module('controller.settings', []).controller('SettingsController', funct
 
   $scope.templateUrl = apiUrl + '/containers/container1/download/template';
   $scope.apiBaseUrl = apiUrl;
+  $scope.imageResourceId = null;
+
+  $scope.isDesktop = angular.isNullOrUndefined(window.cordova);
 
   $scope.$on('$ionicView.enter', function (e) {
     checkUserStatus();
@@ -42,34 +45,117 @@ angular.module('controller.settings', []).controller('SettingsController', funct
   }
 
   /**
-   * Camera Methods
+   * Add new image for resource
    */
-  $scope.getImage = function () {
-    if (angular.isNullOrUndefined(navigator) || angular.isNullOrUndefined(navigator.camera)) {
-      displayMessage("Error", "The camera is not available on your device");
-      return;
-    }
+  $scope.showGetImagePopup = function () {
+    var isDataValid = function isDataValid(data) {
+      var valid = true;
 
-    var cameraError = function cameraError(err) {
-      console.log(err);
+      if (angular.isNullOrUndefined(data)) {
+        valid = false;return false;
+      }
+      if (angular.isNullOrUndefined(data.postcode)) {
+        valid = false;return false;
+      }
+      if (angular.isNullOrUndefined(data.imageResourceId)) {
+        valid = false;return false;
+      }
+
+      if (data.postcode > 999999) {
+        valid = false;
+      }
+      if (data.postcode < 99999) {
+        valid = false;
+      }
+      if (data.imageResourceId < 999) {
+        valid = false;
+      }
+      if (data.imageResourceId > 9999) {
+        valid = false;
+      }
+
+      console.log(valid);
+
+      return valid;
     };
 
-    var cameraSuccess = function cameraSuccess(data) {
-      //TODO: upload to api service!
-      console.log(data);
-    };
+    $scope.data = {};
 
-    navigator.camera.getPicture(cameraSuccess, cameraError, {
-      quality: 25,
-      destinationType: 'DATA_URL',
-      sourceType: 'PHOTOLIBRARY'
+    var popup = $ionicPopup.show({
+      template: '<div>\
+       <input type="number" placeholder="Pin Code" ng-model="data.postcode">\
+       <input type="number" placeholder="ResourceId" ng-model="data.imageResourceId">\
+      </div>',
+      title: 'Details',
+      subTitle: 'Enter the details of the resource to attach the image to.',
+      scope: $scope,
+      buttons: [{
+        text: 'Cancel',
+        onTap: function onTap(e) {
+          console.log('closing');
+        }
+      }, {
+        text: '<b>Next</b>',
+        type: 'button-positive',
+        onTap: function onTap(e) {
+          console.log($scope.data);
+          if (!isDataValid($scope.data)) {
+            e.preventDefault();
+          } else {
+            return $scope.data;
+          }
+        }
+      }]
+    });
+
+    popup.then(function (response) {
+      console.log("hey");
+      if (angular.isNullOrUndefined(response)) {
+        //Do nothing!
+        return null;
+      }
+      var postcode = response.postcode;
+      var imageResourceId = response.imageResourceId;
+
+      return getImage().then(function (data) {
+        console.log('get image data', data);
+        return ApiService.uploadImageForResource(postcode, imageResourceId, data);
+      });
+    }).then(function () {
+      displayMessage('Thanks.', 'Updated image successfully!');
+    }).catch(function (err) {
+      console.log('Error getting image', err);
+      displayMessage('Error updating image', err.statusText);
     });
   };
 
-  function displayMessage(title, message) {
+  var getImage = function getImage() {
+    return new Promise(function (resolve, reject) {
+      if (angular.isNullOrUndefined(navigator) || angular.isNullOrUndefined(navigator.camera)) {
+        displayMessage("Error", "The camera is not available on your device");
+
+        //Right now for testing
+        return reject(new Error('Unsupported device'));
+      }
+
+      //TODO: tweak these settings
+      navigator.camera.getPicture(resolve, reject, {
+        quality: 10,
+        destinationType: Camera.DestinationType.DATA_URL,
+        targetWidth: 500,
+        targetHeight: 250,
+        // destinationType: Camera.DestinationType.FILE_URI
+        sourceType: Camera.PictureSourceType.CAMERA
+      });
+
+      //We need to read the image back, and then squash it!
+    });
+  };
+
+  var displayMessage = function displayMessage(title, message) {
     var alertPopup = $ionicPopup.alert({
       title: title,
       template: message
     });
-  }
+  };
 });

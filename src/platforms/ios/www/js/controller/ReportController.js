@@ -121,6 +121,8 @@ angular.module('report.controllers', []).controller('ReportController', function
    * File uploading
    */
   $scope.upload = function (file) {
+    //show loading indicator manually
+    $rootScope.$broadcast('loading:show');
     Upload.upload({
       url: apiUrl + '/api/containers/container1/upload',
       data: { file: file }

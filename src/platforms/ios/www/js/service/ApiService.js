@@ -1,5 +1,7 @@
 'use strict';
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 angular.module('service.api', []).service('ApiService', function ($http, $q, $rootScope, apiUrl, AuthenticationService, $localstorage, CachingService) {
 
   return {
@@ -12,14 +14,37 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
     processExcelFile: processExcelFile,
     getDifferenceFromJune: getDifferenceFromJune,
     getResourceReadings: getResourceReadings,
-    getResource: getResource
+    getResource: getResource,
+    uploadImageForResource: uploadImageForResource,
+    getReadingsByWeek: getReadingsByWeek,
+    getCurrentVillageAverage: getCurrentVillageAverage
   };
+
+  function uploadImageForResource(postcode, resourceId, data) {
+    return $http({
+      method: 'put',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resources/' + resourceId + '?access_token=' + AuthenticationService.getAccessToken(),
+      data: {
+        image: data,
+        postcode: postcode
+      }
+    });
+  }
 
   function getResource(postcode, resourceId) {
     return $http({
       method: 'get',
       headers: { 'Content-Type': 'application/json' },
       url: apiUrl + '/api/resources/' + resourceId + '&postcode=' + postcode
+    });
+  }
+
+  function getReadingsByWeek(postcode, resourceId) {
+    return $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/readings/readingsByWeek?postcode=' + postcode + '&resourceId=' + resourceId
     });
   }
 
@@ -120,6 +145,19 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
     });
   }
 
+  function getCurrentVillageAverage(postcode, resourceId) {
+    var villageId = resourceId.substring(0, 2);
+
+    return $http({
+      method: 'get',
+      headers: { 'Content-Type': 'application/json' },
+      url: apiUrl + '/api/resource_stats/getCurrentVillageAverage?villageId=' + villageId + '&postcode=' + postcode
+    }).catch(function (err) {
+      if (err.status !== 404) return Promise.reject(err);
+      console.log("No current village reading");
+    });
+  }
+
   /**
    * Get the info and statistics for a resource
    * @returns Promise<[resource, villageAverage, historicalResourceAverages, historicalVillageAverages ]
@@ -164,13 +202,16 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
     //TODO: make url parameters load properly
     //TODO: inject hide and show loading indicator into every request...
     return Promise.resolve(true).then(function () {
-      return showLoadingIndicator();
+      return showSlowLoadingIndicator();
     }).then(function () {
-      return $http({
+      return $http(_defineProperty({
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
-        url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken()
-      });
+        url: apiUrl + '/api/readings/processExcelFile?container=' + fileResponse.container + '&name=' + fileResponse.name + '&access_token=' + AuthenticationService.getAccessToken(),
+        timeout: 1000 * 60 * 10 }, 'headers', {
+        'timeout': 1000,
+        'Connection': 'Keep-Alive'
+      }));
     }).then(function (res) {
       hideLoadingIndicator();
       return res;
@@ -182,6 +223,10 @@ angular.module('service.api', []).service('ApiService', function ($http, $q, $ro
 
   function showLoadingIndicator() {
     $rootScope.$broadcast('loading:show');
+  }
+
+  function showSlowLoadingIndicator() {
+    $rootScope.$broadcast('loading:show-slow');
   }
 
   function hideLoadingIndicator() {
