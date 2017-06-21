@@ -11,6 +11,7 @@ COPY package.json /usr/src/app/
 RUN npm install -s
 
 COPY ./ /usr/src/app/
+RUN cd /usr/src/app/src && npm install -s
 
 #Default envs
 ENV ENABLE_LOGS=false
