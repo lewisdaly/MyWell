@@ -67,14 +67,15 @@
   <script src="lib/moment.min.js"></script>
 
   <!-- Auth0 Stuff -->
-  <script src="lib/auth0-js/auth0.min.js"></script>
-  <script src="lib/angular-auth0/angular-auth0.js"></script>
+  <!-- <script src="lib/auth0-js/auth0.min.js"></script> -->
+  <!-- <script src="lib/angular-auth0/angular-auth0.js"></script> -->
+  <script src="lib/angular-lock-passwordless/angular-lock-passwordless.js"></script>
+  <script src="lib/angular-lock-passwordless/lock-passwordless-2.2.3.min.js"></script>
 
 </head>
 <body ng-app="starter">
   <ion-nav-bar class="bar-stable" ng-controller="AppController">
     <ion-nav-back-button></ion-nav-back-button>
-
     <ion-nav-buttons side="right">
       <button class="button" ng-click="login()" ng-hide="isLoggedIn">
         Login
@@ -82,18 +83,8 @@
       <button class="button" ng-click="logout()" ng-hide="!isLoggedIn">
         Logout
       </button>
-  </ion-nav-buttons>
-
+    </ion-nav-buttons>
   </ion-nav-bar>
-  <!-- in case we want a silly header...  -->
-  <!-- <div class="bar bar-subheader">
-    <div class="button-bar">
-      <a class="button">Wells</a>
-      <a class="button">Rain</a>
-      <a class="button">Checkdams</a>
-    </div>
-  </div> -->
-
   <ion-nav-view scroll="false"></ion-nav-view>
 </body>
 </html>

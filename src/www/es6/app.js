@@ -30,7 +30,8 @@ angular.module('starter', [
   'rainapp.utils',
 
   'AdalAngular',
-  'auth0.auth0'
+  // 'auth0.auth0',
+  'auth0.lockPasswordless'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -60,8 +61,11 @@ angular.module('starter', [
     };
 
     window.codePush.sync(codePushCallback, options);
+
+
   });
-// });
+
+
 
   //keep user logged in after page refresh
   //http://jasonwatmore.com/post/2015/03/10/AngularJS-User-Registration-and-Login-Example.aspx
@@ -93,6 +97,24 @@ angular.module('starter', [
   })
 })
 
+.run(function($rootScope, $localstorage, lockPasswordless) {
+  /**
+   * Callback for Auth0 lock authentication event
+   */
+  $rootScope.$on('authenticated', function(authResult) {
+    console.log("authResult:", authResult.idToken);
+
+    $localStorage.setItem('id_token', authResult.idToken);
+
+    lockPasswordless.getProfile(result.idToken, function(error, profile) {
+      if (error) {
+        console.log(error);
+      }
+      $localStorage.setItem('profile', JSON.stringify(profile));
+    });
+  });
+})
+
 //The ADAL Provider - Auth and Stuff
 .config(['$compileProvider', '$stateProvider', '$urlRouterProvider', '$httpProvider', 'adalAuthenticationServiceProvider',
   function ($compileProvider, $stateProvider, $urlRouterProvider, $httpProvider, adalProvider) {
@@ -110,108 +132,116 @@ angular.module('starter', [
 
   }])
 
-.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider, angularAuth0Provider) {
+.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider, lockPasswordlessProvider, $locationProvider) {
+  // $urlRouterProvider.rule(function ($injector, $location) {
+  //     window.location.search = ''
+  //     //what this function returns will be set as the $location.url
+  //     console.log("$location", $location);
+  //      const path = $location.path();
+  //      const normalized = path.replace("?hello=2", "");
+  //      console.log(path, normalized);
+  //      if (path != normalized) {
+  //         //  $location.replace().path(normalized);
+  //         return normalized + "?hello=1"
+  //      }
+  //      // because we've returned nothing, no state change occurs
+  //     //  return "/tab/map";
+  //  });
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
   $stateProvider
-  .state('login', {
-    url: '/login',
-    templateUrl: 'templates/login.html',
-    controller: 'LoginController'
-  })
+    .state('login', {
+      url: '/login',
+      templateUrl: 'templates/login.html',
+      controller: 'LoginController'
+    })
 
-  .state('signup', {
-    url: '/signup',
-    templateUrl: 'templates/signup.html',
-    controller: 'SignupController'
-  })
+    .state('signup', {
+      url: '/signup',
+      templateUrl: 'templates/signup.html',
+      controller: 'SignupController'
+    })
 
 
-  // setup an abstract state for the tabs directive
-  .state('tab', {
-    url: '/tab',
-    abstract: true,
-    templateUrl: 'templates/tabs.html',
+    // setup an abstract state for the tabs directive
+    .state('tab', {
+      url: '/tab',
+      abstract: true,
+      templateUrl: 'templates/tabs.html',
+    })
 
-  })
-
-  // Each tab has its own nav history stack:
-
-  .state('tab.map', {
-    url: '/map',
-    // requireADLogin: true,
-    views: {
-      'tab-map': {
-        templateUrl: 'templates/tab-map.html',
-        //TODO: change this name
-        controller: 'MapCtrl'
+    // Each tab has its own nav history stack:
+    .state('tab.map', {
+      url: '/map',
+      // requireADLogin: true,
+      views: {
+        'tab-map': {
+          templateUrl: 'templates/tab-map.html',
+          //TODO: change this name
+          controller: 'MapCtrl'
+        }
       }
-    }
-  })
-  // Map detail page
-  .state('tab.map-detail', {
-    url: '/map/:postcode/:resourceId',
-    views: {
-      'tab-map': {
-        templateUrl: 'templates/map-detail.html',
-        controller: 'MapDetailController'
+    })
+    // Map detail page
+    .state('tab.map-detail', {
+      url: '/map/:postcode/:resourceId',
+      views: {
+        'tab-map': {
+          templateUrl: 'templates/map-detail.html',
+          controller: 'MapDetailController'
+        }
       }
-    }
-  })
-  //Village Detail Page
-  .state('tab.village-detail', {
-    url: '/map/:postcode/village/:villageId',
-    views: {
-      'tab-map': {
-        templateUrl: 'templates/village-detail.html',
-        controller: 'VillageDetailController'
+    })
+    //Village Detail Page
+    .state('tab.village-detail', {
+      url: '/map/:postcode/village/:villageId',
+      views: {
+        'tab-map': {
+          templateUrl: 'templates/village-detail.html',
+          controller: 'VillageDetailController'
+        }
       }
-    }
-  })
-  .state('tab.report', {
-    url: '/report',
-    // requireADLogin: true,
-    views: {
-      'tab-report': {
-        templateUrl: 'templates/tab-report.html',
-        controller: 'ReportController'
+    })
+    .state('tab.report', {
+      url: '/report',
+      // requireADLogin: true,
+      views: {
+        'tab-report': {
+          templateUrl: 'templates/tab-report.html',
+          controller: 'ReportController'
+        }
       }
-    }
-  })
-  .state('tab.chat-detail', {
-    url: '/chats/:chatId',
-    // requireADLogin: true,
-    views: {
-      'tab-chats': {
-        templateUrl: 'templates/chat-detail.html',
-        controller: 'ChatDetailCtrl'
+    })
+    .state('tab.chat-detail', {
+      url: '/chats/:chatId',
+      // requireADLogin: true,
+      views: {
+        'tab-chats': {
+          templateUrl: 'templates/chat-detail.html',
+          controller: 'ChatDetailCtrl'
+        }
       }
-    }
-  })
+    })
 
-  .state('tab.settings', {
-    url: '/settings',
-    // requireADLogin: true,
-    views: {
-      'tab-settings': {
-        templateUrl: 'templates/tab-settings.html',
-        controller: 'SettingsController'
+    .state('tab.settings', {
+      url: '/settings',
+      // requireADLogin: true,
+      views: {
+        'tab-settings': {
+          templateUrl: 'templates/tab-settings.html',
+          controller: 'SettingsController'
+        }
       }
-    }
-  })
+    })
 
-  //Register  page
-  .state('tab.settings-register', {
-    url: '/settings/register',
-    views: {
-      'tab-settings': {
-        templateUrl: 'templates/register.html',
-        controller: 'RegisterController'
+    //Register  page
+    .state('tab.settings-register', {
+      url: '/settings/register',
+      views: {
+        'tab-settings': {
+          templateUrl: 'templates/register.html',
+          controller: 'RegisterController'
+        }
       }
-    }
   });
 
   // if none of the above states are matched, use this as the fallback
@@ -244,14 +274,20 @@ angular.module('starter', [
   }]);
 
   // Initialization for the angular-auth0 library
-  angularAuth0Provider.init({
+  //TODO: var for the redirectUri
+  lockPasswordlessProvider.init({
    clientID: 'zLkp7B2NAsbk10anUI1LZsiMngQksoI0',
    domain: 'vessels.au.auth0.com',
-   responseType: 'token id_token',
+  //  responseType: 'token',
    audience: 'https://vessels.au.auth0.com/userinfo',
-   redirectUri: 'http://localhost:3000/callback',
+  //  redirectUri: 'http://docker.local:8080/callback',
    scope: 'openid'
   });
+
+  // lockPasswordlessProvider.on('loginSuccess', function($location) {
+  //   console.log("loginSuccess!");
+  //   // $location.path('/').hash('');
+  // });
 
   // catch exceptions out of angular
   window.onerror = function(message, url, line, col, error){
@@ -279,7 +315,8 @@ angular.module('starter', [
     return stopPropagation;
   };
 
-})
+  $locationProvider.hashPrefix('!');
+});
 
 
 angular.isNullOrUndefined = function(val) {

@@ -1,5 +1,7 @@
 angular.module('starter.controllers', ['ionic'])
-.controller('AppController', function($scope, $ionicModal, Auth0Service, AuthenticationService, $state, $rootScope, LoginService, ApiService) {
+.controller('AppController', function($scope, $ionicModal, lockPasswordless, AuthenticationService, $state, $rootScope, LoginService, ApiService) {
+
+  const callbackURI = "onLoginSuccess"
 
 	//Init
 	//Check to see if user is logged in.
@@ -11,13 +13,38 @@ angular.module('starter.controllers', ['ionic'])
 		$scope.isLoggedIn = false;
 	}
 
-	$scope.login = function() {
-    Auth0Service.login();
+  $scope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+    console.log(oldUrl, "to", newUrl);
+    console.log("window.location", window.location);
+    // var hash = lockPasswordless.parseHash(window.location.hash);
 
-		// $scope.modal.show();
+    // lockPasswordless.getProfile("38lVA-7_OB-88IKn", function (err, profile) {
+    //   if (err){
+    //     //handle err
+    //     console.log("err", err);
+    //   } else {
+    //     //use user profile
+    //     console.log("HEY", profile);
+    //   }
+    // });
+  });
+
+	$scope.login = function() {
+    console.log(window.location);
+    const options = {
+      auth: {
+        redirectUrl: `${window.location.href}`,
+      },
+      "focusInput":false,
+      title: "MyWell Login"
+    };
+    // lockPasswordless.sms(options);
+    lockPasswordless.emailcode(options);
 	}
 
 	$scope.logout = function() {
+    //TODO: log out with Auth0
+
 		AuthenticationService.ClearCredentials();
 		$rootScope.$broadcast('login-state-changed');
 		$scope.isVerified = false;
@@ -39,7 +66,7 @@ angular.module('starter.controllers', ['ionic'])
 	})
 
   $scope.performLogin = function(form) {
-    Auth0Service.login();
+    // Auth0Service.login();
   }
 
 	// $scope.performLogin = function(form) {
