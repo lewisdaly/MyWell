@@ -17,7 +17,9 @@ angular.module('service.api', [])
     getResource: getResource,
     uploadImageForResource: uploadImageForResource,
     getReadingsByWeek: getReadingsByWeek,
-    getCurrentVillageAverage: getCurrentVillageAverage
+    getCurrentVillageAverage: getCurrentVillageAverage,
+    sendLoginCode: sendLoginCode,
+    loginWithCode: loginWithCode
   });
 
 
@@ -246,6 +248,24 @@ angular.module('service.api', [])
         hideLoadingIndicator();
         return Promise.reject(err);
       })
+  }
+
+  function sendLoginCode(mobile_number) {
+    return $http({
+      method:'post',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + '/api/LoginCodes/sendSMSCode',
+      data: {mobile_number:mobile_number}
+    });
+  }
+
+  function loginWithCode(mobile_number, code) {
+    return $http({
+      method:'post',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + '/api/Clients/loginWithCode',
+      data: {mobile_number:mobile_number, code:code}
+    });
   }
 
   function showLoadingIndicator() {

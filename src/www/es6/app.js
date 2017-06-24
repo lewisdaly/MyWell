@@ -26,11 +26,9 @@ angular.module('starter', [
   'service.signup',
   'service.user',
   'service.api',
-  'service.auth0',
   'rainapp.utils',
-
   'AdalAngular',
-  'auth0.auth0'
+  'ngIntlTelInput'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -106,16 +104,13 @@ angular.module('starter', [
     },
     $httpProvider
     );
-
-
   }])
 
-.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider, angularAuth0Provider) {
+.config(function (ngIntlTelInputProvider) {
+   ngIntlTelInputProvider.set({initialCountry: 'in', onlyCountries: ["in", "au"]});
+ })
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
+.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider) {
   $stateProvider
   .state('login', {
     url: '/login',
@@ -243,16 +238,6 @@ angular.module('starter', [
     };
   }]);
 
-  // Initialization for the angular-auth0 library
-  angularAuth0Provider.init({
-   clientID: 'zLkp7B2NAsbk10anUI1LZsiMngQksoI0',
-   domain: 'vessels.au.auth0.com',
-   responseType: 'token id_token',
-   audience: 'https://vessels.au.auth0.com/userinfo',
-   redirectUri: 'http://localhost:3000/callback',
-   scope: 'openid'
-  });
-
   // catch exceptions out of angular
   window.onerror = function(message, url, line, col, error){
     var stopPropagation = debug ? false : true;
@@ -278,8 +263,7 @@ angular.module('starter', [
     }
     return stopPropagation;
   };
-
-})
+});
 
 
 angular.isNullOrUndefined = function(val) {
