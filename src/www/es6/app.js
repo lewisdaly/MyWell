@@ -28,7 +28,8 @@ angular.module('starter', [
   'service.api',
   'rainapp.utils',
   'AdalAngular',
-  'ngIntlTelInput'
+  // 'ngIntlTelInput'
+  'intlpnIonic'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -106,9 +107,9 @@ angular.module('starter', [
     );
   }])
 
-.config(function (ngIntlTelInputProvider) {
-   ngIntlTelInputProvider.set({initialCountry: 'in', onlyCountries: ["in", "au"]});
- })
+// .config(function (ngIntlTelInputProvider) {
+//    ngIntlTelInputProvider.set({initialCountry: 'in', onlyCountries: ["in", "au"]});
+//  })
 
 .config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider) {
   $stateProvider
