@@ -21,7 +21,7 @@
           </div>
           <button ng-disabled="form.tel.$invalid || shouldDisablePhoneButton(form.tel) || buttonState === 'loading'" class="button button-outline button-block button-positive" ng-click="getCode(form.tel.$modelValue)">
             <i ng-hide="buttonState !== 'userInput'"class="icon ion-ios-arrow-forward"></i>
-            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner-energized"></ion-spinner>
+            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive button-spinner"></ion-spinner>
           </button>
         </div>
       </form>
@@ -37,7 +37,7 @@
           </label>
           <button ng-enabled="isCodeValid(form.code)" class="button button-outline button-block button-positive" ng-click="performLogin(form.code)">
             <p ng-hide="buttonState !== 'userInput'">Login</p>
-            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner-energized"></ion-spinner>
+            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive  button-spinner"></ion-spinner>
           </button>
           <button class="button button-clear button-stable" ng-click="resetLogin()">Did not get the code?</button>
         </div>

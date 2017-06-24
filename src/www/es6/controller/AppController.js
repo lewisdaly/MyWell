@@ -25,7 +25,7 @@ angular.module('starter.controllers', ['ionic'])
 	$scope.login = function() {
 		$scope.modal.show();
     $scope.codeState = 'getCode';
-    // $scope.codeState = 'enterCode';
+
 	}
 
 	$scope.logout = function() {
