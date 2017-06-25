@@ -1,22 +1,57 @@
 <ion-modal-view>
-    <ion-header-bar>
-        <h1 class="title">Login</h1>
-    </ion-header-bar>
-    <ion-content>
-    </br>
-        <h5>Please enter the login code</h5>
+  <ion-header-bar>
+    <h1 class="title">Login</h1>
+      <button side="left" class="button button-clear icon ion-android-close" ng-click="cancel()"></button>
+      <button side="left" class="button button-clear" ng-show="false"></button>
+    </ion-nav-buttons>
+  </ion-header-bar>
+  <ion-content scroll="true">
+    <div class="login-heading">
+      <img class="marvi_logo" src="img/marvi_logo.png"/>
+      <h3>MyWell</h3>
+    </div>
 
-        <form class="list list-inset simple-form">
-          <input ng-model="form.password" type="password" placeholder="login code">
-          <button class="button button-block button-calm" ng-click="performLogin(form)">Login</button>
-        </form>
+    <div class="padding" ng-hide="codeState !== 'getCode'">
+      <h5>Enter your phone to sign in</h5>
+      <form name="form">
+        <div class="form-group" ng-class="{'has-error': form.tel.$invalid && form.tel.$touched, 'has-success': form.tel.$valid}">
+            <intlpn name="tel" ng-model="tel" placeholder="Your Number" default-country="in" only-country="['in','au']"></intlpn>
+          <button ng-disabled="form.tel.$invalid || shouldDisablePhoneButton(form.tel) || buttonState === 'loading'" class="button button-outline button-block button-positive" ng-click="getCode(form.tel.$modelValue)">
+            <i ng-hide="buttonState !== 'userInput'"class="icon ion-ios-arrow-forward"></i>
+            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive button-spinner"></ion-spinner>
+          </button>
+        </div>
+      </form>
+    </div>
 
-        <!-- Uncomment below when we re-implement login -->
-        <!-- <button class="button button-block button-calm" ng-click="performLogin('facebook')">Login with Facebook</button> -->
-        <!-- <button class="button button-block button-calm" ng-click="performLogin('twitter')">Login with Twitter</button> -->
-        <!-- <button class="button button-block button-calm" ng-click="performLogin('google')">Login with Google</button> -->
-        <!-- </br> -->
-        <!-- <button class="button button-block button-assertive button-clear button-outline" ng-click="cancel()">Cancel</button> -->
+    <div ng-hide="codeState !== 'enterCode'">
+      <p>An SMS with the code has been sent to +{{mobile_number}}</p>
+      <form name="codeForm">
+        <div class="form-group">
+          <label class="item item-input">
+            <i class="icon ion-search placeholder-icon"></i>
+            <input ng-model="form.code" type="tel" placeholder="Your code">
+          </label>
+          <button ng-enabled="isCodeValid(form.code)" class="button button-outline button-block button-positive" ng-click="performLogin(form.code)">
+            <p ng-hide="buttonState !== 'userInput'">Login</p>
+            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive  button-spinner"></ion-spinner>
+          </button>
+          <button class="button button-clear button-stable" ng-click="resetLogin()">Did not get the code?</button>
+        </div>
+      </form>
+    </div>
+    <!-- <form class="list list-inset simple-form">
+      <input ng-model="form.area_code" type="number" placeholder="91">
+      <input ng-model="form.local_number" type="number" placeholder="login code">
+      <button class="button button-block button-calm" ng-click="performLogin(form)">Login</button>
+    </form> -->
 
-    </ion-content>
+
+    <!-- <h5>An SMS with the code has been sent to </h5>
+    <form class="list list-inset simple-form">
+      <input ng-model="form.password" type="password" placeholder="login code">
+      <button class="button button-block button-calm" ng-click="performLogin(form)">Login</button>
+    </form> -->
+    <!-- <button>Did not get the code?</button> -->
+  </ion-content>
 </ion-modal-view>

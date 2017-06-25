@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' https://*.mapbox.com data:; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'self' gap://ready file://* *; img-src 'self' https://*.mapbox.com data:; connect-src *; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval';">
   <meta charset="utf-8">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
 
@@ -29,7 +29,6 @@
   <script src="cordova.js"></script>
 
   <script src="js/dist.js"></script>
-
 
   <!-- iOS 9 Webview Patch -->
   <script src="lib/angular-ios9-uiwebview.patch.js"></script>
@@ -66,6 +65,20 @@
   <!-- MomentJS -->
   <script src="lib/moment.min.js"></script>
 
+  <!-- Phone number input and validation  -->
+  <!-- <script src="lib/intl-tel-input/build/js/intlTelInput.min.js"></script>
+  <script src="lib/intl-tel-input/build/js/utils.js"></script>
+  <link href="lib/intl-tel-input/build/css/intlTelInput.css" rel="stylesheet"> -->
+
+  <!-- <script src="lib/ng-intl-tel-input/dist/ng-intl-tel-input.min.js"></script> -->
+  <!-- <script src="lib/ng-intl-tel-input/ng-intl-tel-input.module.js"></script>
+  <script src="lib/ng-intl-tel-input/ng-intl-tel-input.provider.js"></script>
+  <script src="lib/ng-intl-tel-input/ng-intl-tel-input.directive.js"></script> -->
+
+  <link rel="stylesheet" href="lib/intlpnIonic/css/intlpn.css">
+  <script src="lib/intlpnIonic/js/intlpnIonic.js"></script>
+  <script src="lib/intlpnIonic/js/data.js"></script>
+  <script src="lib/intlpnIonic/lib/libphonenumber/build/utils.js"></script>
 
 </head>
 <body ng-app="starter" class="platform-android platform-cordova platform-webview">

@@ -87,7 +87,10 @@ body {
   margin: 0;
   border-bottom-width: 0px;
   text-align: center;
+}
 
+popup-more-button {
+  width: 100%;
 }
 
 .search-scroll-container {
@@ -330,4 +333,28 @@ hr-text {
 
 .small_logo {
   width: 50%;
+}
+
+.login-heading {
+  /*background-color: #444;*/
+}
+
+.tel-item {
+  border-color: #ddd;
+  background-color: #fff;
+  color: #444;
+  position: relative;
+  z-index: 2;
+  display: block;
+  margin: -1px;
+  padding: 16px;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 16px;
+}
+
+.button-spinner {
+  position: absolute;
+  top: 20%;
+  left: 47%;
 }

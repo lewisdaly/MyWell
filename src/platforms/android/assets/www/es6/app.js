@@ -27,8 +27,9 @@ angular.module('starter', [
   'service.user',
   'service.api',
   'rainapp.utils',
-  // 'azure-mobile-service.module',
-  'AdalAngular'
+  'AdalAngular',
+  // 'ngIntlTelInput'
+  'intlpnIonic'
   ])
 
 .run(function($ionicPlatform, $rootScope, $ionicLoading, $location, $http, $localstorage) {
@@ -72,19 +73,6 @@ angular.module('starter', [
     $rootScope.globals = {};
   }
 
-  // $rootScope.$on('$locationChangeStart', function (event, next, current) {
-  //   // redirect to login page if not logged in and trying to access a restricted page
-  //   //TODO: Add to this!
-  //   var pageArray = ['/login', '/signup'];
-  //   var restrictedPage = pageArray.indexOf($location.path()) === -1;
-  //   // var restrictedPage = $.inArray($location.path(), ) === -1;
-  //   var loggedIn = $rootScope.globals.currentUser;
-  //   if (restrictedPage && !loggedIn) {
-  //     console.log("Error: not logged in. Redirecting to /login");
-  //     $location.path('/login');
-  //   }
-  // });
-
   //Refer to: http://learn.ionicframework.com/formulas/loading-screen-with-interceptors/
   //Loading indicators and callbacks
   $rootScope.$on('loading:show', function() {
@@ -117,16 +105,13 @@ angular.module('starter', [
     },
     $httpProvider
     );
-
-
   }])
 
-.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider) {
+// .config(function (ngIntlTelInputProvider) {
+//    ngIntlTelInputProvider.set({initialCountry: 'in', onlyCountries: ["in", "au"]});
+//  })
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
+.config(function($stateProvider, $urlRouterProvider, $provide, debug, adalAuthenticationServiceProvider) {
   $stateProvider
   .state('login', {
     url: '/login',
@@ -279,8 +264,7 @@ angular.module('starter', [
     }
     return stopPropagation;
   };
-
-})
+});
 
 
 angular.isNullOrUndefined = function(val) {
