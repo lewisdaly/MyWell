@@ -27,10 +27,11 @@ angular.module('service.api', [])
     return $http({
       method:'put',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/resources/${resourceId}?access_token=${AuthenticationService.getAccessToken()}`,
+      url: `${apiUrl}/api/resources/updateResourceByIdAndPostcode?access_token=${AuthenticationService.getAccessToken()}`,
       data: {
         image: data,
-        postcode: postcode
+        postcode: postcode,
+        id: resourceId
       }
     });
   }
