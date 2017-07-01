@@ -19,13 +19,14 @@ angular.module('service.api', [])
     getReadingsByWeek: getReadingsByWeek,
     getCurrentVillageAverage: getCurrentVillageAverage,
     sendLoginCode: sendLoginCode,
-    loginWithCode: loginWithCode
+    loginWithCode: loginWithCode,
+    isLoggedIn:isLoggedIn
   });
 
 
   function uploadImageForResource(postcode, resourceId, data) {
     return $http({
-      method:'put',
+      method:'post',
       headers: {'Content-Type':'application/json'},
       url: `${apiUrl}/api/resources/updateResourceByIdAndPostcode?access_token=${AuthenticationService.getAccessToken()}`,
       data: {
@@ -174,6 +175,13 @@ angular.module('service.api', [])
     });
   }
 
+  function isLoggedIn() {
+    return $http({
+      method: 'get',
+      headers: {'Content-Type':'application/json'},
+      url: `${apiUrl}/api/Clients/isLoggedIn?access_token=${AuthenticationService.getAccessToken()}`
+    });
+  }
 
   function getCurrentVillageAverage(postcode, resourceId) {
     const villageId = resourceId.substring(0,2);

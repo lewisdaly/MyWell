@@ -1,5 +1,5 @@
 angular.module('controller.map', [])
-//TODO: change this name
+
 .controller('MapCtrl', function($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService, CachingService) {
 
   const ResourceType = {
@@ -45,6 +45,9 @@ angular.module('controller.map', [])
       }
       leafletMap.removeLayer(marker);
     });
+    //Trying this out - it may fix the greyness and popup position errors
+    //maybe call this whenever the page
+    leafletMap.invalidateSize();
   }
 
   const loadDataAndSetupMap = () => {

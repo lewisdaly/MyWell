@@ -15,17 +15,22 @@ angular.module('starter.controllers', ['ionic'])
 	//Check to see if user is logged in.
   $scope.buttonState = 'userInput';
 	var currentUser = $rootScope.globals.currentUser;
-	if(currentUser) {
-		$scope.isLoggedIn = true;
-	}
-	else {
-		$scope.isLoggedIn = false;
-	}
+  if (!currentUser) {
+    $scope.isLoggedIn = false;
+  } else {
+    //We have a token, but we don't know that its valid
+    ApiService.isLoggedIn()
+      .then(() => $scope.isLoggedIn = true)
+      .catch(err => {
+        console.log("User is no longer logged in");
+        $scope.isLoggedIn = false;
+        $scope.logout();
+      });
+  }
 
 	$scope.login = function() {
 		$scope.modal.show();
     $scope.codeState = 'getCode';
-
 	}
 
 	$scope.logout = function() {
