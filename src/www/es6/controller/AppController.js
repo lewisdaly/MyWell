@@ -3,7 +3,8 @@ angular.module('starter.controllers', ['ionic'])
 
   /*
     codeState:
-      - getCode - user must enter phone number
+      - getCodeSMS - user must enter phone number
+      - getCodeEmail - user must enter email address
       - enterCode - message has been sent, waiting for user to enter code
 
     buttonState:
@@ -30,7 +31,7 @@ angular.module('starter.controllers', ['ionic'])
 
 	$scope.login = function() {
 		$scope.modal.show();
-    $scope.codeState = 'getCode';
+    $scope.codeState = 'getCodeSMS';
 	}
 
 	$scope.logout = function() {
@@ -70,6 +71,15 @@ angular.module('starter.controllers', ['ionic'])
     return false;
   }
 
+  $scope.switchService = function() {
+    if ($scope.codeState === "getCodeSMS") {
+      $scope.codeState = "getCodeEmail";
+      return;
+    }
+
+    $scope.codeState == "getCodeSMS";
+  }
+
   //Send the request to make the 1 time code
   $scope.getCode = function(mobile_number) {
     //get rid of first '+'
@@ -85,7 +95,7 @@ angular.module('starter.controllers', ['ionic'])
       .catch(err => {
         console.log("Err", err);
         $scope.buttonState = 'userInput';
-        $scope.codeState = 'getCode'; //only change once loaded
+        $scope.codeState = 'getCodeSMS'; //only change once loaded
         window.alert('Error sending login code. Please try again.');
       })
   }
@@ -133,7 +143,7 @@ angular.module('starter.controllers', ['ionic'])
   }
 
   $scope.resetLogin = function() {
-    $scope.codeState = 'getCode';
+    $scope.codeState = 'getCodeSMS';
     $scope.buttonState = 'userInput';
     $scope.mobile_number = null;
 
