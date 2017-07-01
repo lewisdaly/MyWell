@@ -23,8 +23,10 @@ angular.module('starter.controllers', ['ionic'])
     ApiService.isLoggedIn()
       .then(() => $scope.isLoggedIn = true)
       .catch(err => {
-        console.log("User is no longer logged in");
+        //TODO: only clear on a 401
+        console.log("User is no longer logged in", err);
         $scope.isLoggedIn = false;
+        //logout, but still hold onto the credentials just in case
         $scope.logout();
       });
   }
@@ -34,8 +36,8 @@ angular.module('starter.controllers', ['ionic'])
     $scope.codeState = 'getCodeSMS';
 	}
 
-	$scope.logout = function() {
-		AuthenticationService.ClearCredentials();
+	$scope.logout = function(shouldClear) {
+    AuthenticationService.ClearCredentials();
 		$rootScope.$broadcast('login-state-changed');
 		$scope.isVerified = false;
 		$scope.unverifiedUsers = [];

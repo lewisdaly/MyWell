@@ -48,11 +48,11 @@ angular.module('service.api', [])
     }).then(response => response.data[0]);
   }
 
-  function getReadingsByWeek(postcode, resourceId) {
+  function getReadingsByWeek(postcode, resourceId, method) {
     return $http({
       method: 'get',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/readings/readingsByWeek?postcode=${postcode}&resourceId=${resourceId}`
+      url: `${apiUrl}/api/readings/readingsByWeek?postcode=${postcode}&resourceId=${resourceId}&method=${method}`
     });
   }
 
@@ -140,10 +140,11 @@ angular.module('service.api', [])
    * If we cannot connect, save to localstorage array
    */
   function updateReading(reading) {
+    //TODO: change to upsert with where
     return $http({
       method:'post',
       headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/readings?access_token=' + AuthenticationService.getAccessToken(),
+      url: apiUrl + '/api/readings/saveOrCreate?access_token=' + AuthenticationService.getAccessToken(),
       data:reading,
     });
   }

@@ -93,7 +93,7 @@ angular.module('report.controllers', [])
         value: $scope.form.value,
         resourceId: $scope.form.resourceId,
         villageId: `${$scope.form.resourceId}`.substring(0,2),
-        date: $scope.form.date
+        date: $scope.form.date.toDateString()
       }
 
       ApiService.updateReading(data)
