@@ -137,7 +137,6 @@ angular.module('controller.register', [])
       },
       owner: form.owner,
       village_name: form.village_name.trim(),
-      mobile: `91${form.mobile}`,
       email: form.email,
       well_depth: form.max_wt_depth,
       type:form.type,

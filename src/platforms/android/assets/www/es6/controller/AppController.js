@@ -3,7 +3,8 @@ angular.module('starter.controllers', ['ionic'])
 
   /*
     codeState:
-      - getCode - user must enter phone number
+      - getCodeSMS - user must enter phone number
+      - getCodeEmail - user must enter email address
       - enterCode - message has been sent, waiting for user to enter code
 
     buttonState:
@@ -15,21 +16,28 @@ angular.module('starter.controllers', ['ionic'])
 	//Check to see if user is logged in.
   $scope.buttonState = 'userInput';
 	var currentUser = $rootScope.globals.currentUser;
-	if(currentUser) {
-		$scope.isLoggedIn = true;
-	}
-	else {
-		$scope.isLoggedIn = false;
-	}
+  if (!currentUser) {
+    $scope.isLoggedIn = false;
+  } else {
+    //We have a token, but we don't know that its valid
+    ApiService.isLoggedIn()
+      .then(() => $scope.isLoggedIn = true)
+      .catch(err => {
+        //TODO: only clear on a 401
+        console.log("User is no longer logged in", err);
+        $scope.isLoggedIn = false;
+        //logout, but still hold onto the credentials just in case
+        $scope.logout();
+      });
+  }
 
 	$scope.login = function() {
 		$scope.modal.show();
-    $scope.codeState = 'getCode';
-
+    $scope.codeState = 'getCodeSMS';
 	}
 
-	$scope.logout = function() {
-		AuthenticationService.ClearCredentials();
+	$scope.logout = function(shouldClear) {
+    AuthenticationService.ClearCredentials();
 		$rootScope.$broadcast('login-state-changed');
 		$scope.isVerified = false;
 		$scope.unverifiedUsers = [];
@@ -65,6 +73,15 @@ angular.module('starter.controllers', ['ionic'])
     return false;
   }
 
+  $scope.switchService = function() {
+    if ($scope.codeState === "getCodeSMS") {
+      $scope.codeState = "getCodeEmail";
+      return;
+    }
+
+    $scope.codeState == "getCodeSMS";
+  }
+
   //Send the request to make the 1 time code
   $scope.getCode = function(mobile_number) {
     //get rid of first '+'
@@ -80,7 +97,7 @@ angular.module('starter.controllers', ['ionic'])
       .catch(err => {
         console.log("Err", err);
         $scope.buttonState = 'userInput';
-        $scope.codeState = 'getCode'; //only change once loaded
+        $scope.codeState = 'getCodeSMS'; //only change once loaded
         window.alert('Error sending login code. Please try again.');
       })
   }
@@ -128,7 +145,7 @@ angular.module('starter.controllers', ['ionic'])
   }
 
   $scope.resetLogin = function() {
-    $scope.codeState = 'getCode';
+    $scope.codeState = 'getCodeSMS';
     $scope.buttonState = 'userInput';
     $scope.mobile_number = null;
 

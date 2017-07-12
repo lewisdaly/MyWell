@@ -11,7 +11,20 @@
       <h3>MyWell</h3>
     </div>
 
-    <div class="padding" ng-hide="codeState !== 'getCode'">
+    <div class="padding" ng-hide="codeState !== 'getCodeSMS'">
+      <h5>Enter your phone to sign in</h5>
+      <form name="form">
+        <div class="form-group" ng-class="{'has-error': form.tel.$invalid && form.tel.$touched, 'has-success': form.tel.$valid}">
+            <intlpn name="tel" ng-model="tel" placeholder="Your Number" only-country="['in','au']"></intlpn>
+          <button ng-disabled="form.tel.$invalid || shouldDisablePhoneButton(form.tel) || buttonState === 'loading'" class="button button-outline button-block button-positive" ng-click="getCode(form.tel.$modelValue)">
+            <i ng-hide="buttonState !== 'userInput'"class="icon ion-ios-arrow-forward"></i>
+            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive button-spinner"></ion-spinner>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="padding" ng-hide="codeState !== 'getCodeEmail'">
       <h5>Enter your phone to sign in</h5>
       <form name="form">
         <div class="form-group" ng-class="{'has-error': form.tel.$invalid && form.tel.$touched, 'has-success': form.tel.$valid}">
