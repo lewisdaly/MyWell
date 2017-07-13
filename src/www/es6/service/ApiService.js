@@ -140,13 +140,23 @@ angular.module('service.api', [])
    * If we cannot connect, save to localstorage array
    */
   function updateReading(reading) {
-    //TODO: change to upsert with where
-    return $http({
-      method:'post',
-      headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/readings/saveOrCreate?access_token=' + AuthenticationService.getAccessToken(),
-      data:reading,
-    });
+    return Promise.resolve(true)
+      .then(() => showLoadingIndicator())
+      .then(() => $http({
+          method:'post',
+          headers: {'Content-Type':'application/json'},
+          url: apiUrl + '/api/readings/saveOrCreate?access_token=' + AuthenticationService.getAccessToken(),
+          data:reading,
+        })
+      )
+      .then(res => {
+        hideLoadingIndicator();
+        return res;
+      })
+      .catch((err) => {
+        hideLoadingIndicator();
+        return Promise.reject(err);
+      })
   }
 
   function registerWell(resource) {
