@@ -1,5 +1,5 @@
 angular.module('starter.controllers', ['ionic'])
-.controller('AppController', function($scope, $ionicModal, AuthenticationService, $state, $rootScope, LoginService, ApiService) {
+.controller('AppController', function($scope, $ionicModal, AuthenticationService, $state, $rootScope, LoginService, ApiService, $localstorage) {
 
   /*
     codeState:
@@ -15,6 +15,7 @@ angular.module('starter.controllers', ['ionic'])
 	//Init
 	//Check to see if user is logged in.
   $scope.buttonState = 'userInput';
+  $scope.lastCodeState = '';
 	var currentUser = $rootScope.globals.currentUser;
   if (!currentUser) {
     $scope.isLoggedIn = false;
@@ -32,8 +33,12 @@ angular.module('starter.controllers', ['ionic'])
   }
 
 	$scope.login = function() {
+    $scope.email = $localstorage.get('last_entered_email', '');
+    $scope.mobile_number = $localstorage.get('last_entered_mobile_number', '');
+    $scope.tel = $localstorage.get('last_entered_mobile_number', '');
+
 		$scope.modal.show();
-    $scope.codeState = 'getCodeSMS';
+    $scope.codeState = 'getCodeEmail';
 	}
 
 	$scope.logout = function(shouldClear) {
@@ -73,23 +78,32 @@ angular.module('starter.controllers', ['ionic'])
     return false;
   }
 
+  $scope.shouldDisableEmailButton = function(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return !re.test(email);
+  }
+
   $scope.switchService = function() {
+    console.log($scope.codeState);
     if ($scope.codeState === "getCodeSMS") {
       $scope.codeState = "getCodeEmail";
       return;
     }
 
-    $scope.codeState == "getCodeSMS";
+    $scope.codeState = "getCodeSMS";
   }
 
   //Send the request to make the 1 time code
-  $scope.getCode = function(mobile_number) {
+  $scope.getCodeSMS = function(mobile_number) {
+    $localstorage.set('last_entered_mobile_number', mobile_number);
+    $scope.lastCodeState = 'getCodeSMS';
+    $scope.email = '';
+
     //get rid of first '+'
     $scope.mobile_number = mobile_number.replace("+", "");
-    console.log("Getting code", $scope.mobile_number);
     //TODO: send message
     $scope.buttonState = 'loading';
-    return ApiService.sendLoginCode(mobile_number)
+    return ApiService.sendLoginCodeSMS(mobile_number)
       .then(() => {
         $scope.buttonState = 'userInput';
         $scope.codeState = 'enterCode';
@@ -97,9 +111,29 @@ angular.module('starter.controllers', ['ionic'])
       .catch(err => {
         console.log("Err", err);
         $scope.buttonState = 'userInput';
-        $scope.codeState = 'getCodeSMS'; //only change once loaded
+        $scope.codeState = $scope.lastCodeState;
         window.alert('Error sending login code. Please try again.');
       })
+  }
+
+  $scope.getCodeEmail = function(email) {
+    $localstorage.set('last_entered_email', email);
+    $scope.mobile_number = '';
+    $scope.lastCodeState = 'getCodeEmail';
+
+    $scope.buttonState = 'loading';
+
+    return ApiService.sendLoginCodeEmail(email)
+      .then(() => {
+        $scope.buttonState = 'userInput';
+        $scope.codeState = 'enterCode';
+      })
+      .catch(err => {
+        console.log("Err", err);
+        $scope.buttonState = 'userInput';
+        $scope.codeState = $scope.lastCodeState;
+        window.alert('Error sending login code. Please try again.');
+      });
   }
 
   $scope.isCodeValid = function(code) {
@@ -117,10 +151,10 @@ angular.module('starter.controllers', ['ionic'])
   }
 
   //Perform the login
-  $scope.performLogin = function(code) {
-    console.log("Performing login", code);
+  $scope.performLogin = function(mobile_number, email, code) {
+    console.log("Performing login", mobile_number, email, code);
 
-    return ApiService.loginWithCode($scope.mobile_number, code)
+    return ApiService.loginWithCode(mobile_number, email, code)
       .then(response => {
         console.log(response);
         if (response.status === 200) {
@@ -152,40 +186,6 @@ angular.module('starter.controllers', ['ionic'])
   }
 
   //TODO: remember number (using local storage)
-  //TODO: Figure out country code
-  //TODO: "didn't get message" button
-
-
-
-	// $scope.performLogin = function(form) {
-  //   if (angular.isNullOrUndefined(form) || angular.isNullOrUndefined(form.password) || form.password.length === 0){
-  //     return;
-  //   }
-  //
-  //   ApiService.login('marvi', form.password)
-  //   .then(function (response) {
-  //     console.log(response);
-  //     if (response.status === 200) {
-  //       //login
-  //       const user = {
-  //         id: response.data.userId,
-  //         authToken:response.data.id,
-  //         username: 'marvi',
-  //         verified: true,
-  //         service: 'none'
-  //       };
-  //       AuthenticationService.SetCredentials(user, response.data.id);
-  //       $scope.modal.hide();
-  //     } else {
-  //       window.alert('Login Error: '+ response.status);
-  //     }
-  //   })
-  //   .catch(function (err){
-  //     console.log("err", err);
-  //     window.alert('Login Error: '+ err.status);
-  //
-  //   });
-	// }
 
 	$ionicModal.fromTemplateUrl('templates/login.html', {
 		scope: $scope,

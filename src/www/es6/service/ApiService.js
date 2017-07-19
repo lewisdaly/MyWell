@@ -18,7 +18,8 @@ angular.module('service.api', [])
     uploadImageForResource: uploadImageForResource,
     getReadingsByWeek: getReadingsByWeek,
     getCurrentVillageAverage: getCurrentVillageAverage,
-    sendLoginCode: sendLoginCode,
+    sendLoginCodeSMS: sendLoginCodeSMS,
+    sendLoginCodeEmail: sendLoginCodeEmail,
     loginWithCode: loginWithCode,
     isLoggedIn:isLoggedIn
   });
@@ -270,7 +271,7 @@ angular.module('service.api', [])
       })
   }
 
-  function sendLoginCode(mobile_number) {
+  function sendLoginCodeSMS(mobile_number) {
     return $http({
       method:'post',
       headers: {'Content-Type':'application/json'},
@@ -279,12 +280,30 @@ angular.module('service.api', [])
     });
   }
 
-  function loginWithCode(mobile_number, code) {
+  function sendLoginCodeEmail(email) {
+    return $http({
+      method:'post',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + '/api/LoginCodes/sendEmailCode',
+      data: {email:email}
+    });
+  }
+
+  function loginWithCode(mobile_number, email, code) {
+    let data = null;
+    if (mobile_number && !email) {
+      data = {mobile_number:mobile_number, code:code}
+    } else if (!mobile_number && email) {
+      data = {email:email, code:code}
+    } else {
+      return Promise.reject(new Error('Cannot set both mobile_number and email'));
+    }
+
     return $http({
       method:'post',
       headers: {'Content-Type':'application/json'},
       url: apiUrl + '/api/Clients/loginWithCode',
-      data: {mobile_number:mobile_number, code:code}
+      data: data
     });
   }
 
