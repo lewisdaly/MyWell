@@ -187,11 +187,18 @@ angular.module('service.api', [])
     });
   }
 
-  function isLoggedIn() {
+  /**
+   * Check if token is valid, if no token is set, defaults to Auth service's token
+   */
+  function isLoggedIn(optional_token) {
+    if (!optional_token) {
+      optional_token = AuthenticationService.getAccessToken();
+    }
+
     return $http({
       method: 'get',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/Clients/isLoggedIn?access_token=${AuthenticationService.getAccessToken()}`
+      url: `${apiUrl}/api/Clients/isLoggedIn?access_token=${optional_token}`
     });
   }
 
