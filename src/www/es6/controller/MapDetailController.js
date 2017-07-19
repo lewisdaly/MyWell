@@ -171,8 +171,10 @@ angular.module('controller.map-detail', ['nvd3'])
 
       return Promise.all([
         ApiService.getReadingsByWeek($stateParams.postcode, $scope.resourceId, getReadingsByWeekMethod($scope.resource.type)),
-        ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
-          .catch(err => console.log(err)),
+        null,
+        /* This method is tooooo slow*/
+        // ApiService.getDifferenceFromJune(null, 'individual', $scope.resourceId, $stateParams.postcode)
+          // .catch(err => console.log(err)),
         ApiService.getCurrentVillageAverage($stateParams.postcode, $scope.resourceId)
       ]);
     })
