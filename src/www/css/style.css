@@ -235,7 +235,12 @@ popup-more-button {
   overflow: hidden;
 }
 
-.banner .heading {
+.banner .topImage img {
+  height: 100%;
+  padding-bottom: 2
+}
+
+/*.banner .heading {
   position: absolute;
   top: 160px;
   padding: 0px 10px;
@@ -248,7 +253,7 @@ popup-more-button {
    1px -1px 0 #000,
    -1px 1px 0 #000,
    1px 1px 0 #000;
-}
+}*/
 
 h5.style1{
 	border-top: 1px solid #8c8b8b;
@@ -313,11 +318,11 @@ hr-text {
 }
 
 .stats {
-  background: #F5F5F5;
+  /*background: #F5F5F5;*/
   padding-top: 40px;
   padding-bottom: 40px;
-  border-bottom: 1px solid #90A4AE;
-  border-top: 1px solid #90A4AE;
+  /*border-bottom: 1px solid #90A4AE;*/
+  /*border-top: 1px solid #90A4AE;*/
 }
 
 .graphs {
