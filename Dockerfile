@@ -16,7 +16,7 @@ RUN cd /usr/src/app/src && npm install -s
 #Default envs
 ENV ENABLE_LOGS=false
 ENV VERSION_NUMBER=
-ENV SERVER_URL=http://docker.local:3000
+ENV SERVER_URL=http://localhost:3000
 ENV ENVIRONMENT=development
 
 EXPOSE 8100

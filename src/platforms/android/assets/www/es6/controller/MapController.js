@@ -2,6 +2,10 @@ angular.module('controller.map', [])
 
 .controller('MapCtrl', function($scope, apiUrl, $state, $window, $ionicHistory, $ionicModal, $ionicPopup, ApiService, CachingService) {
 
+  $scope.$on('$ionicView.enter', function(e) {
+    leafletMap.invalidateSize();
+  });
+
   const ResourceType = {
     WELL: 'well',
     RAINGAUGE: 'raingauge',

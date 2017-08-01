@@ -16,36 +16,41 @@
       <form name="form">
         <div class="form-group" ng-class="{'has-error': form.tel.$invalid && form.tel.$touched, 'has-success': form.tel.$valid}">
             <intlpn name="tel" ng-model="tel" placeholder="Your Number" only-country="['in','au']"></intlpn>
-          <button ng-disabled="form.tel.$invalid || shouldDisablePhoneButton(form.tel) || buttonState === 'loading'" class="button button-outline button-block button-positive" ng-click="getCode(form.tel.$modelValue)">
+          <button ng-disabled="form.tel.$invalid || shouldDisablePhoneButton(form.tel) || buttonState === 'loading'" class="button button-outline button-block button-positive" ng-click="getCodeSMS(form.tel.$modelValue)">
             <i ng-hide="buttonState !== 'userInput'"class="icon ion-ios-arrow-forward"></i>
             <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive button-spinner"></ion-spinner>
           </button>
+          <button class="button button-clear button-stable" ng-click="switchService()">No phone? Use email instead.</button>
         </div>
       </form>
     </div>
 
     <div class="padding" ng-hide="codeState !== 'getCodeEmail'">
-      <h5>Enter your phone to sign in</h5>
-      <form name="form">
-        <div class="form-group" ng-class="{'has-error': form.tel.$invalid && form.tel.$touched, 'has-success': form.tel.$valid}">
-            <intlpn name="tel" ng-model="tel" placeholder="Your Number" default-country="in" only-country="['in','au']"></intlpn>
-          <button ng-disabled="form.tel.$invalid || shouldDisablePhoneButton(form.tel) || buttonState === 'loading'" class="button button-outline button-block button-positive" ng-click="getCode(form.tel.$modelValue)">
-            <i ng-hide="buttonState !== 'userInput'"class="icon ion-ios-arrow-forward"></i>
-            <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive button-spinner"></ion-spinner>
-          </button>
-        </div>
-      </form>
+      <h5>Enter your email</h5>
+        <div class="form-group">
+          <label class="item item-input">
+            <input ng-model="email" type="email" placeholder="Your email">
+          </label>
+        <button ng-disabled="shouldDisableEmailButton(email) || buttonState === 'loading'"
+                class="button button-outline button-block button-positive"
+                ng-click="getCodeEmail(email)">
+          <i ng-hide="buttonState !== 'userInput'"class="icon ion-ios-arrow-forward"></i>
+          <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive button-spinner"></ion-spinner>
+        </button>
+        <button class="button button-clear button-stable" ng-click="switchService()">Use phone instead.</button>
+      </div>
     </div>
 
     <div ng-hide="codeState !== 'enterCode'">
-      <p>An SMS with the code has been sent to +{{mobile_number}}</p>
+      <p ng-show="lastCodeState === 'getCodeSMS'">An SMS with the login code has been sent to +{{mobile_number}}</p>
+      <p ng-show="lastCodeState === 'getCodeEmail'">An email with the login code has been sent to {{email}}</p>
       <form name="codeForm">
         <div class="form-group">
           <label class="item item-input">
             <i class="icon ion-search placeholder-icon"></i>
             <input ng-model="form.code" type="tel" placeholder="Your code">
           </label>
-          <button ng-enabled="isCodeValid(form.code)" class="button button-outline button-block button-positive" ng-click="performLogin(form.code)">
+          <button ng-enabled="isCodeValid(form.code)" class="button button-outline button-block button-positive" ng-click="performLogin(mobile_number, email, form.code)">
             <p ng-hide="buttonState !== 'userInput'">Login</p>
             <ion-spinner ng-hide="buttonState !== 'loading'" class="spinner spinner-positive  button-spinner"></ion-spinner>
           </button>
@@ -53,18 +58,5 @@
         </div>
       </form>
     </div>
-    <!-- <form class="list list-inset simple-form">
-      <input ng-model="form.area_code" type="number" placeholder="91">
-      <input ng-model="form.local_number" type="number" placeholder="login code">
-      <button class="button button-block button-calm" ng-click="performLogin(form)">Login</button>
-    </form> -->
-
-
-    <!-- <h5>An SMS with the code has been sent to </h5>
-    <form class="list list-inset simple-form">
-      <input ng-model="form.password" type="password" placeholder="login code">
-      <button class="button button-block button-calm" ng-click="performLogin(form)">Login</button>
-    </form> -->
-    <!-- <button>Did not get the code?</button> -->
   </ion-content>
 </ion-modal-view>

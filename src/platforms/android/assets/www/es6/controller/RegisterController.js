@@ -1,5 +1,5 @@
 angular.module('controller.register', [])
-.controller('RegisterController', ($scope, $location, $rootScope, $ionicModal, $ionicPopup, ApiService, CachingService, apiUrl) => {
+.controller('RegisterController', ($scope, $location, $rootScope, $ionicModal, $ionicPopup, $ionicHistory, ApiService, CachingService, apiUrl) => {
 
   let leafletMap = null;
   $scope.resources = [
@@ -137,7 +137,6 @@ angular.module('controller.register', [])
       },
       owner: form.owner,
       village_name: form.village_name.trim(),
-      mobile: `91${form.mobile}`,
       email: form.email,
       well_depth: form.max_wt_depth,
       type:form.type,
@@ -152,6 +151,9 @@ angular.module('controller.register', [])
         title: 'Thanks!',
         template: `Created a new ${form.type} in ${form.village_name.trim()}`
       });
+
+      //navigate back if possible
+      $ionicHistory && $ionicHistory.goBack();
     })
     .catch(function(err) {
       if (err.status === 0) {

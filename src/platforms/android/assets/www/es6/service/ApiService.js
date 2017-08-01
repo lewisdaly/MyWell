@@ -18,7 +18,8 @@ angular.module('service.api', [])
     uploadImageForResource: uploadImageForResource,
     getReadingsByWeek: getReadingsByWeek,
     getCurrentVillageAverage: getCurrentVillageAverage,
-    sendLoginCode: sendLoginCode,
+    sendLoginCodeSMS: sendLoginCodeSMS,
+    sendLoginCodeEmail: sendLoginCodeEmail,
     loginWithCode: loginWithCode,
     isLoggedIn:isLoggedIn
   });
@@ -140,13 +141,23 @@ angular.module('service.api', [])
    * If we cannot connect, save to localstorage array
    */
   function updateReading(reading) {
-    //TODO: change to upsert with where
-    return $http({
-      method:'post',
-      headers: {'Content-Type':'application/json'},
-      url: apiUrl + '/api/readings/saveOrCreate?access_token=' + AuthenticationService.getAccessToken(),
-      data:reading,
-    });
+    return Promise.resolve(true)
+      .then(() => showLoadingIndicator())
+      .then(() => $http({
+          method:'post',
+          headers: {'Content-Type':'application/json'},
+          url: apiUrl + '/api/readings/saveOrCreate?access_token=' + AuthenticationService.getAccessToken(),
+          data:reading,
+        })
+      )
+      .then(res => {
+        hideLoadingIndicator();
+        return res;
+      })
+      .catch((err) => {
+        hideLoadingIndicator();
+        return Promise.reject(err);
+      })
   }
 
   function registerWell(resource) {
@@ -176,11 +187,18 @@ angular.module('service.api', [])
     });
   }
 
-  function isLoggedIn() {
+  /**
+   * Check if token is valid, if no token is set, defaults to Auth service's token
+   */
+  function isLoggedIn(optional_token) {
+    if (!optional_token) {
+      optional_token = AuthenticationService.getAccessToken();
+    }
+
     return $http({
       method: 'get',
       headers: {'Content-Type':'application/json'},
-      url: `${apiUrl}/api/Clients/isLoggedIn?access_token=${AuthenticationService.getAccessToken()}`
+      url: `${apiUrl}/api/Clients/isLoggedIn?access_token=${optional_token}`
     });
   }
 
@@ -260,7 +278,7 @@ angular.module('service.api', [])
       })
   }
 
-  function sendLoginCode(mobile_number) {
+  function sendLoginCodeSMS(mobile_number) {
     return $http({
       method:'post',
       headers: {'Content-Type':'application/json'},
@@ -269,12 +287,30 @@ angular.module('service.api', [])
     });
   }
 
-  function loginWithCode(mobile_number, code) {
+  function sendLoginCodeEmail(email) {
+    return $http({
+      method:'post',
+      headers: {'Content-Type':'application/json'},
+      url: apiUrl + '/api/LoginCodes/sendEmailCode',
+      data: {email:email}
+    });
+  }
+
+  function loginWithCode(mobile_number, email, code) {
+    let data = null;
+    if (mobile_number && !email) {
+      data = {mobile_number:mobile_number, code:code}
+    } else if (!mobile_number && email) {
+      data = {email:email, code:code}
+    } else {
+      return Promise.reject(new Error('Cannot set both mobile_number and email'));
+    }
+
     return $http({
       method:'post',
       headers: {'Content-Type':'application/json'},
       url: apiUrl + '/api/Clients/loginWithCode',
-      data: {mobile_number:mobile_number, code:code}
+      data: data
     });
   }
 

@@ -2,7 +2,7 @@
 (function () {
     'use strict';
     angular.module('service.authentication',[])
-    .factory('AuthenticationService', function($http, $rootScope, $timeout, $location, $localstorage, UserService){
+    .factory('AuthenticationService', function($http, apiUrl, $rootScope, $timeout, $location, $localstorage, UserService){
 
         var service = {};
 
@@ -12,6 +12,8 @@
         service.ClearCredentials = ClearCredentials;
         service.getAccessToken = getAccessToken;
         service.Logout = Logout;
+        service.tryLastTokenLogin = tryLastTokenLogin;
+
         return service;
 
         function Login(user) {
@@ -29,13 +31,34 @@
         }
 
         function getAccessToken() {
-          //TODO: maybe we can directly set headers of $http
-          console.log('user details', $rootScope.globals.currentUser.authToken);
           return $rootScope.globals.currentUser.authToken;
         }
 
-        function SetCredentials(user, authToken) {
+        function tryLastTokenLogin() {
+          //get the token and try the endpoint
+          const lastUser = $localstorage.getObject('last_user', null);
+          if (!lastUser || !lastUser.currentUser) {
+            console.log("No last user found");
+            return Promise.reject('No last user');
+          }
 
+          return $http({
+            method: 'get',
+            headers: {'Content-Type':'application/json'},
+            url: `${apiUrl}/api/Clients/isLoggedIn?access_token=${lastUser.currentUser.authToken}`
+          })
+          .then(() => {
+            SetCredentials(lastUser, lastUser.currentUser.authToken);
+          })
+          .catch(err => {
+            if (err.statusCode === 401) {
+              $localstorage.delete('last_user');
+            }
+          });
+        }
+
+
+        function SetCredentials(user, authToken) {
             $rootScope.globals = {
                 currentUser: {
                     userID:user.id,
@@ -47,11 +70,17 @@
             };
 
             $localstorage.setObject('globals', $rootScope.globals);
-
         }
 
         function ClearCredentials() {
             console.log("Clearing Credentials");
+
+            //Save the user to try and login again if possible
+            const globals = $localstorage.getObject('globals', null);
+            if (globals && globals.currentUser && globals.currentUser.authToken) {
+              $localstorage.setObject('last_user', globals);
+            }
+
             $rootScope.globals = {};
             $localstorage.delete('globals');
             $http.defaults.headers.common.Authorization = 'Basic';
