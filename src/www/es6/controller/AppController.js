@@ -162,8 +162,14 @@ angular.module('starter.controllers', ['ionic'])
 
   //Perform the login
   $scope.performLogin = function(mobile_number, email, code) {
-    console.log("Performing login", mobile_number, email, code);
 
+    if ($scope.lastCodeState === 'getCodeEmail') {
+      mobile_number = null;
+    } else {
+      email = null;
+    }
+
+    console.log("Performing login", mobile_number, email, code);
     return ApiService.loginWithCode(mobile_number, email, code)
       .then(response => {
         console.log(response);
