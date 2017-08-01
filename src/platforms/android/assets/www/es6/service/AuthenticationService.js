@@ -51,9 +51,12 @@
             SetCredentials(lastUser, lastUser.currentUser.authToken);
           })
           .catch(err => {
+            console.log("Error: ", err);
             if (err.statusCode === 401) {
               $localstorage.delete('last_user');
             }
+
+            return Promise.reject(err);
           });
         }
 
