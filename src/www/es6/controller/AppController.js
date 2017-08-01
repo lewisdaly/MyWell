@@ -24,7 +24,6 @@ angular.module('starter.controllers', ['ionic'])
     ApiService.isLoggedIn()
       .then(() => $scope.isLoggedIn = true)
       .catch(err => {
-        //TODO: only clear on a 401
         console.log("User is no longer logged in", err);
         $scope.isLoggedIn = false;
         //logout, but still hold onto the credentials just in case
@@ -34,18 +33,20 @@ angular.module('starter.controllers', ['ionic'])
 
 	$scope.login = function() {
     //Try to login with last saved token first:
+    const _scope = $scope;
     return AuthenticationService.tryLastTokenLogin()
       .then(() => {
         $rootScope.$broadcast('login-state-changed', { any: {} });
       })
       .catch(err => {
-        console.log("err", err);
 
         $scope.email = $localstorage.get('last_entered_email', '');
         $scope.mobile_number = $localstorage.get('last_entered_mobile_number', '');
         $scope.tel = $localstorage.get('last_entered_mobile_number', '');
 
+        //Gets executed in child state
         $scope.modal.show();
+        // this.$parent.modal.show();
         $scope.codeState = 'getCodeEmail';
       });
 	}

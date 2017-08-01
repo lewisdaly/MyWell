@@ -17,7 +17,7 @@
        under the License.
  */
 
-package com.ionicframework.ionicrainapp175406;
+package com.vesselstech.mywell;
 
 import android.os.Bundle;
 import org.apache.cordova.*;
